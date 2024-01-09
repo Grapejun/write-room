@@ -1,0 +1,14 @@
+version: '3'
+services:
+  blue:
+    image: yell/writeroom/cicd:latest
+    container_name: blue
+    restart: always
+    ports:
+      - 8081:8080
+  green:
+    image: yell/writeroom/cicd:latest
+    container_name: green
+    restart: always
+    ports:
+      - 8082:8080
