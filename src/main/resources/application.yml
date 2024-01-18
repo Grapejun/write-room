@@ -9,3 +9,5 @@ sql:
   init:
     mode: never
 
+chatgpt:
+  key: ${GPT_SECRET}
