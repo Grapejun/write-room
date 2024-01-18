@@ -30,7 +30,4 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private JoinType joinType;
-
-    @OneToMany(mappedBy = "user")
-    private List<RoomParticipation> roomParticipations = new ArrayList<>();
 }

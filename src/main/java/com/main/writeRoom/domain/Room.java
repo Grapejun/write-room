@@ -3,6 +3,7 @@ package com.main.writeRoom.domain;
 import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Challenge.ChallengeRootine;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.RoomParticipation;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,8 +33,5 @@ public class Room {
     private String coverImg;
 
     @OneToMany(mappedBy = "room")
-    List<ChallengeRootine> rootines = new ArrayList<>();
-
-    @OneToMany(mappedBy = "room")
-    List<ChallengeGoals> goals = new ArrayList<>();
+    private List<RoomParticipation> roomParticipations = new ArrayList<>();
 }
