@@ -30,4 +30,5 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private JoinType joinType;
+    private String profileImg;
 }
