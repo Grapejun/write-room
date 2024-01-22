@@ -1,6 +1,8 @@
 package com.main.writeRoom.domain;
 
 import com.main.writeRoom.common.BaseEntity;
+
+import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,7 +34,10 @@ public class Room extends BaseEntity {
     private String coverImg;
 
     @OneToMany(mappedBy = "room")
-    private List<RoomParticipation> roomParticipations = new ArrayList<>();
+    List<ChallengeRoutine> routineList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "room")
+    private List<RoomParticipation> roomParticipationList = new ArrayList<>();
 
     public String daysSinceLastUpdate() {
         LocalDateTime now = LocalDateTime.now();

@@ -12,12 +12,12 @@ public class RoomConverter {
     public static List<RoomResponseDTO.MyRoomResultDto> myRoomListInfoDTO(Page<RoomParticipation> rooms) {
         return rooms.stream()
                 .map(room -> {
-                    long totalMemberCount = room.getRoom().getRoomParticipations().size();
+                    long totalMemberCount = room.getRoom().getRoomParticipationList().size();
                     return RoomResponseDTO.MyRoomResultDto.builder()
                             .roomId(room.getRoom().getId())
                             .roomTitle(room.getRoom().getTitle())
                             .updatedAt(room.getRoom().daysSinceLastUpdate())
-                            .userRoomList(room.getRoom().getRoomParticipations().stream()
+                            .userRoomList(room.getRoom().getRoomParticipationList().stream()
                                     .limit(3)
                                     .map(roomParticipation -> userRoomInfoDTO(roomParticipation.getUser()))
                                     .collect(Collectors.toList()))
@@ -36,7 +36,7 @@ public class RoomConverter {
         return userRoomResponseDTO.userRoomInfoList.builder()
                 .userId(user.getId())
                 .name(user.getName())
-                .profileImg(user.getProfileImg())
+                .profileImg(user.getProfileImage())
                 .build();
     }
 }
