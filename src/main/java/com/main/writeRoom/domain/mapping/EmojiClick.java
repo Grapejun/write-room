@@ -19,22 +19,10 @@ public class EmojiClick {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user")
-    private User user;
-
-    @ManyToOne
     @JoinColumn(name = "emoji")
     private Emoji emoji;
 
     @ManyToOne
     @JoinColumn(name = "note")
     private Note note;
-
-    @ManyToOne
-    @JoinColumn(name = "room")
-    private Room room;
-
-    @ManyToOne
-    @JoinColumn(name = "category")
-    private Category category;
 }

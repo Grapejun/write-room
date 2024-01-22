@@ -1,5 +1,6 @@
 package com.main.writeRoom.domain.mapping;
 
+import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.Tag;
 import jakarta.persistence.Entity;
@@ -16,8 +17,8 @@ public class NoteTag {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "room")
-    private Room room;
+    @JoinColumn(name = "note")
+    private Note note;
 
     @ManyToOne
     @JoinColumn(name = "tag")

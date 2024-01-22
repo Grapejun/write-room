@@ -1,11 +1,10 @@
 package com.main.writeRoom.domain;
 
+import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.common.BaseEntity;
 import com.main.writeRoom.domain.mapping.NoteTag;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -19,12 +18,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Tag {
+public class Tag extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String content;
+
+    @ManyToOne
+    @JoinColumn(name = "category")
+    private Category category;
 
     @OneToMany(mappedBy = "tag")
     private List<NoteTag> noteTagList = new ArrayList<>();

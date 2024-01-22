@@ -1,5 +1,6 @@
 package com.main.writeRoom.domain.User;
 
+import com.main.writeRoom.domain.common.BaseEntity;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -30,4 +31,8 @@ public class User {
     private String password;
     @Enumerated(EnumType.STRING)
     private JoinType joinType;
+    private String profileImage;
+
+    @OneToMany(mappedBy = "user")
+    private List<RoomParticipation> roomParticipationList = new ArrayList<>();
 }

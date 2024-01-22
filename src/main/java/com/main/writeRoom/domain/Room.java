@@ -1,14 +1,12 @@
 package com.main.writeRoom.domain;
 
-import com.main.writeRoom.domain.Challenge.ChallengeGoals;
-import com.main.writeRoom.domain.Challenge.ChallengeRootine;
-import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
+import com.main.writeRoom.domain.common.BaseEntity;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Room {
+public class Room extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,5 +31,8 @@ public class Room {
     private String coverImg;
 
     @OneToMany(mappedBy = "room")
-    private List<RoomParticipation> roomParticipations = new ArrayList<>();
+    List<ChallengeRoutine> routineList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "room")
+    private List<RoomParticipation> roomParticipationList = new ArrayList<>();
 }
