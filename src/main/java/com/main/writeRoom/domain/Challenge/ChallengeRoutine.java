@@ -32,6 +32,6 @@ public class ChallengeRoutine extends BaseEntity {
     @JoinColumn(name = "room")
     private Room room;
 
-    @OneToMany(mappedBy = "challenge_routine")
+    @OneToMany(mappedBy = "challengeRoutine")
     private List<ChallengeRoutineParticipation> challengeRoutineParticipationList = new ArrayList<>();
 }

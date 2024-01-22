@@ -33,6 +33,6 @@ public class ChallengeGoals extends BaseEntity {
     @JoinColumn(name = "room")
     private Room room;
 
-    @OneToMany(mappedBy = "challenge_goals")
+    @OneToMany(mappedBy = "challengeGoals")
     private List<ChallengeGoalsParticipation> challengeGoalsParticipationList = new ArrayList<>();
 }
