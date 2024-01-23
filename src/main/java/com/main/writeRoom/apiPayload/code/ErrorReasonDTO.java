@@ -10,9 +10,9 @@ public class ErrorReasonDTO {
 
     private HttpStatus httpStatus;
 
-    private final boolean isSuccess;
+    private final boolean isFailure;
     private final String code;
     private final String message;
 
-    public boolean getIsSuccess(){return isSuccess;}
+    public boolean getIsFailure(){return isFailure;}
 }

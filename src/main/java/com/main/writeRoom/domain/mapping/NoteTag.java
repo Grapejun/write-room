@@ -1,7 +1,6 @@
 package com.main.writeRoom.domain.mapping;
 
 import com.main.writeRoom.domain.Note;
-import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.Tag;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -1,10 +1,7 @@
 package com.main.writeRoom.domain.mapping;
 
-import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Emoji;
 import com.main.writeRoom.domain.Note;
-import com.main.writeRoom.domain.Room;
-import com.main.writeRoom.domain.User.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
