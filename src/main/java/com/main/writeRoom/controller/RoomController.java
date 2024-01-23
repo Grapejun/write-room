@@ -75,7 +75,7 @@ public class RoomController {
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.toUserRoomResultDTO(roomParticipation, roomParticipationList));
     }
 
-    @Operation(summary = "룸 멤버 조회 API", description = "해당 룸의 참여중인 멤버를 조회하는 API입니다.")
+    @Operation(summary = "룸 떠나기 API", description = "룸 떠나기 API이며, 모든 권한의 유저가 룸을 떠날 수 있습니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
