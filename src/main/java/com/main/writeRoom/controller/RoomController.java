@@ -7,6 +7,7 @@ import com.main.writeRoom.converter.RoomConverter;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
+import com.main.writeRoom.service.RoomParticipationService.RoomParticipationService;
 import com.main.writeRoom.service.RoomService.RoomCommandService;
 import com.main.writeRoom.service.RoomService.RoomQueryService;
 import com.main.writeRoom.service.UserService.UserQueryService;
@@ -23,6 +24,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +39,7 @@ public class RoomController {
     private final RoomCommandService roomCommandService;
     private final RoomQueryService roomQueryService;
     private final UserQueryService userQueryService;
+    private final RoomParticipationService roomParticipationService;
 
     @GetMapping("/{userId}")
     @Operation(summary = "나의 룸 목록 조회 API", description = "해당 유저가 참여중인 룸의 목록들을 조회하는 API이며, 페이징을 포함합니다. query String으로 page 번호를 주세요. ")
@@ -70,5 +73,13 @@ public class RoomController {
         RoomParticipation roomParticipation = roomCommandService.getUserRoomInfo(room, user);
         Page<RoomParticipation> roomParticipationList = roomCommandService.getUserRoomInfoList(room);
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.toUserRoomResultDTO(roomParticipation, roomParticipationList));
+    }
+
+    @DeleteMapping("/{roomId}/{userId}")
+    public ApiResponse leaveRoom(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "userId")Long userId) {
+        Room room = roomQueryService.findRoom(roomId);
+        User user = userQueryService.findUser(userId);
+        roomParticipationService.leaveRoom(room, user);
+        return ApiResponse.onSuccess();
     }
 }

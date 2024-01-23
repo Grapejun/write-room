@@ -13,4 +13,5 @@ public interface RoomPaticipationRepository extends JpaRepository<RoomParticipat
     Page<RoomParticipation> findAllByUser(User user, PageRequest pageRequest);
     Page<RoomParticipation> findAllByRoom(Room room, PageRequest pageRequest);
     RoomParticipation findByRoomAndUser(Room room, User user);
+    void deleteByRoomAndUser(Room room, User user);
 }

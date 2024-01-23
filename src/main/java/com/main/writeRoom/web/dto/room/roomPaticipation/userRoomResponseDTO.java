@@ -38,4 +38,12 @@ public class userRoomResponseDTO {
         String name;
         Authority authority;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getUserRoomInfoResultDTO {
+        Long userRoomId;
+    }
 }
