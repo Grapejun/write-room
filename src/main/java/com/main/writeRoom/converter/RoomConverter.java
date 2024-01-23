@@ -39,4 +39,25 @@ public class RoomConverter {
                 .profileImg(user.getProfileImage())
                 .build();
     }
+
+    public static userRoomResponseDTO.getUserRoom toUserRoomResultDTO(RoomParticipation roomParticipation, Page<RoomParticipation> roomParticipations) {
+        List<userRoomResponseDTO.getUserRoomList> toUserRoomResultDTOList = roomParticipations.stream()
+                .map(userRoom -> userRoomInfoListDTO(userRoom.getUser(), userRoom)).collect(Collectors.toList());
+
+        return userRoomResponseDTO.getUserRoom.builder()
+                .userId(roomParticipation.getUser().getId())
+                .name(roomParticipation.getUser().getName())
+                .authority(roomParticipation.getAuthority())
+                .userRoomLists(toUserRoomResultDTOList)
+                .build();
+    }
+
+    public static userRoomResponseDTO.getUserRoomList userRoomInfoListDTO(User user, RoomParticipation userRoom) {
+        return userRoomResponseDTO.getUserRoomList.builder()
+                .userId(user.getId())
+                .profileImg(user.getProfileImage())
+                .name(user.getName())
+                .authority(userRoom.getAuthority())
+                .build();
+    }
 }
