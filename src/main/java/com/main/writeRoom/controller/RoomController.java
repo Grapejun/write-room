@@ -83,7 +83,24 @@ public class RoomController {
     public ApiResponse leaveRoom(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "userId")Long userId) {
         Room room = roomQueryService.findRoom(roomId);
         User user = userQueryService.findUser(userId);
+
         roomParticipationService.leaveRoom(room, user);
+        return ApiResponse.onSuccess();
+    }
+
+    @Operation(summary = "룸 멤버 내보내기 API", description = "룸 멤버 내보내기 API이며, MANAGER(관리자)권한을 가진 유저만 룸 멤버를 내보낼 수 있습니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTHORITY4001", description = "권한이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @DeleteMapping("/{roomId}/{userId}/{outUserId}")
+    public ApiResponse outRoom(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "userId")Long userId, @PathVariable(name = "outUserId")Long outUserId) {
+        Room room = roomQueryService.findRoom(roomId);
+        User user = userQueryService.findUser(userId);
+        User outUser = userQueryService.findUser(outUserId);
+
+        roomParticipationService.outRoom(room, user, outUser);
         return ApiResponse.onSuccess();
     }
 }
