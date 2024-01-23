@@ -75,6 +75,10 @@ public class RoomController {
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.toUserRoomResultDTO(roomParticipation, roomParticipationList));
     }
 
+    @Operation(summary = "룸 멤버 조회 API", description = "해당 룸의 참여중인 멤버를 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
     @DeleteMapping("/{roomId}/{userId}")
     public ApiResponse leaveRoom(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "userId")Long userId) {
         Room room = roomQueryService.findRoom(roomId);
