@@ -31,4 +31,14 @@ public class RoomParticipationServiceImpl implements RoomParticipationService {
         }
         roomPaticipationRepository.deleteByRoomAndUser(room, outUser);
     }
+
+    @Transactional
+    public void updateAuthority(Room room, User user, User updateUser, String authority) {
+        RoomParticipation roomParticipation = roomPaticipationRepository.findByRoomAndUser(room, user);
+        if (roomParticipation.getAuthority() != MANAGER) {
+            throw new RoomHandler(ErrorStatus.AUTHORITY_NOT_FOUND);
+        }
+        RoomParticipation updateRoom = roomPaticipationRepository.findByRoomAndUser(room, updateUser);
+        updateRoom.updateAuthority(authority);
+    }
 }
