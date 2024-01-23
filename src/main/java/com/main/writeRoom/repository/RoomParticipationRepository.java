@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RoomPaticipationRepository extends JpaRepository<RoomParticipation, Long> {
+public interface RoomParticipationRepository extends JpaRepository<RoomParticipation, Long> {
     Page<RoomParticipation> findAllByUser(User user, PageRequest pageRequest);
     Page<RoomParticipation> findAllByRoom(Room room, PageRequest pageRequest);
     RoomParticipation findByRoomAndUser(Room room, User user);

@@ -5,7 +5,7 @@ import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import com.main.writeRoom.handler.UserHandler;
-import com.main.writeRoom.repository.RoomPaticipationRepository;
+import com.main.writeRoom.repository.RoomParticipationRepository;
 import com.main.writeRoom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class RoomCommandServiceimpl implements RoomCommandService {
-    private final RoomPaticipationRepository userRoomRepository;
+    private final RoomParticipationRepository userRoomRepository;
     private final UserRepository userRepository;
 
     @Override
