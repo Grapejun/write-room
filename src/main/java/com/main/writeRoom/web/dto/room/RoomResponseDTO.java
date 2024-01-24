@@ -24,4 +24,12 @@ public class RoomResponseDTO {
         Long totalMember;
         List<userRoomInfoList> userRoomList;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RoomInfoResult {
+        Long roomId;
+    }
 }

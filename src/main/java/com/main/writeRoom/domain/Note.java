@@ -30,4 +30,8 @@ public class Note extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "room")
+    private Room room;
 }
