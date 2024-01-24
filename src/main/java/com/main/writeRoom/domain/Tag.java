@@ -1,6 +1,5 @@
 package com.main.writeRoom.domain;
 
-import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.common.BaseEntity;
 import com.main.writeRoom.domain.mapping.NoteTag;
 import jakarta.persistence.*;
