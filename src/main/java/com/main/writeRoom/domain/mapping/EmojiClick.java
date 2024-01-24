@@ -2,6 +2,7 @@ package com.main.writeRoom.domain.mapping;
 
 import com.main.writeRoom.domain.Emoji;
 import com.main.writeRoom.domain.Note;
+import com.main.writeRoom.domain.Room;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,4 +23,8 @@ public class EmojiClick {
     @ManyToOne
     @JoinColumn(name = "note")
     private Note note;
+
+    @ManyToOne
+    @JoinColumn(name = "room")
+    private Room room;
 }
