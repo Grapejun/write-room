@@ -1,5 +1,7 @@
 package com.main.writeRoom.service.RoomService;
 
+import static com.main.writeRoom.domain.mapping.Authority.MANAGER;
+
 import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.aws.s3.AmazonS3Manager;
 import com.main.writeRoom.aws.s3.Uuid;
@@ -7,6 +9,7 @@ import com.main.writeRoom.converter.RoomConverter;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
+import com.main.writeRoom.handler.RoomHandler;
 import com.main.writeRoom.handler.UserHandler;
 import com.main.writeRoom.repository.RoomParticipationRepository;
 import com.main.writeRoom.repository.RoomRepository;
@@ -69,5 +72,14 @@ public class RoomCommandServiceimpl implements RoomCommandService {
         userRoomRepository.save(roomParticipation);
 
         return roomRepository.save(room);
+    }
+
+    @Transactional
+    public void deleteRoom(Room room, User user) {
+        RoomParticipation roomParticipation = userRoomRepository.findByRoomAndUser(room, user);
+        if (roomParticipation.getAuthority() != MANAGER) {
+            throw new RoomHandler(ErrorStatus.AUTHORITY_NOT_FOUND);
+        }
+        roomRepository.delete(room);
     }
 }

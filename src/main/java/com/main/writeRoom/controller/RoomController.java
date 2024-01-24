@@ -143,4 +143,19 @@ public class RoomController {
         Room room = roomCommandService.createRoom(user, request, roomImg);
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.toCreateRoomResultDTO(room));
     }
+
+    @Operation(summary = "룸 삭제 API", description = "룸을 삭제하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTHORITY4001", description = "권한이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @DeleteMapping("/delete/{roomId}/{userId}")
+    public ApiResponse deleteRoom(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "userId")Long userId) {
+        Room room = roomQueryService.findRoom(roomId);
+        User user = userQueryService.findUser(userId);
+
+        roomCommandService.deleteRoom(room, user);
+        return ApiResponse.onSuccess();
+    }
 }
