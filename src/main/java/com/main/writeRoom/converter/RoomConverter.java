@@ -1,7 +1,10 @@
 package com.main.writeRoom.converter;
 
+import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.Authority;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
+import com.main.writeRoom.web.dto.room.RoomRequestDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO;
 import com.main.writeRoom.web.dto.room.roomPaticipation.userRoomResponseDTO;
 import java.util.List;
@@ -60,4 +63,26 @@ public class RoomConverter {
                 .authority(userRoom.getAuthority())
                 .build();
     }
-}
+
+    public static Room toRoom(RoomRequestDTO.CreateRoomDTO request, String imgUrl) {
+        return Room.builder()
+                .title(request.getRoomTitle())
+                .introduction(request.getRoomContent())
+                .coverImg(imgUrl)
+                .build();
+    }
+
+    public static RoomParticipation toUserRoom(Room room, User user) {
+        return RoomParticipation.builder()
+                .user(user)
+                .room(room)
+                .authority(Authority.MANAGER)
+                .build();
+    }
+
+    public static RoomResponseDTO.RoomInfoResult toCreateRoomResultDTO(Room room) {
+        return RoomResponseDTO.RoomInfoResult.builder()
+                .roomId(room.getId())
+                .build();
+    }
+ }
