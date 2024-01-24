@@ -8,6 +8,7 @@ import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeStatus;
+import com.main.writeRoom.handler.ChallengeHandler;
 import com.main.writeRoom.handler.RoomHandler;
 import com.main.writeRoom.handler.UserHandler;
 import com.main.writeRoom.repository.ChallengeRoutineParticipationRepository;
@@ -56,4 +57,25 @@ public class ChallengeCommandServiceImpl implements ChallengeCommandService{ //G
 
         return challengeRoutineRepository.save(newChallengeRoutine);
     }
+
+    @Override
+    @Transactional
+    public ChallengeRoutineParticipation giveUP(Long userId, Long routineId) {
+        //회원, 챌린지 조회
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        ChallengeRoutine routine = challengeRoutineRepository.findById(routineId).orElseThrow(() -> new ChallengeHandler(ErrorStatus.ROUTINE_NOTFOUND));
+
+        //회원과 챌린지로 챌린지 참여 조회
+        ChallengeRoutineParticipation routineParticipation = challengeRoutineParticipationRepository.findByUserAndChallengeRoutine(user, routine);
+        if (routineParticipation != null) {
+            //챌린지 상태를 실패로 변경
+            routineParticipation.setChallengeStatus(ChallengeStatus.FAILURE);
+        } else {
+            throw new ChallengeHandler(ErrorStatus.PARTICIPATION_NOTFOUND);
+        }
+
+        return routineParticipation;
+    }
+
+
 }

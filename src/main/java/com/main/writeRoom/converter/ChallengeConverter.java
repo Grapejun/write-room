@@ -3,6 +3,7 @@ package com.main.writeRoom.converter;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
+import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
 
@@ -47,7 +48,13 @@ public class ChallengeConverter {
     //3. 챌린지 루틴 조회 - 스탬프 클릭
 
     //5. 챌린지 루틴 포기
-    public static ChallengeResponseDTO.GiveUpChallengeRoutineResultDTO giveUpChallengeRoutineResultDTO(ChallengeRoutine challengeRootine) {
-        return null;
+    public static ChallengeResponseDTO.GiveUpChallengeRoutineResultDTO toGiveUpChallengeRoutineResultDTO(ChallengeRoutineParticipation routineParticipation) {
+
+        return ChallengeResponseDTO.GiveUpChallengeRoutineResultDTO.builder()
+                .userId(routineParticipation.getUser().getId())
+                .challengeRoutineId(routineParticipation.getChallengeRoutine().getId())
+                .status(routineParticipation.getChallengeStatus())
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 }

@@ -37,4 +37,8 @@ public class ChallengeRoutineParticipation {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public void setChallengeStatus(ChallengeStatus challengeStatus) {
+        this.challengeStatus = challengeStatus;
+    }
 }

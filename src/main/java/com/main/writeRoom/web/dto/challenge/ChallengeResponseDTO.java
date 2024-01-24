@@ -2,6 +2,7 @@ package com.main.writeRoom.web.dto.challenge;
 
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,7 +55,9 @@ public class ChallengeResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class GiveUpChallengeRoutineResultDTO {
-        Long challengeRoutineId;
+        Long userId;             //포기한 회원
+        Long challengeRoutineId; //포기한 챌린지 루틴
+        ChallengeStatus status;  //포기 상태
         LocalDateTime createdAt; //포기 시간
     }
 
