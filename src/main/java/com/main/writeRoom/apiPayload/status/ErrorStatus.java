@@ -19,7 +19,11 @@ public enum ErrorStatus implements BaseErrorCode {
     PAGE_LESS_NULL(HttpStatus.BAD_REQUEST, "PAGE4001", "Page는 0부터 입니다."),
 
     //룸 에러
-    ROOM_NOT_FOUND(HttpStatus.BAD_REQUEST, "ROOM4001", "룸이 없습니다.")
+    ROOM_NOT_FOUND(HttpStatus.BAD_REQUEST, "ROOM4001", "룸이 없습니다."),
+
+    //챌린지 에러
+    ROUTINE_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4001", "챌린지 루틴이 없습니다."),
+    PARTICIPATION_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4002", "회원이 해당 챌린지에 참여하지 않았습니다.")
     ;
 
     private final HttpStatus httpStatus;

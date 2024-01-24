@@ -4,6 +4,7 @@ import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.converter.ChallengeConverter;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
+import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.service.ChallengeService.ChallengeCommandService;
 import com.main.writeRoom.service.ChallengeService.ChallengeQueryService;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
@@ -60,9 +61,20 @@ public class ChallengeRestController {
     //5. 챌린지 루틴 포기
     @PatchMapping("challenge-routines/give-up/{challengeId}")
     @Operation(summary = "챌린지 루틴 포기 API", description = "챌린지 루틴을 포기하는 API입니다.")
-    @ApiResponses
-    @Parameters
-    public ApiResponse<ChallengeResponseDTO.GiveUpChallengeRoutineResultDTO> giveUpChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId) {
-        return null;
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4001", description = "챌린지 루틴이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4002", description = "회원이 해당 챌린지에 참여하지 않았습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
+    })
+    @Parameters({
+            @Parameter(name = "userId", description = "챌린지를 포기할 회원의 식별자를 입력하세요."),
+    })
+    public ApiResponse<ChallengeResponseDTO.GiveUpChallengeRoutineResultDTO> giveUpChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
+        ChallengeRoutineParticipation routineParticipation = challengeCommandService.giveUP(userId, challengeId);
+        return ApiResponse.onSuccess(ChallengeConverter.toGiveUpChallengeRoutineResultDTO(routineParticipation));
     }
 }
