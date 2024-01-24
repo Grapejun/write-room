@@ -131,6 +131,10 @@ public class RoomController {
         return ApiResponse.onSuccess();
     }
 
+    @Operation(summary = "룸 생성 API", description = "룸을 생성하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
     @PostMapping(value = "/{userId}", consumes = "multipart/form-data")
     public ApiResponse<RoomResponseDTO.RoomInfoResult> CreateRoom(@PathVariable(name = "userId")Long userId, @RequestPart(name = "request") RoomRequestDTO.CreateRoomDTO request,
                                                                   @RequestPart(required = false, value = "roomImg")MultipartFile roomImg) {
