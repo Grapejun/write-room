@@ -1,6 +1,7 @@
 package com.main.writeRoom.domain.mapping;
 
 import com.main.writeRoom.domain.Note;
+import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.Tag;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,4 +23,8 @@ public class NoteTag {
     @ManyToOne
     @JoinColumn(name = "tag")
     private Tag tag;
+
+    @ManyToOne
+    @JoinColumn(name = "room")
+    private Room room;
 }
