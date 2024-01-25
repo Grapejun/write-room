@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +38,23 @@ public class CategoryController {
     public ApiResponse<RoomInfoResult> createCategory(@PathVariable(name = "roomId")Long roomId, @RequestBody
                                                       CategoryRequestDTO.CreateCategoryDTO request) {
         Room room = categoryCommandService.createCategory(roomId, request);
+        return ApiResponse.of(SuccessStatus._OK, RoomConverter.toCreateRoomResultDTO(room));
+    }
+
+    @Operation(summary = "사용자 카테고리 삭제 API", description = "사용자 카테고리를 삭제하는 API 입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTE4001", description = "노트가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CATEGORY4001", description = "카테고리가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+
+    })
+    @DeleteMapping("/{roomId}/{categoryId}")
+    public ApiResponse<RoomInfoResult> deleteCategory(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "categoryId")Long categoryId) {
+        Room room = categoryCommandService.deleteCategory(roomId, categoryId);
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.toCreateRoomResultDTO(room));
     }
 }
