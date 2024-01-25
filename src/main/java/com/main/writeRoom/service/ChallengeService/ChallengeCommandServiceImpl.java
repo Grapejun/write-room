@@ -15,6 +15,8 @@ import com.main.writeRoom.repository.ChallengeRoutineParticipationRepository;
 import com.main.writeRoom.repository.ChallengeRoutineRepository;
 import com.main.writeRoom.repository.RoomRepository;
 import com.main.writeRoom.repository.UserRepository;
+import com.main.writeRoom.service.RoomService.RoomQueryService;
+import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,31 +31,33 @@ import java.util.stream.Collectors;
 public class ChallengeCommandServiceImpl implements ChallengeCommandService{ //GET 외의 나머지 요청에 대한 로직
 
     private final ChallengeRoutineRepository challengeRoutineRepository;
-    private final UserRepository userRepository;
     private final ChallengeRoutineParticipationRepository challengeRoutineParticipationRepository;
-    private final RoomRepository roomRepository;
+    private final ChallengeQueryService challengeQueryService;
+    private final RoomQueryService roomQueryService;
+    private final UserQueryService userQueryService;
 
     @Override
     @Transactional
     public ChallengeRoutine create(Long roomId, ChallengeRequestDTO.ChallengeRoutineDTO request) {
 
         //룸 조회
-        Room room = roomRepository.findById(roomId).orElseThrow(() -> new RoomHandler(ErrorStatus.ROOM_NOT_FOUND));
+        Room room = roomQueryService.findRoom(roomId);
+        //insert할 새 챌린지 엔티티로 변환
         ChallengeRoutine newChallengeRoutine = ChallengeConverter.toChallengeRoutine(room, request);
 
         //유저아이디로 유저 조회 -> 참여자
         List<User> userList = request.getUserList().stream()
-                .map(user -> {
-                    return userRepository.findById(user).orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+                .map(userId -> {
+                    return userQueryService.findUser(userId);
                 }).collect(Collectors.toList());
 
         List<ChallengeRoutineParticipation> challengeRoutineParticipationList = ChallengeParticipationConverter.toChallengeRoutineParticipation(userList);
+
         challengeRoutineParticipationList.forEach(challengeRoutineParticipation -> {
             challengeRoutineParticipation.setChallengeRoutine(newChallengeRoutine);
             //챌린지 참여 테이블에 추가하는 코드
             challengeRoutineParticipationRepository.save(challengeRoutineParticipation);
         } );
-
 
         return challengeRoutineRepository.save(newChallengeRoutine);
     }
@@ -62,8 +66,8 @@ public class ChallengeCommandServiceImpl implements ChallengeCommandService{ //G
     @Transactional
     public ChallengeRoutineParticipation giveUP(Long userId, Long routineId) {
         //회원, 챌린지 조회
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        ChallengeRoutine routine = challengeRoutineRepository.findById(routineId).orElseThrow(() -> new ChallengeHandler(ErrorStatus.ROUTINE_NOTFOUND));
+        User user = userQueryService.findUser(userId);
+        ChallengeRoutine routine = challengeQueryService.findRoutine(routineId);
 
         //회원과 챌린지로 챌린지 참여 조회
         ChallengeRoutineParticipation routineParticipation = challengeRoutineParticipationRepository.findByUserAndChallengeRoutine(user, routine);

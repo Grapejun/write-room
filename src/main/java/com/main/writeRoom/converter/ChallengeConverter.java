@@ -3,13 +3,16 @@ package com.main.writeRoom.converter;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
+import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChallengeConverter {
 
@@ -32,16 +35,27 @@ public class ChallengeConverter {
     }
 
     //2. 챌린지 루틴 조회
-    public static ChallengeResponseDTO.RoutineNoteDTO toRoutineNoteDTO(Note note) {
-        return null;
-    }
-
-    public static ChallengeResponseDTO.ChallengeRoutineDTO toChallengeRoutineDTO(List<ChallengeResponseDTO.RoutineNoteDTO> noteList, ChallengeRoutine challengeRoutine) {
+    public static ChallengeResponseDTO.ChallengeRoutineDTO toChallengeRoutineDTO(User user, ChallengeRoutine routine, List<LocalDate> dateList)  {
+        List<ChallengeResponseDTO.userDTO> userList = routine.getChallengeRoutineParticipationList().stream()
+                .map(participation -> {
+                    return ChallengeConverter.toUserDTO(participation.getUser());
+                }).collect(Collectors.toList());
 
         return ChallengeResponseDTO.ChallengeRoutineDTO.builder()
-                .startDate(challengeRoutine.getStartDate())
-                .deadline(challengeRoutine.getDeadline())
-                .targetCount(challengeRoutine.getTargetCount())
+                .userName(user.getName())
+                .startDate(routine.getStartDate())
+                .deadline(routine.getDeadline())
+                .targetCount(routine.getTargetCount())
+                .userList(userList)
+                .dateList(dateList)
+                .build();
+    }
+
+    public static ChallengeResponseDTO.userDTO toUserDTO(User user) {
+        return ChallengeResponseDTO.userDTO.builder()
+                .userId(user.getId())
+                .userName(user.getName())
+                .profileImage(user.getProfileImage())
                 .build();
     }
 
