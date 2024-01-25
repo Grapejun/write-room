@@ -1,12 +1,11 @@
 package com.main.writeRoom.service.CategoryService;
 
-import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.converter.CategoryConverter;
 import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
-import com.main.writeRoom.handler.NoteHandler;
 import com.main.writeRoom.repository.CategoryRepository;
+import com.main.writeRoom.repository.NoteRepository;
 import com.main.writeRoom.service.NoteService.NoteQueryService;
 import com.main.writeRoom.service.RoomService.RoomQueryService;
 import com.main.writeRoom.web.dto.category.CategoryRequestDTO;
@@ -23,6 +22,7 @@ public class CategoryCommandServiceImpl implements CategoryCommandService{
     private final CategoryQueryService categoryQueryService;
     private final NoteQueryService noteQueryService;
     private final CategoryRepository categoryRepository;
+    private final NoteRepository noteRepository;
 
     @Transactional
     public Room createCategory(Long roomId, CategoryRequestDTO.CreateCategoryDTO request) {
@@ -37,12 +37,14 @@ public class CategoryCommandServiceImpl implements CategoryCommandService{
     public Room deleteCategory(Long roomId, Long categoryId) {
         Room room = roomQueryService.findRoom(roomId);
         Category category = categoryQueryService.findCategory(categoryId);
-        List<Note> note = noteQueryService.findNoteForCategory(category);
+        List<Note> notes = noteQueryService.findNoteForCategory(category, room);
 
-        if (note.isEmpty()) {
-            throw new NoteHandler(ErrorStatus.NOTE_NOT_FOUND);
+        if (!notes.isEmpty()) {
+            noteRepository.deleteAll(notes);
+            categoryRepository.delete(category);
+        } else {
+            categoryRepository.delete(category);
         }
-        categoryRepository.delete(category);
         return room;
     }
 }
