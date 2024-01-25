@@ -37,7 +37,7 @@ public class CategoryCommandServiceImpl implements CategoryCommandService{
     public Room deleteCategory(Long roomId, Long categoryId) {
         Room room = roomQueryService.findRoom(roomId);
         Category category = categoryQueryService.findCategory(categoryId);
-        List<Note> notes = noteQueryService.findNoteForCategory(category, room);
+        List<Note> notes = noteQueryService.findNoteForCategoryAndRoom(category, room);
 
         if (!notes.isEmpty()) {
             noteRepository.deleteAll(notes);

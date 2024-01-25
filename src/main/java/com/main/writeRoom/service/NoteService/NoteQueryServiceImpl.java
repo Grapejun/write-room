@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class NoteQueryServiceImpl implements NoteQueryService{
     private final NoteRepository noteRepository;
 
-    public List<Note> findNoteForCategory(Category category, Room room) {
+    public List<Note> findNoteForCategoryAndRoom(Category category, Room room) {
         return noteRepository.findAllByCategoryAndRoom(category, room);
     }
 }

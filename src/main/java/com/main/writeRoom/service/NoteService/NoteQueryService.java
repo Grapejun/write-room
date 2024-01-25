@@ -6,5 +6,5 @@ import com.main.writeRoom.domain.Room;
 import java.util.List;
 
 public interface NoteQueryService {
-    List<Note> findNoteForCategory(Category category, Room room);
+    List<Note> findNoteForCategoryAndRoom(Category category, Room room);
 }
