@@ -1,13 +1,11 @@
 package com.main.writeRoom.converter;
 
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
-import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -58,6 +56,7 @@ public class ChallengeConverter {
                 .profileImage(user.getProfileImage())
                 .build();
     }
+
 
     //3. 챌린지 루틴 조회 - 스탬프 클릭
 

@@ -5,13 +5,10 @@ import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
-import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.handler.ChallengeHandler;
-import com.main.writeRoom.handler.UserHandler;
 import com.main.writeRoom.repository.*;
 import com.main.writeRoom.service.UserService.UserQueryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +45,4 @@ public class ChallengeQueryServiceImpl implements ChallengeQueryService{ //GETìš
 
         return dateList;
     }
-
-
 }

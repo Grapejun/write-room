@@ -21,6 +21,7 @@ public enum ErrorStatus implements BaseErrorCode {
     AUTHORITY_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTHORITY4001", "권한이 없습니다."),
     AUTHORITY_TYPE_ERROR(HttpStatus.BAD_REQUEST, "AUTHORITY4002", "올바른 권한 형식을 입력하세요."),
 
+    //룸 에러
     //챌린지 에러
     ROUTINE_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4001", "챌린지 루틴이 없습니다."),
     PARTICIPATION_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4002", "회원이 해당 챌린지에 참여하지 않았습니다.")
