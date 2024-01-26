@@ -35,4 +35,5 @@ public class ChallengeRoutine extends BaseEntity {
 
     @OneToMany(mappedBy = "challengeRoutine")
     private List<ChallengeRoutineParticipation> challengeRoutineParticipationList = new ArrayList<>();
+
 }

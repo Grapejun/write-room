@@ -5,6 +5,7 @@ import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
+import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
 import java.time.LocalDate;
@@ -36,8 +37,9 @@ public class ChallengeConverter {
     //2. 챌린지 루틴 조회
     public static ChallengeResponseDTO.ChallengeRoutineDTO toChallengeRoutineDTO(User user, ChallengeRoutine routine, List<ChallengeResponseDTO.NoteDTO> noteList)  {
         List<ChallengeResponseDTO.UserDTO> userList = routine.getChallengeRoutineParticipationList().stream()
+                .filter(participation -> (participation.getChallengeStatus() == ChallengeStatus.PROGRESS) || (participation.getChallengeStatus() == ChallengeStatus.SUCCESS))
                 .map(participation -> {
-                    return ChallengeConverter.toUserDTO(participation.getUser());
+                        return ChallengeConverter.toUserDTO(participation.getUser());
                 }).collect(Collectors.toList());
 
         return ChallengeResponseDTO.ChallengeRoutineDTO.builder()

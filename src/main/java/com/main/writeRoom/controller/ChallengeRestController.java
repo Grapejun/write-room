@@ -5,6 +5,7 @@ import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.converter.ChallengeConverter;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
+import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.service.ChallengeService.ChallengeCommandService;
 import com.main.writeRoom.service.ChallengeService.ChallengeQueryService;
@@ -67,9 +68,10 @@ public class ChallengeRestController {
     })
     @Parameters
     public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> getChallengeRoutine(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
-        ChallengeRoutine challengeRoutine = challengeQueryService.findRoutine(challengeId);
-        List<ChallengeResponseDTO.NoteDTO> noteList = challengeQueryService.findNoteDate(userId, challengeId);
-        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeRoutineDTO(userQueryService.findUser(userId), challengeRoutine, noteList));
+        User user = userQueryService.findUser(userId);
+        ChallengeRoutine routine = challengeQueryService.findRoutine(challengeId);
+        List<ChallengeResponseDTO.NoteDTO> noteList = challengeQueryService.findNoteDate(user, routine);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeRoutineDTO(user, routine, noteList));
     }
 
     //3. 챌린지 루틴 조회 - 스탬프 클릭 -> 노트 조회

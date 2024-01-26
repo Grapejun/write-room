@@ -66,14 +66,13 @@ public class ChallengeCommandServiceImpl implements ChallengeCommandService{ //G
         User user = userQueryService.findUser(userId);
         ChallengeRoutine routine = challengeQueryService.findRoutine(routineId);
 
-
         //회원과 챌린지로 챌린지 참여 조회
         ChallengeRoutineParticipation routineParticipation = challengeRoutineParticipationRepository.findByUserAndChallengeRoutine(user, routine);
-        if (routineParticipation != null) {
+        if (routineParticipation != null && routineParticipation.getChallengeStatus() == ChallengeStatus.PROGRESS) {
             //챌린지 상태를 실패로 변경
             routineParticipation.setChallengeStatus(ChallengeStatus.FAILURE);
         } else {
-            throw new ChallengeHandler(ErrorStatus.PARTICIPATION_NOTFOUND);
+            throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);
         }
 
         return routineParticipation;

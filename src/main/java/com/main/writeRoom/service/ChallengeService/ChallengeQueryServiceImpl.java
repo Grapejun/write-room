@@ -30,21 +30,19 @@ public class ChallengeQueryServiceImpl implements ChallengeQueryService{ //GET�
 
     @Override
     public ChallengeRoutine findRoutine(Long challengeId) {
-
         return routineRepository.findById(challengeId).orElseThrow(() -> new ChallengeHandler(ErrorStatus.ROUTINE_NOTFOUND));
     }
 
     @Override
-    public List<ChallengeResponseDTO.NoteDTO> findNoteDate(Long userId, Long challengeId) { //챌린지 루틴 기간 동안에 '200자 이상' 작성된 노트의 작성 날짜를 조회
-        User user = userQueryService.findUser(userId);
-        ChallengeRoutine routine = findRoutine(challengeId);
+    public List<ChallengeResponseDTO.NoteDTO> findNoteDate(User user, ChallengeRoutine routine) { //챌린지 루틴 기간 동안에 '200자 이상' 작성된 노트의 작성 날짜를 조회
         Room room = routine.getRoom();
-        List<Note> noteList = noteRepository.findNotesByDate(routine.getStartDate().atStartOfDay(), routine.getDeadline().atTime(LocalTime.MAX), user, room); //에러핸들러
+        List<Note> noteList = noteRepository.findNotes(routine.getStartDate().atStartOfDay(), routine.getDeadline().atTime(LocalTime.MAX), user, room);
         List<ChallengeResponseDTO.NoteDTO> noteDTOList = noteList.stream()
                 .map(note -> {
                     return ChallengeConverter.toNoteDTO(note);
                 }).collect(Collectors.toList());
-
         return noteDTOList;
     }
+
+
 }

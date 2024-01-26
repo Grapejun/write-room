@@ -17,6 +17,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     List<Note> findAllByCategoryAndRoom(Category category, Room room);
 
     //Note findByUserAndRoom(User user, Room room);
-    @Query("select n from Note n where n.createdAt>= :startDate and n.createdAt<= :deadline and n.user = :user and n.room = :room")
-    List<Note> findNotesByDate(@Param("startDate") LocalDateTime startDate, @Param("deadline") LocalDateTime deadline, @Param("user") User user, @Param("room") Room room);
+    @Query("select n from Note n where n.createdAt>= :startDate and n.createdAt<= :deadline and n.user = :user and n.room = :room and n.achieve = 'TRUE'")
+    List<Note> findNotes(@Param("startDate") LocalDateTime startDate, @Param("deadline") LocalDateTime deadline, @Param("user") User user, @Param("room") Room room);
 }
