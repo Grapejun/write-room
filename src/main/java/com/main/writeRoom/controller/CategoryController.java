@@ -7,7 +7,6 @@ import com.main.writeRoom.converter.RoomConverter;
 import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.service.CategoryService.CategoryCommandService;
-import com.main.writeRoom.service.RoomService.RoomQueryService;
 import com.main.writeRoom.web.dto.category.CategoryRequestDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO.RoomInfoResult;
