@@ -2,12 +2,7 @@ package com.main.writeRoom.domain;
 
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +22,9 @@ public class Note extends BaseEntity {
     private String subtitle;
     private String coverImg;
     private String content;
+    @Enumerated(EnumType.STRING)
+    private ACHIEVE achieve; //노트 200자 달성 여부 true/false
+
     @ManyToOne
     @JoinColumn(name = "user")
     private User user;
@@ -34,4 +32,8 @@ public class Note extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "room")
     private Room room;
+
+    @ManyToOne
+    @JoinColumn(name = "category")
+    private Category category;
 }
