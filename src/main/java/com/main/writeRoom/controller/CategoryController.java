@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class CategoryController {
     private final CategoryCommandService categoryCommandService;
-    private final RoomQueryService roomQueryService;
 
     @Operation(summary = "사용자 카테고리 생성 API", description = "사용자 카테고리를 생성하는 API 이며, 카테고리 이름을 입력해주세요.")
     @ApiResponses({
