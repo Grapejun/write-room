@@ -1,6 +1,7 @@
 package com.main.writeRoom.service.ChallengeService;
 
 import com.main.writeRoom.apiPayload.status.ErrorStatus;
+import com.main.writeRoom.converter.ChallengeConverter;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
@@ -8,6 +9,7 @@ import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.handler.ChallengeHandler;
 import com.main.writeRoom.repository.*;
 import com.main.writeRoom.service.UserService.UserQueryService;
+import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,16 +35,16 @@ public class ChallengeQueryServiceImpl implements ChallengeQueryService{ //GET�
     }
 
     @Override
-    public List<LocalDate> findNoteDate(Long userId, Long challengeId) { //챌린지 루틴 기간 동안에 작성된 노트의 작성 날짜를 조회
+    public List<ChallengeResponseDTO.NoteDTO> findNoteDate(Long userId, Long challengeId) { //챌린지 루틴 기간 동안에 '200자 이상' 작성된 노트의 작성 날짜를 조회
         User user = userQueryService.findUser(userId);
         ChallengeRoutine routine = findRoutine(challengeId);
         Room room = routine.getRoom();
         List<Note> noteList = noteRepository.findNotesByDate(routine.getStartDate().atStartOfDay(), routine.getDeadline().atTime(LocalTime.MAX), user, room); //에러핸들러
-        List<LocalDate> dateList = noteList.stream()
+        List<ChallengeResponseDTO.NoteDTO> noteDTOList = noteList.stream()
                 .map(note -> {
-                    return note.getCreatedAt().toLocalDate();
+                    return ChallengeConverter.toNoteDTO(note);
                 }).collect(Collectors.toList());
 
-        return dateList;
+        return noteDTOList;
     }
 }

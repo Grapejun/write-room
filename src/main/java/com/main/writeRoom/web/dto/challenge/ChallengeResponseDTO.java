@@ -32,22 +32,32 @@ public class ChallengeResponseDTO {
     public static class ChallengeRoutineDTO {
 
         String userName;     //회원명
-        List<userDTO> userList; //챌린지 참여자 목록
+        List<UserDTO> userList; //챌린지 참여자 목록
         LocalDate startDate; //시작 날짜
         LocalDate deadline;  //마감 날짜
         Integer targetCount; //목표 일수
-        List<LocalDate> dateList; //챌린지 기간동안 작성한 날짜들의 리스트
+        List<NoteDTO> noteList; //챌린지 기간동안 작성한 노트들의 인덱스와 날짜 목록
     }
 
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class userDTO {
+    public static class UserDTO {
         Long userId;
         String userName;
         String profileImage;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteDTO {
+        Long noteId;
+        LocalDate date;
+    }
+
 
     //3. 챌린지 루틴 조회 - 스탬프 클릭
     //4. 챌린지 루틴 조회 - 참여자 클릭

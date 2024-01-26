@@ -68,8 +68,8 @@ public class ChallengeRestController {
     @Parameters
     public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> readChallengeRoutine(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
         ChallengeRoutine challengeRoutine = challengeQueryService.findRoutine(challengeId);
-        List<LocalDate> dateList = challengeQueryService.findNoteDate(userId, challengeId);
-        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeRoutineDTO(userQueryService.findUser(userId), challengeRoutine, dateList));
+        List<ChallengeResponseDTO.NoteDTO> noteList = challengeQueryService.findNoteDate(userId, challengeId);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeRoutineDTO(userQueryService.findUser(userId), challengeRoutine, noteList));
     }
 
     //3. 챌린지 루틴 조회 - 스탬프 클릭 -> 노트 조회

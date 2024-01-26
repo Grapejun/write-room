@@ -1,6 +1,7 @@
 package com.main.writeRoom.converter;
 
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
+import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
@@ -33,8 +34,8 @@ public class ChallengeConverter {
     }
 
     //2. 챌린지 루틴 조회
-    public static ChallengeResponseDTO.ChallengeRoutineDTO toChallengeRoutineDTO(User user, ChallengeRoutine routine, List<LocalDate> dateList)  {
-        List<ChallengeResponseDTO.userDTO> userList = routine.getChallengeRoutineParticipationList().stream()
+    public static ChallengeResponseDTO.ChallengeRoutineDTO toChallengeRoutineDTO(User user, ChallengeRoutine routine, List<ChallengeResponseDTO.NoteDTO> noteList)  {
+        List<ChallengeResponseDTO.UserDTO> userList = routine.getChallengeRoutineParticipationList().stream()
                 .map(participation -> {
                     return ChallengeConverter.toUserDTO(participation.getUser());
                 }).collect(Collectors.toList());
@@ -45,15 +46,22 @@ public class ChallengeConverter {
                 .deadline(routine.getDeadline())
                 .targetCount(routine.getTargetCount())
                 .userList(userList)
-                .dateList(dateList)
+                .noteList(noteList)
                 .build();
     }
 
-    public static ChallengeResponseDTO.userDTO toUserDTO(User user) {
-        return ChallengeResponseDTO.userDTO.builder()
+    public static ChallengeResponseDTO.UserDTO toUserDTO(User user) {
+        return ChallengeResponseDTO.UserDTO.builder()
                 .userId(user.getId())
                 .userName(user.getName())
                 .profileImage(user.getProfileImage())
+                .build();
+    }
+
+    public static ChallengeResponseDTO.NoteDTO toNoteDTO(Note note) {
+        return ChallengeResponseDTO.NoteDTO.builder()
+                .noteId(note.getId())
+                .date(note.getCreatedAt().toLocalDate())
                 .build();
     }
 
