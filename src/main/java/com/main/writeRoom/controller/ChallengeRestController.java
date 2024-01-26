@@ -55,7 +55,7 @@ public class ChallengeRestController {
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toCreateChallengeRoutineResultDTO(challengeRoutine));
     }
 
-    //2. 챌린지 루틴 조회
+    //2. 챌린지 루틴 조회(참여자 클릭 시 조회도 동일)
     @GetMapping("/challenge-routines/{userId}/{challengeId}")
     @Operation(summary = "챌린지 루틴 조회 API", description = "챌린지 루틴을 조회하는 API입니다.")
     @ApiResponses({
@@ -66,14 +66,20 @@ public class ChallengeRestController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters
-    public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> readChallengeRoutine(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
+    public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> getChallengeRoutine(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
         ChallengeRoutine challengeRoutine = challengeQueryService.findRoutine(challengeId);
         List<ChallengeResponseDTO.NoteDTO> noteList = challengeQueryService.findNoteDate(userId, challengeId);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeRoutineDTO(userQueryService.findUser(userId), challengeRoutine, noteList));
     }
 
     //3. 챌린지 루틴 조회 - 스탬프 클릭 -> 노트 조회
-    //4. 챌린지 루틴 조회 - 참여자 클릭
+    @GetMapping("/challenge-routines/{userId}/{roomId}/notes")
+    @Operation(summary = "챌린지 루틴 달성 노트 조회 API", description = "챌린지 루틴 달성 스탬프를 눌렀을 때 해당 날짜에 작성된 200자 이상의 노트들이 조회되는 API입니다.")
+    @ApiResponses
+    @Parameters
+    public ApiResponse<ChallengeResponseDTO.NoteListByDateDTO> getNoteListByDate(@PathVariable(name = "userId") Long userId, @PathVariable(name = "roodId") Long roomId, @RequestParam List<Long> noteId) {
+        return null;
+    }
 
     //5. 챌린지 루틴 포기
     @PatchMapping("challenge-routines/give-up/{challengeId}")

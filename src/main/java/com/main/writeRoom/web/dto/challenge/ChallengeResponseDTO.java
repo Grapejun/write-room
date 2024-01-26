@@ -1,6 +1,7 @@
 package com.main.writeRoom.web.dto.challenge;
 
 import com.main.writeRoom.domain.Note;
+import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import lombok.AllArgsConstructor;
@@ -58,8 +59,15 @@ public class ChallengeResponseDTO {
         LocalDate date;
     }
 
+    //3. 챌린지 루틴 조회 - 날짜, 200자 이상에 해당하는 노트 목록
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListByDateDTO{
+        Room room;  //룸의 노트 중 200자 이상인 노트를 조회
+    }
 
-    //3. 챌린지 루틴 조회 - 스탬프 클릭
     //4. 챌린지 루틴 조회 - 참여자 클릭
 
     //5. 챌린지 루틴 포기
