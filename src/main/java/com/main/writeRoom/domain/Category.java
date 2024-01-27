@@ -33,4 +33,8 @@ public class Category extends BaseEntity {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.REMOVE)
     private List<Note> notes;
+
+    public void updatedCategory(String name) {
+        this.name = name;
+    }
 }

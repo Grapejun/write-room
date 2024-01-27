@@ -47,4 +47,11 @@ public class CategoryCommandServiceImpl implements CategoryCommandService{
         }
         return room;
     }
+
+    @Transactional
+    public Category updatedCategory(Long categoryId, String name) {
+        Category category = categoryQueryService.findCategory(categoryId);
+        category.updatedCategory(name);
+        return category;
+    }
 }

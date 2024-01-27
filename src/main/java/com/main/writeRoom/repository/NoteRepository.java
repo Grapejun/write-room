@@ -3,17 +3,17 @@ package com.main.writeRoom.repository;
 import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
-import com.main.writeRoom.domain.User.User;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import com.main.writeRoom.domain.User.User;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface NoteRepository extends JpaRepository<Note, Long> {
-
     List<Note> findAllByCategoryAndRoom(Category category, Room room);
 
     //Note findByUserAndRoom(User user, Room room);
