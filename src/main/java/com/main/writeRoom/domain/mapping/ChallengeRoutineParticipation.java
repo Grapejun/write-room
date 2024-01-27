@@ -26,4 +26,19 @@ public class ChallengeRoutineParticipation {
     @ManyToOne
     @JoinColumn(name = "challenge_routine")
     private ChallengeRoutine challengeRoutine;
+
+    public void setChallengeRoutine(ChallengeRoutine challengeRoutine) {
+        if (this.challengeRoutine != null)
+            challengeRoutine.getChallengeRoutineParticipationList().remove(this);
+        this.challengeRoutine = challengeRoutine;
+        challengeRoutine.getChallengeRoutineParticipationList().add(this);
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setChallengeStatus(ChallengeStatus challengeStatus) {
+        this.challengeStatus = challengeStatus;
+    }
 }
