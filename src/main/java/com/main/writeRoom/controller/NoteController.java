@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,12 +43,25 @@ public class NoteController {
     @Parameters({
             @Parameter(name = "roomId", description = "룸 아이디 입니다."),
             @Parameter(name = "noteId", description = "노트 아이디 입니다."),
-            @Parameter(name = "userId", description = "유저 아이디 입니다."),
+            @Parameter(name = "userId", description = "유ㅇ 아이디 입니다."),
     })
     @PostMapping("/bookmark/{roomId}/{noteId}/{userId}")
     public ApiResponse<NoteResponseDTO.NoteResult> noteBookmark(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId, @PathVariable(name = "userId")Long userId) {
         Note note = noteQueryService.findNote(noteId);
         noteCommandService.createBookmarkNote(roomId, note, userId);
         return ApiResponse.of(SuccessStatus._OK, NoteConverter.toBookMarkNoteResult(note));
+    }
+
+    @Operation(summary = "북마크 노트 해제 API", description = "북마크한 노트를 해제하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @Parameters({
+            @Parameter(name = "bookmarkNoteId", description = "북마크 노트 아이디입니다."),
+    })
+    @DeleteMapping("/bookmark/delete/{bookmarkNoteId}")
+    public ApiResponse deleteBookmark(@PathVariable(name = "bookmarkNoteId")Long bookmarkNoteId) {
+        noteCommandService.deleteBookmarkNote(bookmarkNoteId);
+        return ApiResponse.onSuccess();
     }
 }

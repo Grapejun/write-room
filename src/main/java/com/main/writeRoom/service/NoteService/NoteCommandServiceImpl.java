@@ -28,4 +28,9 @@ public class NoteCommandServiceImpl implements NoteCommandService{
         BookmarkNote bookmarkNote = NoteConverter.toBookMarkNote(room, note, user);
         bookmarkNoteRepository.save(bookmarkNote);
     }
+
+    @Transactional
+    public void deleteBookmarkNote(Long bookmarkNoteId) {
+        bookmarkNoteRepository.deleteById(bookmarkNoteId);
+    }
 }
