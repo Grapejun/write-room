@@ -29,7 +29,7 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
 
     private final ChallengeRoutineRepository challengeRoutineRepository;
     private final ChallengeRoutineParticipationRepository challengeRoutineParticipationRepository;
-    private final ChallengeRoutineQueryService challengeQueryService;
+    private final ChallengeRoutineQueryService routineQueryService;
     private final RoomQueryService roomQueryService;
     private final UserQueryService userQueryService;
 
@@ -62,12 +62,10 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
     }
 
     @Override
-    public boolean deadlineRange(LocalDate startDate, LocalDate deadline) {
+    public void deadlineRange(LocalDate startDate, LocalDate deadline) {
         for (int i = 0; i < 4; i++) {
             if (deadline.isEqual(startDate.plusWeeks(i + 1).minusDays(1))) {
-                return true;
-            } else {
-                continue;
+                return;
             }
         }
         throw new ChallengeHandler(ErrorStatus.DEADLINE_OUT_RANGE);
@@ -79,7 +77,7 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
     public ChallengeRoutineParticipation giveUP(Long userId, Long routineId) {
         //회원, 챌린지 조회
         User user = userQueryService.findUser(userId);
-        ChallengeRoutine routine = challengeQueryService.findRoutine(routineId);
+        ChallengeRoutine routine = routineQueryService.findRoutine(routineId);
 
         //회원과 챌린지로 챌린지 참여 조회
         ChallengeRoutineParticipation routineParticipation = challengeRoutineParticipationRepository.findByUserAndChallengeRoutine(user, routine);

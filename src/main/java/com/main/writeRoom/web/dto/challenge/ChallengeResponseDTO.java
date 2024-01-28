@@ -15,13 +15,13 @@ import java.util.List;
 
 public class ChallengeResponseDTO {
 
-    //1. 챌린지 루틴 생성
+    //1. 챌린지 루틴, 목표량 생성 결과 dto
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class CreateChallengeRoutineResultDTO {
-        Long challengeRoutineId;
+    public static class CreateChallengeResultDTO {
+        Long challengeId;
         LocalDateTime createdAt;
     }
 
@@ -68,28 +68,16 @@ public class ChallengeResponseDTO {
         Room room;  //룸의 노트 중 200자 이상인 노트를 조회
     }
 
-    //5. 챌린지 루틴 포기
+    //5. 챌린지 루틴, 목표량 포기 결과 dto
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class GiveUpChallengeRoutineResultDTO {
+    public static class GiveUpChallengeResultDTO {
         Long userId;             //포기한 회원
-        Long challengeRoutineId; //포기한 챌린지 루틴
+        Long challengeId;        //포기한 챌린지
         ChallengeStatus status;  //포기 상태
         LocalDateTime createdAt; //포기 시간
-    }
-
-
-    //챌린지 목표량
-    //챌린지 목표량 생성
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class CreateChallengeGoalsResultDTO {
-        Long challengeGoalsId;
-        LocalDateTime createdAt;
     }
 
     //챌린지 목표량 조회
@@ -106,6 +94,4 @@ public class ChallengeResponseDTO {
         LocalDate deadline;  //마감 날짜
         Integer targetCount; //목표 일수
     }
-
-    //챌린지 목표량 포기
 }

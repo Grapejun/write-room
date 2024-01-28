@@ -42,9 +42,4 @@ public class ChallengeRequestDTO {
         LocalDate startDate; //시작 날짜 -> null 가능
         LocalDate deadline;  //마감 날짜 -> null 가능
     }
-
-    //챌린지 목표량 조회
-
-
-    //챌린지 목표량 포기
 }

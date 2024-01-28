@@ -5,6 +5,7 @@ import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
@@ -28,9 +29,9 @@ public class ChallengeConverter {
                 .build();
     }
 
-    public static ChallengeResponseDTO.CreateChallengeRoutineResultDTO toCreateChallengeRoutineResultDTO(ChallengeRoutine challengeRoutine) {
-        return ChallengeResponseDTO.CreateChallengeRoutineResultDTO.builder()
-                .challengeRoutineId(challengeRoutine.getId())
+    public static ChallengeResponseDTO.CreateChallengeResultDTO toCreateChallengeRoutineResultDTO(ChallengeRoutine challengeRoutine) {
+        return ChallengeResponseDTO.CreateChallengeResultDTO.builder()
+                .challengeId(challengeRoutine.getId())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -69,11 +70,11 @@ public class ChallengeConverter {
     }
 
     //5. 챌린지 루틴 포기
-    public static ChallengeResponseDTO.GiveUpChallengeRoutineResultDTO toGiveUpChallengeRoutineResultDTO(ChallengeRoutineParticipation routineParticipation) {
+    public static ChallengeResponseDTO.GiveUpChallengeResultDTO toGiveUpChallengeRoutineResultDTO(ChallengeRoutineParticipation routineParticipation) {
 
-        return ChallengeResponseDTO.GiveUpChallengeRoutineResultDTO.builder()
+        return ChallengeResponseDTO.GiveUpChallengeResultDTO.builder()
                 .userId(routineParticipation.getUser().getId())
-                .challengeRoutineId(routineParticipation.getChallengeRoutine().getId())
+                .challengeId(routineParticipation.getChallengeRoutine().getId())
                 .status(routineParticipation.getChallengeStatus())
                 .createdAt(LocalDateTime.now())
                 .build();
@@ -91,9 +92,9 @@ public class ChallengeConverter {
                 .build();
     }
 
-    public static ChallengeResponseDTO.CreateChallengeGoalsResultDTO toCreateChallengeGoalsResultDTO(ChallengeGoals challengeGoals) {
-        return ChallengeResponseDTO.CreateChallengeGoalsResultDTO.builder()
-                .challengeGoalsId(challengeGoals.getId())
+    public static ChallengeResponseDTO.CreateChallengeResultDTO toCreateChallengeGoalsResultDTO(ChallengeGoals challengeGoals) {
+        return ChallengeResponseDTO.CreateChallengeResultDTO.builder()
+                .challengeId(challengeGoals.getId())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -118,4 +119,13 @@ public class ChallengeConverter {
 
 
     //챌린지 목표량 포기
+    public static ChallengeResponseDTO.GiveUpChallengeResultDTO toGiveUpChallengeGoalsResultDTO(ChallengeGoalsParticipation goalsParticipation) {
+
+        return ChallengeResponseDTO.GiveUpChallengeResultDTO.builder()
+                .userId(goalsParticipation.getUser().getId())
+                .challengeId(goalsParticipation.getChallengeGoals().getId())
+                .status(goalsParticipation.getChallengeStatus())
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
 }

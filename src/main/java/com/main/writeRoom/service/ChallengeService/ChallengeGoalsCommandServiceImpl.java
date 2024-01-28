@@ -9,6 +9,7 @@ import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
+import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import com.main.writeRoom.handler.ChallengeHandler;
 import com.main.writeRoom.repository.ChallengeGoalsParticipationRepository;
 import com.main.writeRoom.repository.ChallengeGoalsRepository;
@@ -29,7 +30,7 @@ import java.util.stream.Collectors;
 public class ChallengeGoalsCommandServiceImpl implements ChallengeGoalsCommandService{
     private final ChallengeGoalsRepository goalsRepository;
     private final ChallengeGoalsParticipationRepository goalsParticipationRepository;
-    //private final ChallengeGoalsQueryService goalsQueryService;
+    private final ChallengeGoalsQueryService goalsQueryService;
     private final RoomQueryService roomQueryService;
     private final UserQueryService userQueryService;
 
@@ -57,15 +58,13 @@ public class ChallengeGoalsCommandServiceImpl implements ChallengeGoalsCommandSe
     }
 
     @Override
-    public boolean deadlineRangeNull(LocalDate startDate, LocalDate deadline) {
+    public void deadlineRangeNull(LocalDate startDate, LocalDate deadline) {
         if (deadline == null) {
-            return true;
+            return;
         } else {
             for (int i = 0; i < 4; i++) {
                 if (deadline.isEqual(startDate.plusWeeks(i + 1).minusDays(1))) {
-                    return true;
-                } else {
-                    continue;
+                    return;
                 }
             }
             throw new ChallengeHandler(ErrorStatus.DEADLINE_OUT_RANGE);
@@ -74,7 +73,20 @@ public class ChallengeGoalsCommandServiceImpl implements ChallengeGoalsCommandSe
 
     @Override
     @Transactional
-    public ChallengeGoalsParticipation giveUP(Long userId, Long challengeGoalsId) {
-        return null;
+    public ChallengeGoalsParticipation giveUP(Long userId, Long goalsId) {
+        //회원, 챌린지 조회
+        User user = userQueryService.findUser(userId);
+        ChallengeGoals goals = goalsQueryService.findGoals(goalsId);
+
+        //회원과 챌린지로 챌린지 참여 조회
+        ChallengeGoalsParticipation goalsParticipation = goalsParticipationRepository.findByUserAndChallengeGoals(user, goals);
+        if (goalsParticipation != null && goalsParticipation.getChallengeStatus() == ChallengeStatus.PROGRESS) {
+            //챌린지 상태를 실패로 변경
+            goalsParticipation.setChallengeStatus(ChallengeStatus.FAILURE);
+        } else {
+            throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);
+        }
+
+        return goalsParticipation;
     }
 }

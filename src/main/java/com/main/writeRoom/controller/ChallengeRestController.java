@@ -8,6 +8,7 @@ import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.service.ChallengeService.ChallengeGoalsCommandService;
 import com.main.writeRoom.service.ChallengeService.ChallengeGoalsQueryService;
@@ -51,7 +52,7 @@ public class ChallengeRestController {
     @Parameters({
             @Parameter(name = "roomId", description = "챌린지가 진행될 룸의 식별자를 입력하세요."),
     })
-    public ApiResponse<ChallengeResponseDTO.CreateChallengeRoutineResultDTO> createChallengeRoutine(@RequestParam Long roomId, @Valid @RequestBody ChallengeRequestDTO.ChallengeRoutineDTO request) {
+    public ApiResponse<ChallengeResponseDTO.CreateChallengeResultDTO> createChallengeRoutine(@RequestParam Long roomId, @Valid @RequestBody ChallengeRequestDTO.ChallengeRoutineDTO request) {
         ChallengeRoutine challengeRoutine = routineCommandService.create(roomId, request);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toCreateChallengeRoutineResultDTO(challengeRoutine));
     }
@@ -65,6 +66,8 @@ public class ChallengeRestController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4001", description = "챌린지 루틴이 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4004", description = "챌린지 마감 날짜 범위를 벗어났습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
     @Parameters
     public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> getChallengeRoutine(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
@@ -98,7 +101,7 @@ public class ChallengeRestController {
     @Parameters({
             @Parameter(name = "userId", description = "챌린지를 포기할 회원의 식별자를 입력하세요."),
     })
-    public ApiResponse<ChallengeResponseDTO.GiveUpChallengeRoutineResultDTO> giveUpChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
+    public ApiResponse<ChallengeResponseDTO.GiveUpChallengeResultDTO> giveUpChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
         ChallengeRoutineParticipation routineParticipation = routineCommandService.giveUP(userId, challengeId);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toGiveUpChallengeRoutineResultDTO(routineParticipation));
     }
@@ -112,12 +115,12 @@ public class ChallengeRestController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
-                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
     @Parameters({
             @Parameter(name = "roomId", description = "챌린지가 진행될 룸의 식별자를 입력하세요."),
     })
-    public ApiResponse<ChallengeResponseDTO.CreateChallengeGoalsResultDTO> createChallengeGoals(@RequestParam Long roomId, @Valid @RequestBody ChallengeRequestDTO.ChallengeGoalsDTO request) {
+    public ApiResponse<ChallengeResponseDTO.CreateChallengeResultDTO> createChallengeGoals(@RequestParam Long roomId, @Valid @RequestBody ChallengeRequestDTO.ChallengeGoalsDTO request) {
         ChallengeGoals challengeGoals = goalsCommandService.create(roomId, request);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toCreateChallengeGoalsResultDTO(challengeGoals));
     }
@@ -131,6 +134,8 @@ public class ChallengeRestController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4005", description = "챌린지 목표량이 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4004", description = "챌린지 마감 날짜 범위를 벗어났습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
     @Parameters
     public ApiResponse<ChallengeResponseDTO.ChallengeGoalsDTO> getChallengeGoals(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
@@ -141,4 +146,22 @@ public class ChallengeRestController {
     }
 
     //챌린지 목표량 포기
+    @PatchMapping("challenge-goals/give-up/{challengeId}")
+    @Operation(summary = "챌린지 목표량 포기 API", description = "챌린지 목표량을 포기하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4005", description = "챌린지 목표량이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4002", description = "회원이 해당 챌린지에 참여하지 않았습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
+    })
+    @Parameters({
+            @Parameter(name = "userId", description = "챌린지를 포기할 회원의 식별자를 입력하세요."),
+    })
+    public ApiResponse<ChallengeResponseDTO.GiveUpChallengeResultDTO> giveUpChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
+        ChallengeGoalsParticipation goalsParticipation = goalsCommandService.giveUP(userId, challengeId);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toGiveUpChallengeGoalsResultDTO(goalsParticipation));
+    }
 }

@@ -10,7 +10,7 @@ public interface ChallengeRoutineCommandService {
 
     public ChallengeRoutine create(Long roomId, ChallengeRequestDTO.ChallengeRoutineDTO request);
 
-    public boolean deadlineRange(LocalDate startDate, LocalDate deadline);
+    public void deadlineRange(LocalDate startDate, LocalDate deadline);
 
     public ChallengeRoutineParticipation giveUP(Long userId, Long challengeRoutineId);
 }

@@ -8,6 +8,6 @@ import java.time.LocalDate;
 
 public interface ChallengeGoalsCommandService {
     public ChallengeGoals create(Long roomId, ChallengeRequestDTO.ChallengeGoalsDTO request);
-    public boolean deadlineRangeNull(LocalDate startDate, LocalDate deadline);
+    public void deadlineRangeNull(LocalDate startDate, LocalDate deadline);
     public ChallengeGoalsParticipation giveUP(Long userId, Long challengeGoalsId);
 }
