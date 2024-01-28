@@ -4,6 +4,8 @@ import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.common.BaseEntity;
 import com.main.writeRoom.domain.mapping.NoteTag;
 import jakarta.persistence.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -42,4 +44,20 @@ public class Note extends BaseEntity {
 
     @OneToMany(mappedBy = "note")
     private List<NoteTag> noteTagList = new ArrayList<>();
+
+    public String daysSinceLastUpdate() {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(this.getUpdatedAt(), now);
+
+        if (duration.toDays() == 0) {
+            long hourDifference = duration.toHours();
+            if (hourDifference == 0) {
+                return "방금 전";
+            } else {
+                return hourDifference + "시간 전";
+            }
+        } else {
+            return duration.toDays() + "일 전";
+        }
+    }
 }

@@ -38,4 +38,15 @@ public class userRoomResponseDTO {
         String name;
         Authority authority;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class getUpdatedAtUserList {
+        Long userId;
+        String name;
+        String profileImg;
+        String updateAt;
+    }
 }
