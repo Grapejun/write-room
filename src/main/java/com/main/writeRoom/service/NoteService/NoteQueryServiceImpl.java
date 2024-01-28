@@ -6,6 +6,8 @@ import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.repository.NoteRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,5 +19,10 @@ public class NoteQueryServiceImpl implements NoteQueryService{
 
     public List<Note> findNoteForCategoryAndRoom(Category category, Room room) {
         return noteRepository.findAllByCategoryAndRoom(category, room);
+    }
+
+    public Page<Note> getNoteListForRoom(Room room, Integer page) {
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        return noteRepository.findAllByRoom(room, pageRequest);
     }
 }
