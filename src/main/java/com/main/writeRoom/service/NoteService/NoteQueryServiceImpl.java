@@ -1,8 +1,10 @@
 package com.main.writeRoom.service.NoteService;
 
+import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
+import com.main.writeRoom.handler.NoteHandler;
 import com.main.writeRoom.repository.NoteRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +26,10 @@ public class NoteQueryServiceImpl implements NoteQueryService{
     public Page<Note> getNoteListForRoom(Room room, Integer page) {
         PageRequest pageRequest = PageRequest.of(page, 10);
         return noteRepository.findAllByRoom(room, pageRequest);
+    }
+
+    public Note findNote(Long noteId) {
+        return noteRepository.findById(noteId)
+                .orElseThrow(() -> new NoteHandler(ErrorStatus.NOTE_NOT_FOUND));
     }
 }

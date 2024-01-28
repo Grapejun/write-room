@@ -1,7 +1,9 @@
 package com.main.writeRoom.converter;
 
+import com.main.writeRoom.domain.Bookmark.BookmarkNote;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
+import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.NoteTag;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
@@ -43,6 +45,20 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
         return TagResponseDTO.TagList.builder()
                 .tagId(noteTag.getTag().getId())
                 .tagName(noteTag.getTag().getContent())
+                .build();
+    }
+
+    public static NoteResponseDTO.NoteResult toBookMarkNoteResult(Note note) {
+        return NoteResponseDTO.NoteResult.builder()
+                .noteId(note.getId())
+                .build();
+    }
+
+    public static BookmarkNote toBookMarkNote(Room room, Note note, User user) {
+        return BookmarkNote.builder()
+                .room(room)
+                .note(note)
+                .user(user)
                 .build();
     }
 }

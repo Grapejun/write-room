@@ -35,4 +35,12 @@ public class NoteResponseDTO {
         LocalDateTime createdAt;
         List<TagResponseDTO.TagList> tagList;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteResult {
+        Long noteId;
+    }
 }
