@@ -2,7 +2,10 @@ package com.main.writeRoom.domain;
 
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.common.BaseEntity;
+import com.main.writeRoom.domain.mapping.NoteTag;
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,4 +39,7 @@ public class Note extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "category")
     private Category category;
+
+    @OneToMany(mappedBy = "note")
+    private List<NoteTag> noteTagList = new ArrayList<>();
 }
