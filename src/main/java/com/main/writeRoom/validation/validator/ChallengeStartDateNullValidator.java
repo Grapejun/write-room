@@ -1,7 +1,7 @@
 package com.main.writeRoom.validation.validator;
 
 import com.main.writeRoom.apiPayload.status.ErrorStatus;
-import com.main.writeRoom.validation.annotation.DeadlineRange;
+import com.main.writeRoom.validation.annotation.IsStartDateTodayNull;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
@@ -11,21 +11,16 @@ import java.time.LocalDate;
 
 @Component
 @RequiredArgsConstructor
-public class ChallengeDeadlineValidator implements ConstraintValidator<DeadlineRange, LocalDate> {
-
+public class ChallengeStartDateNullValidator implements ConstraintValidator<IsStartDateTodayNull, LocalDate> {
     @Override
-    public void initialize(DeadlineRange constraintAnnotation) {
+    public void initialize(IsStartDateTodayNull constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
 
     @Override
     public boolean isValid(LocalDate value, ConstraintValidatorContext context) {
-        for (int i = 0; i < 4; i++) {
-            if (value.isEqual(LocalDate.now().plusWeeks(i + 1).minusDays(1))) {
-                return true;
-            } else {
-                continue;
-            }
+        if (value == null || !(value.isBefore(LocalDate.now()))) {
+            return true;
         }
         context.disableDefaultConstraintViolation();
         context.buildConstraintViolationWithTemplate(ErrorStatus.STARTDATE_NOT_TODAY.toString()).addConstraintViolation();

@@ -19,7 +19,7 @@ public class ChallengeStartDateValidator implements ConstraintValidator<IsStartD
 
     @Override
     public boolean isValid(LocalDate value, ConstraintValidatorContext context) {
-        if (!value.isEqual(LocalDate.now())) {
+        if (value.isBefore(LocalDate.now())) {
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(ErrorStatus.STARTDATE_NOT_TODAY.toString()).addConstraintViolation();
             return false;

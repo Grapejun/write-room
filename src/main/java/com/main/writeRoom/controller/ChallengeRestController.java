@@ -4,13 +4,16 @@ import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.converter.ChallengeConverter;
+import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
+import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
-import com.main.writeRoom.service.ChallengeService.ChallengeCommandService;
-import com.main.writeRoom.service.ChallengeService.ChallengeQueryService;
+import com.main.writeRoom.service.ChallengeService.ChallengeGoalsCommandService;
+import com.main.writeRoom.service.ChallengeService.ChallengeGoalsQueryService;
+import com.main.writeRoom.service.ChallengeService.ChallengeRoutineCommandService;
+import com.main.writeRoom.service.ChallengeService.ChallengeRoutineQueryService;
 import com.main.writeRoom.service.UserService.UserQueryService;
-import com.main.writeRoom.service.UserService.UserQueryServiceImpl;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,22 +24,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import retrofit2.http.Path;
 
-import java.time.LocalDate;
 import java.util.List;
-
-import static com.amazonaws.services.ec2.model.PrincipalType.User;
 
 @RestController
 @RequiredArgsConstructor
 public class ChallengeRestController {
 
-    private final ChallengeCommandService challengeCommandService;
-    private final ChallengeQueryService challengeQueryService;
+    private final ChallengeRoutineCommandService routineCommandService;
+    private final ChallengeRoutineQueryService routineQueryService;
     private final UserQueryService userQueryService;
+    private final ChallengeGoalsCommandService goalsCommandService;
+    private final ChallengeGoalsQueryService goalsQueryService;
 
     //1. 챌린지 루틴 생성
     @PostMapping("/challenge-routines/create")
@@ -52,7 +52,7 @@ public class ChallengeRestController {
             @Parameter(name = "roomId", description = "챌린지가 진행될 룸의 식별자를 입력하세요."),
     })
     public ApiResponse<ChallengeResponseDTO.CreateChallengeRoutineResultDTO> createChallengeRoutine(@RequestParam Long roomId, @Valid @RequestBody ChallengeRequestDTO.ChallengeRoutineDTO request) {
-        ChallengeRoutine challengeRoutine = challengeCommandService.create(roomId, request);
+        ChallengeRoutine challengeRoutine = routineCommandService.create(roomId, request);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toCreateChallengeRoutineResultDTO(challengeRoutine));
     }
 
@@ -69,8 +69,8 @@ public class ChallengeRestController {
     @Parameters
     public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> getChallengeRoutine(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
         User user = userQueryService.findUser(userId);
-        ChallengeRoutine routine = challengeQueryService.findRoutine(challengeId);
-        List<ChallengeResponseDTO.NoteDTO> noteList = challengeQueryService.findNoteDate(user, routine);
+        ChallengeRoutine routine = routineQueryService.findRoutine(challengeId);
+        List<ChallengeResponseDTO.NoteDTO> noteList = routineQueryService.findNoteDate(user, routine);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeRoutineDTO(user, routine, noteList));
     }
 
@@ -99,7 +99,46 @@ public class ChallengeRestController {
             @Parameter(name = "userId", description = "챌린지를 포기할 회원의 식별자를 입력하세요."),
     })
     public ApiResponse<ChallengeResponseDTO.GiveUpChallengeRoutineResultDTO> giveUpChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
-        ChallengeRoutineParticipation routineParticipation = challengeCommandService.giveUP(userId, challengeId);
+        ChallengeRoutineParticipation routineParticipation = routineCommandService.giveUP(userId, challengeId);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toGiveUpChallengeRoutineResultDTO(routineParticipation));
     }
+
+    //챌린지 목표량
+    //챌린지 목표량 생성
+    @PostMapping("/challenge-goals/create")
+    @Operation(summary = "챌린지 목표량 생성 API", description = "챌린지 목표량을 생성하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "roomId", description = "챌린지가 진행될 룸의 식별자를 입력하세요."),
+    })
+    public ApiResponse<ChallengeResponseDTO.CreateChallengeGoalsResultDTO> createChallengeGoals(@RequestParam Long roomId, @Valid @RequestBody ChallengeRequestDTO.ChallengeGoalsDTO request) {
+        ChallengeGoals challengeGoals = goalsCommandService.create(roomId, request);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toCreateChallengeGoalsResultDTO(challengeGoals));
+    }
+
+    //챌린지 목표량 조회
+    @GetMapping("/challenge-goals/{userId}/{challengeId}")
+    @Operation(summary = "챌린지 목표량 조회 API", description = "챌린지 목표량을 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4005", description = "챌린지 목표량이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters
+    public ApiResponse<ChallengeResponseDTO.ChallengeGoalsDTO> getChallengeGoals(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
+        User user = userQueryService.findUser(userId);
+        ChallengeGoals goals = goalsQueryService.findGoals(challengeId);
+        Integer achieveCount = goalsQueryService.findAchieveNote(user, goals);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeGoalsDTO(user, goals, achieveCount));
+    }
+
+    //챌린지 목표량 포기
 }

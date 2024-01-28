@@ -68,8 +68,6 @@ public class ChallengeResponseDTO {
         Room room;  //룸의 노트 중 200자 이상인 노트를 조회
     }
 
-    //4. 챌린지 루틴 조회 - 참여자 클릭
-
     //5. 챌린지 루틴 포기
     @Builder
     @Getter
@@ -82,4 +80,32 @@ public class ChallengeResponseDTO {
         LocalDateTime createdAt; //포기 시간
     }
 
+
+    //챌린지 목표량
+    //챌린지 목표량 생성
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class CreateChallengeGoalsResultDTO {
+        Long challengeGoalsId;
+        LocalDateTime createdAt;
+    }
+
+    //챌린지 목표량 조회
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ChallengeGoalsDTO {
+
+        String userName;     //회원명
+        Integer achieveCount; //기간 동안의 200자 이상인 노트의 수
+        List<UserDTO> userList; //챌린지 참여자 목록
+        LocalDate startDate; //시작 날짜
+        LocalDate deadline;  //마감 날짜
+        Integer targetCount; //목표 일수
+    }
+
+    //챌린지 목표량 포기
 }
