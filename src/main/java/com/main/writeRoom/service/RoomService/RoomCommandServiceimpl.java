@@ -82,4 +82,9 @@ public class RoomCommandServiceimpl implements RoomCommandService {
         }
         roomRepository.delete(room);
     }
+
+    public Page<RoomParticipation> findUpdateAtUserList(Room room, Integer page) {
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        return userRoomRepository.findAllByRoom(room, pageRequest);
+    }
 }
