@@ -178,7 +178,16 @@ public class RoomController {
         return ApiResponse.of(SuccessStatus._OK, NoteConverter.toRoomResultDTO(room, note));
     }
 
-    저
+    @Operation(summary = "룸에 참여중인 멤버들의 최근 수정일자 조회 API", description = "해당 룸에 참여중인 멤버들의 노트 수정일자를 조회하는 API이며, 페이징을 포함합니다. query String으로 page 번호를 주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
+            @Parameter(name = "roomId", description = "룸 아이디 입니다."),
+    })
     @GetMapping("/updateAt/{roomId}")
     public ApiResponse<List<userRoomResponseDTO.getUpdatedAtUserList>> getUpdateAtUserList(@PathVariable(name = "roomId")Long roomId, @PageLessNull @RequestParam(name = "page") Integer page) {
         Room room = roomQueryService.findRoom(roomId);
