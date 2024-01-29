@@ -32,4 +32,8 @@ public class NoteQueryServiceImpl implements NoteQueryService{
         return noteRepository.findById(noteId)
                 .orElseThrow(() -> new NoteHandler(ErrorStatus.NOTE_NOT_FOUND));
     }
+    public Page<Note> findNoteForRoomAndCategory(Category category, Room room, Integer page) {
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        return noteRepository.findAllByRoomAndCategory(room, category, pageRequest);
+    }
 }

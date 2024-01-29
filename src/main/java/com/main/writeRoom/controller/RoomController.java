@@ -5,10 +5,12 @@ import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.converter.NoteConverter;
 import com.main.writeRoom.converter.RoomConverter;
+import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
+import com.main.writeRoom.service.CategoryService.CategoryQueryService;
 import com.main.writeRoom.service.NoteService.NoteQueryService;
 import com.main.writeRoom.service.RoomParticipationService.RoomParticipationService;
 import com.main.writeRoom.service.RoomService.RoomCommandService;
@@ -50,6 +52,7 @@ public class RoomController {
     private final RoomQueryService roomQueryService;
     private final UserQueryService userQueryService;
     private final NoteQueryService noteQueryService;
+    private final CategoryQueryService categoryQueryService;
     private final RoomParticipationService roomParticipationService;
 
     @GetMapping("/{userId}")
@@ -193,5 +196,26 @@ public class RoomController {
         Room room = roomQueryService.findRoom(roomId);
         Page<RoomParticipation> userRoomList = roomCommandService.findUpdateAtUserList(room, page);
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.updateAtUserList(userRoomList));
+    }
+
+    @Operation(summary = "카테고리에 속한 노트 목록 조회 API", description = "카테고리에 속한 노트 리스트를 조회하는 API이며, 페이징을 포함합니다. query String으로 page 번호를 주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CATEGORY4001", description = "카테고리가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
+            @Parameter(name = "roomId", description = "룸 아이디 입니다."),
+            @Parameter(name = "categoryId", description = "카테고리 아이디 입니다.")
+    })
+    @GetMapping("/noteList/{roomId}/{categoryId}")
+    public ApiResponse<NoteResponseDTO.RoomResult> getNoteListForCategory(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "categoryId")Long categoryId, @PageLessNull @RequestParam(name = "page") Integer page) {
+        Room room = roomQueryService.findRoom(roomId);
+        Category category = categoryQueryService.findCategory(categoryId);
+        Page<Note> note = noteQueryService.findNoteForRoomAndCategory(category, room, page);
+        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toRoomResultDTO(room, note));
     }
 }
