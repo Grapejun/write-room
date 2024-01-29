@@ -9,6 +9,7 @@ import com.main.writeRoom.repository.NoteRepository;
 import com.main.writeRoom.service.NoteService.NoteQueryService;
 import com.main.writeRoom.service.RoomService.RoomQueryService;
 import com.main.writeRoom.web.dto.category.CategoryRequestDTO;
+import com.main.writeRoom.web.dto.category.CategoryResponseDTO;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -53,5 +54,12 @@ public class CategoryCommandServiceImpl implements CategoryCommandService{
         Category category = categoryQueryService.findCategory(categoryId);
         category.updatedCategory(name);
         return category;
+    }
+
+    @Transactional(readOnly = true)
+    public CategoryResponseDTO.CategoryResult findCategoryForRoom(Room room) {
+        Long noteAllCount = noteRepository.countByRoom(room);
+        List<Category> categories = categoryQueryService.findCategoryForRoom(room);
+        return CategoryConverter.toCategoryForRoom(room, noteAllCount, categories);
     }
 }

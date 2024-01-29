@@ -5,7 +5,6 @@ import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import java.util.List;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,4 +29,5 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     Integer findAchieveCountNoDate(@Param("user") User user, @Param("room") Room room);
 
     Page<Note> findAllByRoom(Room room, PageRequest pageRequest);
+    Long countByRoom(Room room);
 }
