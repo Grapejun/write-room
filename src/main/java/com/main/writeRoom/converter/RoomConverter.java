@@ -1,5 +1,6 @@
 package com.main.writeRoom.converter;
 
+import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.Authority;
@@ -43,7 +44,8 @@ public class RoomConverter {
                 .build();
     }
 
-    public static userRoomResponseDTO.getUserRoom toUserRoomResultDTO(RoomParticipation roomParticipation, Page<RoomParticipation> roomParticipations) {
+    public static userRoomResponseDTO.getUserRoom toUserRoomResultDTO(RoomParticipation roomParticipation,
+                                                                      Page<RoomParticipation> roomParticipations) {
         List<userRoomResponseDTO.getUserRoomList> toUserRoomResultDTOList = roomParticipations.stream()
                 .map(userRoom -> userRoomInfoListDTO(userRoom.getUser(), userRoom)).collect(Collectors.toList());
 
@@ -85,4 +87,35 @@ public class RoomConverter {
                 .roomId(room.getId())
                 .build();
     }
- }
+
+    public static List<userRoomResponseDTO.getUpdatedAtUserList> updateAtUserList(
+            Page<RoomParticipation> roomParticipations) {
+        return roomParticipations.stream()
+                .map(roomParticipation -> {
+                    User user = roomParticipation.getUser();
+                    List<Note> userNotes = getNotesForUserInRoom(roomParticipation);
+                    List<String> noteUpdateDates = getNoteUpdateDates(userNotes);
+
+                    return userRoomResponseDTO.getUpdatedAtUserList.builder()
+                            .userId(user.getId())
+                            .profileImg(user.getProfileImage())
+                            .name(user.getName())
+                            .updateAt(String.join(", ", noteUpdateDates))
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    private static List<Note> getNotesForUserInRoom(RoomParticipation roomParticipation) {
+        Room room = roomParticipation.getRoom();
+        return room.getNoteList().stream()
+                .filter(note -> note.getUser().equals(roomParticipation.getUser()))
+                .collect(Collectors.toList());
+    }
+
+    private static List<String> getNoteUpdateDates(List<Note> notes) {
+        return notes.stream()
+                .map(Note::daysSinceLastUpdate)
+                .collect(Collectors.toList());
+    }
+}

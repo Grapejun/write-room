@@ -6,6 +6,8 @@ import com.main.writeRoom.domain.Room;
 import java.util.List;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,7 +20,6 @@ import org.springframework.stereotype.Repository;
 public interface NoteRepository extends JpaRepository<Note, Long> {
     List<Note> findAllByCategoryAndRoom(Category category, Room room);
 
-    //Note findByUserAndRoom(User user, Room room);
     @Query("select n from Note n where n.createdAt>= :startDate and n.createdAt<= :deadline and n.user = :user and n.room = :room and n.achieve = 'TRUE'")
     List<Note> findAchieveNotes(@Param("startDate") LocalDateTime startDate, @Param("deadline") LocalDateTime deadline, @Param("user") User user, @Param("room") Room room);
 
@@ -27,4 +28,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     @Query("select count(*) from Note n where n.user = :user and n.room = :room and n.achieve = 'TRUE'")
     Integer findAchieveCountNoDate(@Param("user") User user, @Param("room") Room room);
+
+    Page<Note> findAllByRoom(Room room, PageRequest pageRequest);
 }
