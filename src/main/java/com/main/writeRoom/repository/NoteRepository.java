@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NoteRepository extends JpaRepository<Note, Long> {
+    Page<Note> findAllByRoomAndCategory(Room room, Category category, PageRequest pageRequest);
     List<Note> findAllByCategoryAndRoom(Category category, Room room);
 
     @Query("select n from Note n where n.createdAt>= :startDate and n.createdAt<= :deadline and n.user = :user and n.room = :room and n.achieve = 'TRUE'")
