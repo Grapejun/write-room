@@ -1,6 +1,7 @@
 package com.main.writeRoom.domain.mapping;
 
 import com.main.writeRoom.domain.Challenge.ChallengeGoals;
+import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.User.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,4 +27,19 @@ public class ChallengeGoalsParticipation {
     @ManyToOne
     @JoinColumn(name = "challenge_goals")
     private ChallengeGoals challengeGoals;
+
+    public void setChallengeGoals(ChallengeGoals challengeGoals) {
+        if (this.challengeGoals != null)
+            challengeGoals.getChallengeGoalsParticipationList().remove(this);
+        this.challengeGoals = challengeGoals;
+        challengeGoals.getChallengeGoalsParticipationList().add(this);
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setChallengeStatus(ChallengeStatus challengeStatus) {
+        this.challengeStatus = challengeStatus;
+    }
 }

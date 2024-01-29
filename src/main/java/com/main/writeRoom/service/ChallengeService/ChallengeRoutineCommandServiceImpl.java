@@ -18,23 +18,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ChallengeCommandServiceImpl implements ChallengeCommandService{ //GET 외의 나머지 요청에 대한 로직
+public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineCommandService { //GET 외의 나머지 요청에 대한 로직
 
     private final ChallengeRoutineRepository challengeRoutineRepository;
     private final ChallengeRoutineParticipationRepository challengeRoutineParticipationRepository;
-    private final ChallengeQueryService challengeQueryService;
+    private final ChallengeRoutineQueryService routineQueryService;
     private final RoomQueryService roomQueryService;
     private final UserQueryService userQueryService;
 
     @Override
     @Transactional
     public ChallengeRoutine create(Long roomId, ChallengeRequestDTO.ChallengeRoutineDTO request) {
+       deadlineRange(request.getStartDate(), request.getDeadline());
 
         //룸 조회
         Room room = roomQueryService.findRoom(roomId);
@@ -60,11 +62,22 @@ public class ChallengeCommandServiceImpl implements ChallengeCommandService{ //G
     }
 
     @Override
+    public void deadlineRange(LocalDate startDate, LocalDate deadline) {
+        for (int i = 0; i < 4; i++) {
+            if (deadline.isEqual(startDate.plusWeeks(i + 1).minusDays(1))) {
+                return;
+            }
+        }
+        throw new ChallengeHandler(ErrorStatus.DEADLINE_OUT_RANGE);
+    }
+
+
+    @Override
     @Transactional
     public ChallengeRoutineParticipation giveUP(Long userId, Long routineId) {
         //회원, 챌린지 조회
         User user = userQueryService.findUser(userId);
-        ChallengeRoutine routine = challengeQueryService.findRoutine(routineId);
+        ChallengeRoutine routine = routineQueryService.findRoutine(routineId);
 
         //회원과 챌린지로 챌린지 참여 조회
         ChallengeRoutineParticipation routineParticipation = challengeRoutineParticipationRepository.findByUserAndChallengeRoutine(user, routine);
