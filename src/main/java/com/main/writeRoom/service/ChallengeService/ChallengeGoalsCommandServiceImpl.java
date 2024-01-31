@@ -51,6 +51,7 @@ public class ChallengeGoalsCommandServiceImpl implements ChallengeGoalsCommandSe
 
         goalsParticipationList.forEach(goalsParticipation -> {
             goalsParticipation.setChallengeGoals(newGoals);
+            goalsParticipation.setRoom(newGoals.getRoom());
             goalsParticipationRepository.save(goalsParticipation);
         });
 
@@ -83,6 +84,7 @@ public class ChallengeGoalsCommandServiceImpl implements ChallengeGoalsCommandSe
         if (goalsParticipation != null && goalsParticipation.getChallengeStatus() == ChallengeStatus.PROGRESS) {
             //챌린지 상태를 실패로 변경
             goalsParticipation.setChallengeStatus(ChallengeStatus.FAILURE);
+            goalsParticipation.setStatusUpdatedAt(LocalDate.now());
         } else {
             throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);
         }

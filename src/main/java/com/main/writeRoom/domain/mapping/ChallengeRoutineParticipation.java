@@ -1,9 +1,13 @@
 package com.main.writeRoom.domain.mapping;
 
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
+import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -19,6 +23,8 @@ public class ChallengeRoutineParticipation {
     @Enumerated(EnumType.STRING)
     private ChallengeStatus challengeStatus;
 
+    private LocalDate statusUpdatedAt;
+
     @ManyToOne
     @JoinColumn(name = "user")
     private User user;
@@ -26,6 +32,10 @@ public class ChallengeRoutineParticipation {
     @ManyToOne
     @JoinColumn(name = "challenge_routine")
     private ChallengeRoutine challengeRoutine;
+
+    @ManyToOne
+    @JoinColumn(name = "room")
+    private Room room;
 
     public void setChallengeRoutine(ChallengeRoutine challengeRoutine) {
         if (this.challengeRoutine != null)
@@ -40,5 +50,13 @@ public class ChallengeRoutineParticipation {
 
     public void setChallengeStatus(ChallengeStatus challengeStatus) {
         this.challengeStatus = challengeStatus;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public void setStatusUpdatedAt(LocalDate localDate) {
+        this.statusUpdatedAt = localDate;
     }
 }

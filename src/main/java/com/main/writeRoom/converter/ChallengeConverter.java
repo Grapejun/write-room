@@ -10,7 +10,7 @@ import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,4 +128,59 @@ public class ChallengeConverter {
                 .createdAt(LocalDateTime.now())
                 .build();
     }
+
+    //나의 챌린지
+    //나의 챌린지 이력 조회
+    public static ChallengeResponseDTO.MyChallengeDTO toMyChallengeDTO(ChallengeRoutine routine, ChallengeRoutineParticipation routineParticipation) {
+        List<ChallengeResponseDTO.UserDTO> participantList = routine.getParticipantList().stream()
+                .map(participant -> ChallengeConverter.toUserDTO(participant)).collect(Collectors.toList());
+
+        return ChallengeResponseDTO.MyChallengeDTO.builder()
+                .challengeName(routine.toString())
+                .participantList(participantList)
+                .status(routineParticipation.getChallengeStatus())
+                .endDate(routineParticipation.getStatusUpdatedAt())
+                .build();
+    }
+
+    public static ChallengeResponseDTO.MyChallengeDTO toMyChallengeDTO(ChallengeGoals goals, ChallengeGoalsParticipation goalsParticipation) {
+        List<ChallengeResponseDTO.UserDTO> participantList = goals.getParticipantList().stream()
+                    .map(participant -> ChallengeConverter.toUserDTO(participant)).collect(Collectors.toList());
+
+        return ChallengeResponseDTO.MyChallengeDTO.builder()
+                    .challengeName(goals.toString())
+                .participantList(participantList)
+                .status(goalsParticipation.getChallengeStatus())
+                .endDate(goalsParticipation.getStatusUpdatedAt())
+                .build();
+    }
+
+    public static ChallengeResponseDTO.MyChallengeListDTO toMyChallengeDTOList(List<ChallengeResponseDTO.MyChallengeDTO> myRoutineList,List<ChallengeResponseDTO.MyChallengeDTO> myGoalsList) {
+
+        return ChallengeResponseDTO.MyChallengeListDTO.builder()
+                .myChallengeRoutineDTOList(myRoutineList)
+                .myChallengeGoalsDTOList(myGoalsList)
+                .build();
+    }
+
+    /*public static List<ChallengeResponseDTO.MyChallengeDTO> test(List<ChallengeResponseDTO.GetMyChallengeDTO> getMyChallengeDTOS) {
+
+        List<ChallengeResponseDTO.MyChallengeDTO> myChallengeDTOList = new ArrayList<>();
+        for (int i = 0; i < getMyChallengeDTOS.size(); i++) {
+            myChallengeDTOList.add(ChallengeResponseDTO.MyChallengeDTO.builder()
+                            .endDate(getMyChallengeDTOS.get(i).getEndDate())
+                            .participantList(getMyChallengeDTOS.get(i).getParticipantList().stream().map(participation -> {
+                                return ChallengeResponseDTO.UserDTO.builder()
+                                        .userName(participation.getUser().getName())
+                                        .profileImage(participation.getUser().getProfileImage())
+                                        .userId(participation.getUser().getId())
+                                        .build();
+                            }).collect(Collectors.toList()))
+                            .challengeName(getMyChallengeDTOS.get(i).toString())
+                            .status(getMyChallengeDTOS.get(i).getStatus())
+                            .build());
+        }
+
+        return myChallengeDTOList;
+    }*/
 }

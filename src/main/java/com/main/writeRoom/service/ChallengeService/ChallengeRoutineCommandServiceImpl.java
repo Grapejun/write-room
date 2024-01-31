@@ -54,6 +54,7 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
 
         challengeRoutineParticipationList.forEach(challengeRoutineParticipation -> {
             challengeRoutineParticipation.setChallengeRoutine(newChallengeRoutine);
+            challengeRoutineParticipation.setRoom(newChallengeRoutine.getRoom());
             //챌린지 참여 테이블에 추가하는 코드
             challengeRoutineParticipationRepository.save(challengeRoutineParticipation);
         } );
@@ -84,6 +85,7 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
         if (routineParticipation != null && routineParticipation.getChallengeStatus() == ChallengeStatus.PROGRESS) {
             //챌린지 상태를 실패로 변경
             routineParticipation.setChallengeStatus(ChallengeStatus.FAILURE);
+            routineParticipation.setStatusUpdatedAt(LocalDate.now());
         } else {
             throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);
         }

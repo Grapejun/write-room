@@ -3,6 +3,7 @@ package com.main.writeRoom.web.dto.challenge;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -93,5 +94,38 @@ public class ChallengeResponseDTO {
         LocalDate startDate; //시작 날짜
         LocalDate deadline;  //마감 날짜
         Integer targetCount; //목표 일수
+    }
+
+    //나의 챌린지
+    //나의 챌린지 이력 조회
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MyChallengeListDTO {
+        List<MyChallengeDTO> myChallengeRoutineDTOList; //챌린지 루틴 이력
+        List<MyChallengeDTO> myChallengeGoalsDTOList;   //챌린지 목표량 이력
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MyChallengeDTO { //응답 결과의 일부
+        String challengeName;
+        List<UserDTO> participantList; //참여자 목록 - ChallengeRoutine, ChallengeGoals
+        LocalDate endDate; //챌린지 종료일자 - ChallengeRoutineParticipation, ChallengeGoalsParticipation
+        ChallengeStatus status; //챌린지 상태(성공 or 실패) - ChallengeRoutineParticipation, ChallengeGoalsParticipation
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class GetMyChallengeDTO { //db의 조회결과를 담는 dto
+        Long challengeId;
+        List<ChallengeGoalsParticipation> participantList;
+        LocalDate endDate;
+        ChallengeStatus status;
     }
 }

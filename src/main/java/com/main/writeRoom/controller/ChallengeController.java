@@ -6,14 +6,10 @@ import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.converter.ChallengeConverter;
 import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
-import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
-import com.main.writeRoom.service.ChallengeService.ChallengeGoalsCommandService;
-import com.main.writeRoom.service.ChallengeService.ChallengeGoalsQueryService;
-import com.main.writeRoom.service.ChallengeService.ChallengeRoutineCommandService;
-import com.main.writeRoom.service.ChallengeService.ChallengeRoutineQueryService;
+import com.main.writeRoom.service.ChallengeService.*;
 import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
@@ -26,18 +22,21 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import retrofit2.http.Path;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class ChallengeRestController {
+public class ChallengeController {
 
     private final ChallengeRoutineCommandService routineCommandService;
     private final ChallengeRoutineQueryService routineQueryService;
     private final UserQueryService userQueryService;
     private final ChallengeGoalsCommandService goalsCommandService;
     private final ChallengeGoalsQueryService goalsQueryService;
+    private final MyChallengeQueryService myChallengeQueryService;
 
     //1. 챌린지 루틴 생성
     @PostMapping("/challenge-routines/create")
@@ -163,5 +162,38 @@ public class ChallengeRestController {
     public ApiResponse<ChallengeResponseDTO.GiveUpChallengeResultDTO> giveUpChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
         ChallengeGoalsParticipation goalsParticipation = goalsCommandService.giveUP(userId, challengeId);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toGiveUpChallengeGoalsResultDTO(goalsParticipation));
+    }
+
+    //나의 챌린지
+    //나의 챌린지 이력 목록 조회
+    @GetMapping("/challenges/{userId}/{roomId}")
+    @Operation(summary = "나의 챌린지 목록 조회 API", description = "나의 챌린지 목록을 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "userId", description = "나의 챌린지를 조회할 회원의 식별자를 입력하세요."),
+            @Parameter(name="roomId", description = "현재 룸의 식별자를 입력하세요.")
+    })
+    public ApiResponse<ChallengeResponseDTO.MyChallengeListDTO> getMyChallengeList(@PathVariable(name = "userId") Long userId, @PathVariable(name = "roomId") Long roomId) {
+        List<ChallengeRoutineParticipation> routineParticipationList = myChallengeQueryService.findChallengeRoutineParticipation(userId, roomId);
+        List<ChallengeRoutine> routineList = myChallengeQueryService.findChallengeRoutine(routineParticipationList);
+        List<ChallengeGoalsParticipation> goalsParticipationList = myChallengeQueryService.findChallengeGoalsParticipation(userId, roomId);
+        List<ChallengeGoals> goalsList = myChallengeQueryService.findChallengeGoals(goalsParticipationList);
+
+        List<ChallengeResponseDTO.MyChallengeDTO> myRoutineList = new ArrayList<>();
+        for (int i = 0; i < routineList.size(); i++) {
+            myRoutineList.add(ChallengeConverter.toMyChallengeDTO(routineList.get(i), routineParticipationList.get(i)));
+        }
+        List<ChallengeResponseDTO.MyChallengeDTO> myGoalsList = new ArrayList<>();
+        for (int i = 0; i < goalsList.size(); i++) {
+            myGoalsList.add(ChallengeConverter.toMyChallengeDTO(goalsList.get(i), goalsParticipationList.get(i)));
+        }
+
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toMyChallengeDTOList(myRoutineList, myGoalsList));
     }
 }
