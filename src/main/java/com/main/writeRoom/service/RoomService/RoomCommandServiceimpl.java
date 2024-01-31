@@ -87,4 +87,10 @@ public class RoomCommandServiceimpl implements RoomCommandService {
         PageRequest pageRequest = PageRequest.of(page, 10);
         return userRoomRepository.findAllByRoom(room, pageRequest);
     }
+
+    @Transactional
+    public Room roomParticipateIn(Room room, User user) {
+        RoomParticipation response = RoomConverter.toUserParticipateIn(room, user);
+        return userRoomRepository.save(response).getRoom();
+    }
 }

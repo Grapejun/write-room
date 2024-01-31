@@ -218,4 +218,20 @@ public class RoomController {
         Page<Note> note = noteQueryService.findNoteForRoomAndCategory(category, room, page);
         return ApiResponse.of(SuccessStatus._OK, NoteConverter.toRoomResultDTO(room, note));
     }
+
+    @Operation(summary = "룸 참여 API", description = "룸에 참여하는 API이며, 참여하기 버튼을 통해 참여하면 자동으로 권한은 PARTICIPANT입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER4001", description = "유저가 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @PostMapping("/roomParticipation/{roomId}/{userId}")
+    public ApiResponse<RoomResponseDTO.RoomInfoResult> roomParticipationUser(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "userId")Long userId) {
+        Room room = roomQueryService.findRoom(roomId);
+        User user = userQueryService.findUser(userId);
+        Room response = roomCommandService.roomParticipateIn(room, user);
+        return ApiResponse.of(SuccessStatus._OK, RoomConverter.toCreateRoomResultDTO(response));
+    }
 }

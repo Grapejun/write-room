@@ -118,4 +118,12 @@ public class RoomConverter {
                 .map(Note::daysSinceLastUpdate)
                 .collect(Collectors.toList());
     }
+
+    public static RoomParticipation toUserParticipateIn(Room room, User user) {
+        return RoomParticipation.builder()
+                .user(user)
+                .room(room)
+                .authority(Authority.PARTICIPANT)
+                .build();
+    }
 }

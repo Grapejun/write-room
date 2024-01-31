@@ -14,4 +14,5 @@ public interface RoomCommandService {
     Room createRoom(User user, RoomRequestDTO.CreateRoomDTO request, MultipartFile roomImg);
     void deleteRoom(Room room, User user);
     Page<RoomParticipation> findUpdateAtUserList(Room room, Integer page);
+    Room roomParticipateIn(Room room, User user);
 }
