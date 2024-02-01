@@ -72,16 +72,6 @@ public class ChallengeConverter {
                 .build();
     }
 
-    //5. 챌린지 루틴 포기
-    public static ChallengeResponseDTO.GiveUpChallengeResultDTO toGiveUpChallengeRoutineResultDTO(ChallengeRoutineParticipation routineParticipation) {
-
-        return ChallengeResponseDTO.GiveUpChallengeResultDTO.builder()
-                .userId(routineParticipation.getUser().getId())
-                .challengeId(routineParticipation.getChallengeRoutine().getId())
-                .status(routineParticipation.getChallengeStatus())
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
 
     //챌린지 목표량
     //챌린지 목표량 생성
@@ -120,17 +110,6 @@ public class ChallengeConverter {
                 .build();
     }
 
-
-    //챌린지 목표량 포기
-    public static ChallengeResponseDTO.GiveUpChallengeResultDTO toGiveUpChallengeGoalsResultDTO(ChallengeGoalsParticipation goalsParticipation) {
-
-        return ChallengeResponseDTO.GiveUpChallengeResultDTO.builder()
-                .userId(goalsParticipation.getUser().getId())
-                .challengeId(goalsParticipation.getChallengeGoals().getId())
-                .status(goalsParticipation.getChallengeStatus())
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
 
     //나의 챌린지
     //나의 챌린지 이력 조회

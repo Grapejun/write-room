@@ -107,9 +107,9 @@ public class ChallengeController {
     @Parameters({
             @Parameter(name = "userId", description = "챌린지를 포기할 회원의 식별자를 입력하세요."),
     })
-    public ApiResponse<ChallengeResponseDTO.GiveUpChallengeResultDTO> giveUpChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
+    public ApiResponse giveUpChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
         ChallengeRoutineParticipation routineParticipation = routineCommandService.giveUp(userId, challengeId);
-        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toGiveUpChallengeRoutineResultDTO(routineParticipation));
+        return ApiResponse.onSuccess();
     }
 
     //챌린지 목표량
@@ -166,9 +166,9 @@ public class ChallengeController {
     @Parameters({
             @Parameter(name = "userId", description = "챌린지를 포기할 회원의 식별자를 입력하세요."),
     })
-    public ApiResponse<ChallengeResponseDTO.GiveUpChallengeResultDTO> giveUpChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
+    public ApiResponse giveUpChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
         ChallengeGoalsParticipation goalsParticipation = goalsCommandService.giveUP(userId, challengeId);
-        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toGiveUpChallengeGoalsResultDTO(goalsParticipation));
+        return ApiResponse.onSuccess();
     }
 
     //나의 챌린지
