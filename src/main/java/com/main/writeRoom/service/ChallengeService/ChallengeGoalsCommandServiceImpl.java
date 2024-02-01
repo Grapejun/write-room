@@ -82,8 +82,8 @@ public class ChallengeGoalsCommandServiceImpl implements ChallengeGoalsCommandSe
         //회원과 챌린지로 챌린지 참여 조회
         ChallengeGoalsParticipation goalsParticipation = goalsParticipationRepository.findByUserAndChallengeGoals(user, goals);
         if (goalsParticipation != null && goalsParticipation.getChallengeStatus() == ChallengeStatus.PROGRESS) {
-            //챌린지 상태를 실패로 변경
-            goalsParticipation.setChallengeStatus(ChallengeStatus.FAILURE);
+            //챌린지 상태를 포기로 변경
+            goalsParticipation.setChallengeStatus(ChallengeStatus.GIVEUP);
             goalsParticipation.setStatusUpdatedAt(LocalDate.now());
         } else {
             throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);

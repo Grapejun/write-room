@@ -9,6 +9,7 @@ import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
+import com.main.writeRoom.repository.ChallengeRoutineParticipationRepository;
 import com.main.writeRoom.service.ChallengeService.*;
 import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
@@ -37,6 +38,7 @@ public class ChallengeController {
     private final ChallengeGoalsCommandService goalsCommandService;
     private final ChallengeGoalsQueryService goalsQueryService;
     private final MyChallengeQueryService myChallengeQueryService;
+    private final ChallengeRoutineParticipationRepository routineParticipationRepository;
 
     //1. 챌린지 루틴 생성
     @PostMapping("/challenge-routines/create")
@@ -58,7 +60,7 @@ public class ChallengeController {
 
     //2. 챌린지 루틴 조회(참여자 클릭 시 조회도 동일)
     @GetMapping("/challenge-routines/{userId}/{challengeId}")
-    @Operation(summary = "챌린지 루틴 조회 API", description = "챌린지 루틴을 조회하는 API입니다.")
+    @Operation(summary = "챌린지 루틴 조회 API", description = "챌린지 루틴을 조회하는 API입니다.(참여자 클릭 시의 챌린지 루틴 조회도 포함)")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
@@ -126,7 +128,7 @@ public class ChallengeController {
 
     //챌린지 목표량 조회
     @GetMapping("/challenge-goals/{userId}/{challengeId}")
-    @Operation(summary = "챌린지 목표량 조회 API", description = "챌린지 목표량을 조회하는 API입니다.")
+    @Operation(summary = "챌린지 목표량 조회 API", description = "챌린지 목표량을 조회하는 API입니다.(참여자 클릭 시의 챌린지 목표량 조회도 포함)")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
@@ -166,7 +168,7 @@ public class ChallengeController {
 
     //나의 챌린지
     //나의 챌린지 이력 목록 조회
-    @GetMapping("/challenges/{userId}/{roomId}")
+    @GetMapping("/my-challenges/{userId}/{roomId}")
     @Operation(summary = "나의 챌린지 목록 조회 API", description = "나의 챌린지 목록을 조회하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
@@ -189,11 +191,51 @@ public class ChallengeController {
         for (int i = 0; i < routineList.size(); i++) {
             myRoutineList.add(ChallengeConverter.toMyChallengeDTO(routineList.get(i), routineParticipationList.get(i)));
         }
+
         List<ChallengeResponseDTO.MyChallengeDTO> myGoalsList = new ArrayList<>();
         for (int i = 0; i < goalsList.size(); i++) {
             myGoalsList.add(ChallengeConverter.toMyChallengeDTO(goalsList.get(i), goalsParticipationList.get(i)));
         }
 
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toMyChallengeDTOList(myRoutineList, myGoalsList));
+    }
+
+    //나의 챌린지 상세 조회 - 루틴
+    @GetMapping("/my-challenge/challenge-routines/{challengeId}")
+    @Operation(summary = "나의 챌린지 루틴 상세 조회 API", description = "나의 챌린지 루틴을 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4001", description = "챌린지 루틴이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters
+    public ApiResponse<ChallengeResponseDTO.MyChallengeRoutineDTO> getMyChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
+        User user = userQueryService.findUser(userId);
+        ChallengeRoutine routine = routineQueryService.findRoutine(challengeId);
+        ChallengeRoutineParticipation routineParticipation = routineParticipationRepository.findByUserAndChallengeRoutine(user, routine);
+        List<ChallengeResponseDTO.NoteDTO> noteList = routineQueryService.findNoteDate(user, routine);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toMyChallengeRoutineDTO(user, routine, noteList, routineParticipation));
+    }
+
+    //나의 챌린지 상세 조회 - 목표량
+    @GetMapping("/my-challenges/challenge-goals/{challengeId}")
+    @Operation(summary = "나의 챌린지 목표량 상세 조회 API", description = "나의 챌린지 목표량을 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4005", description = "챌린지 목표량이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4004", description = "챌린지 마감 날짜 범위를 벗어났습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
+    })
+    @Parameters
+    public ApiResponse<ChallengeResponseDTO.ChallengeGoalsDTO> getMyChallengeGoals(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
+        User user = userQueryService.findUser(userId);
+        ChallengeGoals goals = goalsQueryService.findGoals(challengeId);
+        Integer achieveCount = goalsQueryService.findAchieveNote(user, goals);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeGoalsDTO(user, goals, achieveCount));
     }
 }

@@ -83,8 +83,8 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
         //회원과 챌린지로 챌린지 참여 조회
         ChallengeRoutineParticipation routineParticipation = challengeRoutineParticipationRepository.findByUserAndChallengeRoutine(user, routine);
         if (routineParticipation != null && routineParticipation.getChallengeStatus() == ChallengeStatus.PROGRESS) {
-            //챌린지 상태를 실패로 변경
-            routineParticipation.setChallengeStatus(ChallengeStatus.FAILURE);
+            //챌린지 상태를 포기로 변경
+            routineParticipation.setChallengeStatus(ChallengeStatus.GIVEUP);
             routineParticipation.setStatusUpdatedAt(LocalDate.now());
         } else {
             throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);

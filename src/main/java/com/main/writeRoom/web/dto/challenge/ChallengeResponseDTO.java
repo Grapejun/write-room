@@ -118,14 +118,33 @@ public class ChallengeResponseDTO {
         ChallengeStatus status; //챌린지 상태(성공 or 실패) - ChallengeRoutineParticipation, ChallengeGoalsParticipation
     }
 
+    //나의 챌린지 상세 조회
     @Builder
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class GetMyChallengeDTO { //db의 조회결과를 담는 dto
-        Long challengeId;
-        List<ChallengeGoalsParticipation> participantList;
-        LocalDate endDate;
-        ChallengeStatus status;
+    public static class MyChallengeRoutineDTO {
+        String userName;     //회원명
+        List<UserDTO> userList; //챌린지 참여자 목록
+        LocalDate startDate; //시작 날짜
+        LocalDate deadline;  //마감 날짜
+        Integer targetCount; //목표 일수
+        List<NoteDTO> noteList; //챌린지 기간동안 작성한 노트들의 인덱스와 날짜 목록
+        ChallengeStatus challengeStatus; //챌린지 성공여부
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MyChallengeGoalsDTO {
+        String userName;     //회원명
+        Integer achieveCount; //기간 동안의 200자 이상인 노트의 수
+        List<UserDTO> userList; //챌린지 참여자 목록
+        LocalDate startDate; //시작 날짜
+        LocalDate deadline;  //마감 날짜
+        Integer targetCount; //목표 일수
+        ChallengeStatus challengeStatus; //챌린지 성공 여부
+    }
+
 }
