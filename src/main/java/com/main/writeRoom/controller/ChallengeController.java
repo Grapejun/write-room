@@ -9,6 +9,7 @@ import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
+import com.main.writeRoom.domain.mapping.IsActive;
 import com.main.writeRoom.repository.ChallengeGoalsParticipationRepository;
 import com.main.writeRoom.repository.ChallengeRoutineParticipationRepository;
 import com.main.writeRoom.service.ChallengeService.*;
@@ -28,6 +29,7 @@ import retrofit2.http.Path;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,6 +43,7 @@ public class ChallengeController {
     private final MyChallengeQueryService myChallengeQueryService;
     private final ChallengeRoutineParticipationRepository routineParticipationRepository;
     private final ChallengeGoalsParticipationRepository goalsParticipationRepository;
+    private final MyChallengeCommandService myChallengeCommandService;
 
     //1. 챌린지 루틴 생성
     @PostMapping("/challenge-routines/create")
@@ -184,9 +187,11 @@ public class ChallengeController {
             @Parameter(name="roomId", description = "현재 룸의 식별자를 입력하세요.")
     })
     public ApiResponse<ChallengeResponseDTO.MyChallengeListDTO> getMyChallengeList(@PathVariable(name = "userId") Long userId, @PathVariable(name = "roomId") Long roomId) {
-        List<ChallengeRoutineParticipation> routineParticipationList = myChallengeQueryService.findChallengeRoutineParticipation(userId, roomId);
+        List<ChallengeRoutineParticipation> routineParticipationList = myChallengeQueryService.findChallengeRoutineParticipation(userId, roomId).stream()
+                .filter(routineParticipation -> routineParticipation.getIsActive() == IsActive.ACTIVE).collect(Collectors.toList());
         List<ChallengeRoutine> routineList = myChallengeQueryService.findChallengeRoutine(routineParticipationList);
-        List<ChallengeGoalsParticipation> goalsParticipationList = myChallengeQueryService.findChallengeGoalsParticipation(userId, roomId);
+        List<ChallengeGoalsParticipation> goalsParticipationList = myChallengeQueryService.findChallengeGoalsParticipation(userId, roomId).stream()
+                .filter(goalsParticipation -> goalsParticipation.getIsActive() == IsActive.ACTIVE).collect(Collectors.toList());
         List<ChallengeGoals> goalsList = myChallengeQueryService.findChallengeGoals(goalsParticipationList);
 
         List<ChallengeResponseDTO.MyChallengeDTO> myRoutineList = new ArrayList<>();
@@ -244,5 +249,45 @@ public class ChallengeController {
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toMyChallengeGoalsDTO(user, goals, achieveCount, goalsParticipation));
     }
 
+    //챌린지 내역 삭제 - 루틴
+    @PatchMapping("/my-challenges/challenge-routines/delete/{challengeId}")
+    @Operation(summary = "나의 챌린지 내역 삭제 API - 루틴", description = "나의 챌린지(루틴) 내역을 삭제하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4005", description = "챌린지 목표량이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4002", description = "회원이 해당 챌린지에 참여하지 않았습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
+    })
+    @Parameters({
+            @Parameter(name = "userId", description = "회원의 식별자를 입력하세요."),
+    })
+    public ApiResponse deleteChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
+        ChallengeRoutineParticipation routineParticipation = routineParticipationRepository.findByUserAndChallengeRoutine(userQueryService.findUser(userId), routineQueryService.findRoutine(challengeId));
+        myChallengeCommandService.inactiveRoutine(routineParticipation);
+        return ApiResponse.onSuccess();
+    }
 
+    //나의 챌린지 내역 삭제 - 목표량
+    @PatchMapping("/my-challenges/challenge-goals/delete/{challengeId}")
+    @Operation(summary = "나의 챌린지 내역 삭제 API - 목표량", description = "나의 챌린지(목표량) 내역을 삭제하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4005", description = "챌린지 목표량이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4002", description = "회원이 해당 챌린지에 참여하지 않았습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
+    })
+    @Parameters({
+            @Parameter(name = "userId", description = "회원의 식별자를 입력하세요."),
+    })
+    public ApiResponse deleteChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
+        ChallengeGoalsParticipation goalsParticipation = goalsParticipationRepository.findByUserAndChallengeGoals(userQueryService.findUser(userId), goalsQueryService.findGoals(challengeId));
+        myChallengeCommandService.inactiveGoals(goalsParticipation);
+        return ApiResponse.onSuccess();
+    }
 }

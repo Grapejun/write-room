@@ -146,5 +146,4 @@ public class ChallengeResponseDTO {
         Integer targetCount; //목표 일수
         ChallengeStatus challengeStatus; //챌린지 성공 여부
     }
-
 }

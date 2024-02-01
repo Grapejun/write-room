@@ -5,6 +5,9 @@ import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,6 +17,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@DynamicUpdate
+@DynamicInsert
 public class ChallengeRoutineParticipation {
 
     @Id
@@ -24,6 +29,10 @@ public class ChallengeRoutineParticipation {
     private ChallengeStatus challengeStatus;
 
     private LocalDate statusUpdatedAt;
+
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault("'ACTIVE'")
+    private IsActive isActive;
 
     @ManyToOne
     @JoinColumn(name = "user")
@@ -58,5 +67,9 @@ public class ChallengeRoutineParticipation {
 
     public void setStatusUpdatedAt(LocalDate localDate) {
         this.statusUpdatedAt = localDate;
+    }
+
+    public void setIsActive(IsActive isActive) {
+        this.isActive = isActive;
     }
 }
