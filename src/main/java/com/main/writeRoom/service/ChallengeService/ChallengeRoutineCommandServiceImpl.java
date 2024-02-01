@@ -75,7 +75,7 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
 
     @Override
     @Transactional
-    public ChallengeRoutineParticipation giveUP(Long userId, Long routineId) {
+    public ChallengeRoutineParticipation giveUp(Long userId, Long routineId) {
         //회원, 챌린지 조회
         User user = userQueryService.findUser(userId);
         ChallengeRoutine routine = routineQueryService.findRoutine(routineId);

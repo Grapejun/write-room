@@ -184,4 +184,23 @@ public class ChallengeConverter {
                 .challengeStatus(routineParticipation.getChallengeStatus())
                 .build();
     }
+
+    //나의 챌린지 상세 조회 - 목표량
+    public static ChallengeResponseDTO.MyChallengeGoalsDTO toMyChallengeGoalsDTO(User user, ChallengeGoals goals, Integer achieveCount, ChallengeGoalsParticipation goalsParticipation)  {
+        List<ChallengeResponseDTO.UserDTO> userList = goals.getChallengeGoalsParticipationList().stream()
+                .filter(participation -> (participation.getChallengeStatus() == ChallengeStatus.SUCCESS) || (participation.getChallengeStatus() == ChallengeStatus.FAILURE))
+                .map(participation -> {
+                    return ChallengeConverter.toUserDTO(participation.getUser());
+                }).collect(Collectors.toList());
+
+        return ChallengeResponseDTO.MyChallengeGoalsDTO.builder()
+                .userName(user.getName())
+                .startDate(goals.getStartDate())
+                .deadline(goals.getDeadline())
+                .targetCount(goals.getTargetCount())
+                .userList(userList)
+                .achieveCount(achieveCount)
+                .challengeStatus(goalsParticipation.getChallengeStatus())
+                .build();
+    }
 }

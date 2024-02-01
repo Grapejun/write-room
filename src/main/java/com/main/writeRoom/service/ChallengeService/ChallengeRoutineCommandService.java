@@ -12,5 +12,5 @@ public interface ChallengeRoutineCommandService {
 
     public void deadlineRange(LocalDate startDate, LocalDate deadline);
 
-    public ChallengeRoutineParticipation giveUP(Long userId, Long challengeRoutineId);
+    public ChallengeRoutineParticipation giveUp(Long userId, Long challengeRoutineId);
 }
