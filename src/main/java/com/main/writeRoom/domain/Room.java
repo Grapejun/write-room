@@ -4,6 +4,7 @@ import com.main.writeRoom.common.BaseEntity;
 
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -36,8 +37,10 @@ public class Room extends BaseEntity {
     @OneToMany(mappedBy = "room")
     List<ChallengeRoutine> routineList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "room")
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<RoomParticipation> roomParticipationList = new ArrayList<>();
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    private List<Note> noteList = new ArrayList<>();
 
     public String daysSinceLastUpdate() {
         LocalDateTime now = LocalDateTime.now();

@@ -1,7 +1,11 @@
 package com.main.writeRoom.converter;
 
+import com.main.writeRoom.domain.Note;
+import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.Authority;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
+import com.main.writeRoom.web.dto.room.RoomRequestDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO;
 import com.main.writeRoom.web.dto.room.roomPaticipation.userRoomResponseDTO;
 import java.util.List;
@@ -40,7 +44,8 @@ public class RoomConverter {
                 .build();
     }
 
-    public static userRoomResponseDTO.getUserRoom toUserRoomResultDTO(RoomParticipation roomParticipation, Page<RoomParticipation> roomParticipations) {
+    public static userRoomResponseDTO.getUserRoom toUserRoomResultDTO(RoomParticipation roomParticipation,
+                                                                      Page<RoomParticipation> roomParticipations) {
         List<userRoomResponseDTO.getUserRoomList> toUserRoomResultDTOList = roomParticipations.stream()
                 .map(userRoom -> userRoomInfoListDTO(userRoom.getUser(), userRoom)).collect(Collectors.toList());
 
@@ -58,6 +63,67 @@ public class RoomConverter {
                 .profileImg(user.getProfileImage())
                 .name(user.getName())
                 .authority(userRoom.getAuthority())
+                .build();
+    }
+
+    public static Room toRoom(RoomRequestDTO.CreateRoomDTO request, String imgUrl) {
+        return Room.builder()
+                .title(request.getRoomTitle())
+                .introduction(request.getRoomContent())
+                .coverImg(imgUrl)
+                .build();
+    }
+
+    public static RoomParticipation toUserRoom(Room room, User user) {
+        return RoomParticipation.builder()
+                .user(user)
+                .room(room)
+                .authority(Authority.MANAGER)
+                .build();
+    }
+
+    public static RoomResponseDTO.RoomInfoResult toCreateRoomResultDTO(Room room) {
+        return RoomResponseDTO.RoomInfoResult.builder()
+                .roomId(room.getId())
+                .build();
+    }
+
+    public static List<userRoomResponseDTO.getUpdatedAtUserList> updateAtUserList(
+            Page<RoomParticipation> roomParticipations) {
+        return roomParticipations.stream()
+                .map(roomParticipation -> {
+                    User user = roomParticipation.getUser();
+                    List<Note> userNotes = getNotesForUserInRoom(roomParticipation);
+                    List<String> noteUpdateDates = getNoteUpdateDates(userNotes);
+
+                    return userRoomResponseDTO.getUpdatedAtUserList.builder()
+                            .userId(user.getId())
+                            .profileImg(user.getProfileImage())
+                            .name(user.getName())
+                            .updateAt(String.join(", ", noteUpdateDates))
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
+
+    private static List<Note> getNotesForUserInRoom(RoomParticipation roomParticipation) {
+        Room room = roomParticipation.getRoom();
+        return room.getNoteList().stream()
+                .filter(note -> note.getUser().equals(roomParticipation.getUser()))
+                .collect(Collectors.toList());
+    }
+
+    private static List<String> getNoteUpdateDates(List<Note> notes) {
+        return notes.stream()
+                .map(Note::daysSinceLastUpdate)
+                .collect(Collectors.toList());
+    }
+
+    public static RoomParticipation toUserParticipateIn(Room room, User user) {
+        return RoomParticipation.builder()
+                .user(user)
+                .room(room)
+                .authority(Authority.PARTICIPANT)
                 .build();
     }
 }

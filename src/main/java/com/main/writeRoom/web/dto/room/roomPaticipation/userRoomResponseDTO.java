@@ -43,7 +43,10 @@ public class userRoomResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class getUserRoomInfoResultDTO {
-        Long userRoomId;
+    public static class getUpdatedAtUserList {
+        Long userId;
+        String name;
+        String profileImg;
+        String updateAt;
     }
 }

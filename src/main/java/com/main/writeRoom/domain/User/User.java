@@ -1,6 +1,6 @@
 package com.main.writeRoom.domain.User;
 
-import com.main.writeRoom.domain.common.BaseEntity;
+import com.main.writeRoom.common.BaseEntity;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

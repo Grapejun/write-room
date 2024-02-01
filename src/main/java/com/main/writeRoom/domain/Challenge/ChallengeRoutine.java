@@ -28,10 +28,12 @@ public class ChallengeRoutine extends BaseEntity {
     private LocalDate deadline;
     private Integer targetCount;
 
+
     @ManyToOne
     @JoinColumn(name = "room")
     private Room room;
 
     @OneToMany(mappedBy = "challengeRoutine")
     private List<ChallengeRoutineParticipation> challengeRoutineParticipationList = new ArrayList<>();
+
 }

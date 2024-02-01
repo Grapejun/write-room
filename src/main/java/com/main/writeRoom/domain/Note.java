@@ -2,12 +2,12 @@ package com.main.writeRoom.domain;
 
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.main.writeRoom.domain.mapping.NoteTag;
+import jakarta.persistence.*;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +27,37 @@ public class Note extends BaseEntity {
     private String subtitle;
     private String coverImg;
     private String content;
+    @Enumerated(EnumType.STRING)
+    private ACHIEVE achieve; //노트 200자 달성 여부 true/false
+
     @ManyToOne
     @JoinColumn(name = "user")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "room")
+    private Room room;
+
+    @ManyToOne
+    @JoinColumn(name = "category")
+    private Category category;
+
+    @OneToMany(mappedBy = "note")
+    private List<NoteTag> noteTagList = new ArrayList<>();
+
+    public String daysSinceLastUpdate() {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(this.getUpdatedAt(), now);
+
+        if (duration.toDays() == 0) {
+            long hourDifference = duration.toHours();
+            if (hourDifference == 0) {
+                return "방금 전";
+            } else {
+                return hourDifference + "시간 전";
+            }
+        } else {
+            return duration.toDays() + "일 전";
+        }
+    }
 }

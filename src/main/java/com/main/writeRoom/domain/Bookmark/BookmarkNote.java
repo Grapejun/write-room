@@ -1,6 +1,7 @@
 package com.main.writeRoom.domain.Bookmark;
 
 import com.main.writeRoom.domain.Note;
+import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -26,4 +27,8 @@ public class BookmarkNote {
     @ManyToOne
     @JoinColumn(name = "note")
     private Note note;
+
+    @ManyToOne
+    @JoinColumn(name = "room")
+    private Room room;
 }
