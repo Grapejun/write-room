@@ -1,5 +1,6 @@
 package com.main.writeRoom.converter;
 
+import com.main.writeRoom.domain.ACHIEVE;
 import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.Note;
@@ -11,8 +12,11 @@ import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import com.main.writeRoom.repository.ChallengeRoutineParticipationRepository;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
+import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,6 +76,18 @@ public class ChallengeConverter {
                 .build();
     }
 
+    //챌린지 루틴 해당 날짜의 200자 이상 노트 목록 조회
+    public static ChallengeResponseDTO.RoomResultByDate toRoomResultByDate(Room room, Page<Note> notes, LocalDate date) {
+        List<NoteResponseDTO.NoteList> toRoomResultNoteDTOList = notes.stream()
+                .filter(note -> note.getCreatedAt().toLocalDate().isEqual(date))
+                .filter(note -> note.getAchieve() == ACHIEVE.TRUE)
+                .map(NoteConverter::toRoomResultNoteDTOList).collect(Collectors.toList());
+
+        return ChallengeResponseDTO.RoomResultByDate.builder()
+                .roomId(room.getId())
+                .noteList(toRoomResultNoteDTOList)
+                .build();
+    }
 
     //챌린지 목표량
     //챌린지 목표량 생성

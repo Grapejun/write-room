@@ -4,8 +4,11 @@ import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.converter.ChallengeConverter;
+import com.main.writeRoom.converter.NoteConverter;
 import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
+import com.main.writeRoom.domain.Note;
+import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
@@ -13,9 +16,13 @@ import com.main.writeRoom.domain.mapping.IsActive;
 import com.main.writeRoom.repository.ChallengeGoalsParticipationRepository;
 import com.main.writeRoom.repository.ChallengeRoutineParticipationRepository;
 import com.main.writeRoom.service.ChallengeService.*;
+import com.main.writeRoom.service.NoteService.NoteQueryService;
+import com.main.writeRoom.service.RoomService.RoomQueryService;
 import com.main.writeRoom.service.UserService.UserQueryService;
+import com.main.writeRoom.validation.annotation.PageLessNull;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
+import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -24,9 +31,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 import retrofit2.http.Path;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +53,8 @@ public class ChallengeController {
     private final ChallengeRoutineParticipationRepository routineParticipationRepository;
     private final ChallengeGoalsParticipationRepository goalsParticipationRepository;
     private final MyChallengeCommandService myChallengeCommandService;
+    private final RoomQueryService roomQueryService;
+    private final NoteQueryService noteQueryService;
 
     //1. 챌린지 루틴 생성
     @PostMapping("/challenge-routines/create")
@@ -86,10 +97,19 @@ public class ChallengeController {
     //3. 챌린지 루틴 조회 - 스탬프 클릭 -> 노트 조회
     @GetMapping("/challenge-routines/{userId}/{roomId}/notes")
     @Operation(summary = "챌린지 루틴 달성 노트 조회 API", description = "챌린지 루틴 달성 스탬프를 눌렀을 때 해당 날짜에 작성된 200자 이상의 노트들이 조회되는 API입니다.")
-    @ApiResponses
-    @Parameters
-    public ApiResponse<ChallengeResponseDTO.NoteListByDateDTO> getNoteListByDate(@PathVariable(name = "userId") Long userId, @PathVariable(name = "roodId") Long roomId, @RequestParam List<Long> noteId) {
-        return null;
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
+            @Parameter(name = "roomId", description = "룸 아이디 입니다."),
+    })
+    public ApiResponse<ChallengeResponseDTO.RoomResultByDate> getNoteListByDate(@PathVariable(name = "userId") Long userId, @PathVariable(name = "roomId") Long roomId, @PageLessNull @RequestParam(name = "page") Integer page, @RequestParam LocalDate date) {
+        Room room = roomQueryService.findRoom(roomId);
+        Page<Note> note = noteQueryService.getNoteListForRoom(room, page);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toRoomResultByDate(room, note, date));
     }
 
     //5. 챌린지 루틴 포기

@@ -5,6 +5,7 @@ import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeStatus;
+import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -65,8 +66,11 @@ public class ChallengeResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class NoteListByDateDTO{
-        Room room;  //룸의 노트 중 200자 이상인 노트를 조회
+    public static class RoomResultByDate{ //룸의 노트 중 해당 날짜의 200자 이상인 노트를 조회
+        Long roomId;
+        String roomTitle;
+        String roomIntroduction;
+        List<NoteResponseDTO.NoteList> noteList;
     }
 
     //5. 챌린지 루틴, 목표량 포기 결과 dto
