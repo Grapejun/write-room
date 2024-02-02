@@ -20,6 +20,7 @@ public class RoomConverter {
                     return RoomResponseDTO.MyRoomResultDto.builder()
                             .roomId(room.getRoom().getId())
                             .roomTitle(room.getRoom().getTitle())
+                            .roomImg(room.getRoom().getCoverImg())
                             .updatedAt(room.getRoom().daysSinceLastUpdate())
                             .userRoomList(room.getRoom().getRoomParticipationList().stream()
                                     .limit(3)
