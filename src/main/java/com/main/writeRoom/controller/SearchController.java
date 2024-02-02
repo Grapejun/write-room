@@ -1,6 +1,7 @@
 package com.main.writeRoom.controller;
 
 import com.main.writeRoom.apiPayload.ApiResponse;
+import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.service.SearchService;
 //import com.main.writeRoom.web.dto.topic.TopicResponseDTO;
 
@@ -31,7 +32,7 @@ public class SearchController {
     })
     public ApiResponse<List<SearchResponseDTO.VocabularyResultDTO>> getSynonymList(@RequestParam(name = "voca")String request) {
         List<SearchResponseDTO.VocabularyResultDTO> response = searchService.getSynonyms(request);
-        return ApiResponse.onSuccess(response);
+        return ApiResponse.of(SuccessStatus._OK, response);
     }
 
     @GetMapping("/similarKeywords")
@@ -44,7 +45,7 @@ public class SearchController {
     })
     public ApiResponse<List<SearchResponseDTO.VocabularyResultDTO>> getVocabularyList(@RequestParam(name = "voca")String request) {
         List<SearchResponseDTO.VocabularyResultDTO> response = searchService.getSimilarKeywords(request);
-        return ApiResponse.onSuccess(response);
+        return ApiResponse.of(SuccessStatus._OK, response);
     }
 
     @GetMapping("/topics")
@@ -55,7 +56,7 @@ public class SearchController {
     })
     public ApiResponse<List<SearchResponseDTO.VocabularyResultDTO>> getTopicList() {
         List<SearchResponseDTO.VocabularyResultDTO> response = searchService.getTopics();
-        return ApiResponse.onSuccess(response);
+        return ApiResponse.of(SuccessStatus._OK, response);
     }
 
 }
