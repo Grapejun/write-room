@@ -21,6 +21,7 @@ public class RoomResponseDTO {
         Long roomId;
         String roomTitle;
         String updatedAt;
+        String roomImg;
         Long totalMember;
         List<userRoomInfoList> userRoomList;
     }
