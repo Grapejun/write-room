@@ -1,6 +1,7 @@
 package com.main.writeRoom.controller;
 import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
+import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.converter.BookmarkConverter;
 import com.main.writeRoom.domain.Bookmark.BookmarkMaterial;
 import com.main.writeRoom.service.BookmarkService.BookmarkQueryService;
@@ -35,7 +36,7 @@ public class BookmarkController {
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "사용자의 id와 북마크할 내용을 등록해야 합니다.", required = true, content = @Content(schema = @Schema(implementation = BookmarkRequestDTO.TopicDTO.class)))
             @RequestBody @Valid BookmarkRequestDTO.TopicDTO request) {
         BookmarkMaterial material = bookmarkService.postTopic(request);
-        return ApiResponse.onSuccess(BookmarkConverter.toBookmarkResultDTO(material));
+        return ApiResponse.of(SuccessStatus._OK, BookmarkConverter.toBookmarkResultDTO(material));
     }
 
     @DeleteMapping("/topics/{id}")
@@ -48,7 +49,7 @@ public class BookmarkController {
             @Parameter(name = "id", description = "북마크 아이디, path variable 입니다!"),
     })
     public ApiResponse<BookmarkResponseDTO.TopicResultDTO> deleteBookmark(@PathVariable Long id) {
-        return ApiResponse.onSuccess(bookmarkService.deleteMaterial(id));
+        return ApiResponse.of(SuccessStatus._OK, bookmarkService.deleteMaterial(id));
     }
 
     @GetMapping("/topics/{userId}")
@@ -63,7 +64,7 @@ public class BookmarkController {
             @Parameter(name = "page", description = "페이지 번호, 0번이 1페이지 입니다.")
     })
     public ApiResponse<BookmarkResponseDTO.BookMarkMaterialListDTO> getBookmarks(@PathVariable Long userId, @RequestParam Integer page) {
-        return ApiResponse.onSuccess(BookmarkConverter.toBookMarkMaterialListDTO(bookmarkQueryService.getBookmarkMaterialList(userId, page)));
+        return ApiResponse.of(SuccessStatus._OK, BookmarkConverter.toBookMarkMaterialListDTO(bookmarkQueryService.getBookmarkMaterialList(userId, page)));
     }
 
 }
