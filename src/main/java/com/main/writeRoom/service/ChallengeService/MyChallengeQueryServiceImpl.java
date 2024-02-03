@@ -1,10 +1,13 @@
 package com.main.writeRoom.service.ChallengeService;
 
+import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
+import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeStatus;
+import com.main.writeRoom.handler.ChallengeHandler;
 import com.main.writeRoom.repository.ChallengeGoalsParticipationRepository;
 import com.main.writeRoom.repository.ChallengeGoalsRepository;
 import com.main.writeRoom.repository.ChallengeRoutineParticipationRepository;
@@ -43,6 +46,7 @@ public class MyChallengeQueryServiceImpl implements MyChallengeQueryService{
         List<ChallengeRoutineParticipation> list = routineParticipationRepository.findByUserAndRoom(userQueryService.findUser(userId), roomQueryService.findRoom(roomId)).stream()
                 .filter(routineParticipation -> routineParticipation.getChallengeStatus() != ChallengeStatus.PROGRESS).collect(Collectors.toList());
 
+        if(list.isEmpty()) throw new ChallengeHandler(ErrorStatus.CHALLENGE_NOTFOUND);
         return list;
     }
 
@@ -58,6 +62,21 @@ public class MyChallengeQueryServiceImpl implements MyChallengeQueryService{
         List<ChallengeGoalsParticipation> list = goalsParticipationRepository.findByUserAndRoom(userQueryService.findUser(userId), roomQueryService.findRoom(roomId)).stream()
                 .filter(goalsParticipation -> goalsParticipation.getChallengeStatus() != ChallengeStatus.PROGRESS).collect(Collectors.toList());
 
+        if(list.isEmpty()) throw new ChallengeHandler(ErrorStatus.CHALLENGE_NOTFOUND);
         return list;
+    }
+
+    @Override
+    public ChallengeRoutineParticipation findByUserAndChallengeRoutine(User user, ChallengeRoutine routine) {
+        ChallengeRoutineParticipation routineParticipation = routineParticipationRepository.findByUserAndChallengeRoutine(user, routine);
+        if (routineParticipation == null) throw new ChallengeHandler(ErrorStatus.NOT_PARTICIPATE);
+        return routineParticipation;
+    }
+
+    @Override
+    public ChallengeGoalsParticipation findByUserAndChallengeGoals(User user, ChallengeGoals goals) {
+        ChallengeGoalsParticipation goalsParticipation = goalsParticipationRepository.findByUserAndChallengeGoals(user, goals);
+        if (goalsParticipation == null) throw new ChallengeHandler(ErrorStatus.NOT_PARTICIPATE);
+        return goalsParticipation;
     }
 }

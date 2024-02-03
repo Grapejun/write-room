@@ -31,4 +31,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     Page<Note> findAllByRoom(Room room, PageRequest pageRequest);
     Long countByRoom(Room room);
+
+    Page<Note> findAllByRoomAndUser(Room room, User user, PageRequest pageRequest);
 }
