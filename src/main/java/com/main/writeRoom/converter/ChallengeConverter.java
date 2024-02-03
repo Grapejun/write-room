@@ -39,7 +39,6 @@ public class ChallengeConverter {
     public static ChallengeResponseDTO.CreateChallengeResultDTO toCreateChallengeRoutineResultDTO(ChallengeRoutine challengeRoutine) {
         return ChallengeResponseDTO.CreateChallengeResultDTO.builder()
                 .challengeId(challengeRoutine.getId())
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 
@@ -52,6 +51,7 @@ public class ChallengeConverter {
                 }).collect(Collectors.toList());
 
         return ChallengeResponseDTO.ChallengeRoutineDTO.builder()
+                .challengeId(routine.getId())
                 .userName(user.getName())
                 .startDate(routine.getStartDate())
                 .deadline(routine.getDeadline())
@@ -104,7 +104,6 @@ public class ChallengeConverter {
     public static ChallengeResponseDTO.CreateChallengeResultDTO toCreateChallengeGoalsResultDTO(ChallengeGoals challengeGoals) {
         return ChallengeResponseDTO.CreateChallengeResultDTO.builder()
                 .challengeId(challengeGoals.getId())
-                .createdAt(LocalDateTime.now())
                 .build();
     }
 
@@ -117,6 +116,7 @@ public class ChallengeConverter {
                 }).collect(Collectors.toList());
 
         return ChallengeResponseDTO.ChallengeGoalsDTO.builder()
+                .challengeId(goals.getId())
                 .userName(user.getName())
                 .startDate(goals.getStartDate())
                 .deadline(goals.getDeadline())
@@ -140,6 +140,7 @@ public class ChallengeConverter {
         else endDate = routine.getDeadline();
 
         return ChallengeResponseDTO.MyChallengeDTO.builder()
+                .challengeId(routine.getId())
                 .challengeName(routine.toString())
                 .participantList(participantList)
                 .status(routineParticipation.getChallengeStatus())
@@ -158,6 +159,7 @@ public class ChallengeConverter {
         else endDate = goals.getDeadline();
 
         return ChallengeResponseDTO.MyChallengeDTO.builder()
+                .challengeId(goals.getId())
                 .challengeName(goals.toString())
                 .participantList(participantList)
                 .status(goalsParticipation.getChallengeStatus())
@@ -182,6 +184,7 @@ public class ChallengeConverter {
                 }).collect(Collectors.toList());
 
         return ChallengeResponseDTO.MyChallengeRoutineDTO.builder()
+                .challengeId(routine.getId())
                 .userName(user.getName())
                 .startDate(routine.getStartDate())
                 .deadline(routine.getDeadline())
@@ -201,6 +204,7 @@ public class ChallengeConverter {
                 }).collect(Collectors.toList());
 
         return ChallengeResponseDTO.MyChallengeGoalsDTO.builder()
+                .challengeId(goals.getId())
                 .userName(user.getName())
                 .startDate(goals.getStartDate())
                 .deadline(goals.getDeadline())
