@@ -6,9 +6,11 @@ import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.handler.ChallengeHandler;
 import com.main.writeRoom.repository.*;
 import com.main.writeRoom.service.UserService.UserQueryService;
+import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,7 @@ public class ChallengeRoutineQueryServiceImpl implements ChallengeRoutineQuerySe
     private final ChallengeRoutineRepository routineRepository;
     private final NoteRepository noteRepository;
     private final UserQueryService userQueryService;
+    private final ChallengeRoutineParticipationRepository routineParticipationRepository;
 
     @Override
     public ChallengeRoutine findRoutine(Long challengeId) {
@@ -43,5 +46,8 @@ public class ChallengeRoutineQueryServiceImpl implements ChallengeRoutineQuerySe
         return noteDTOList;
     }
 
-
+    @Override
+    public ChallengeRoutineParticipation findRoutineParticipation(User user, ChallengeRoutine routine) {
+        return routineParticipationRepository.findByUserAndChallengeRoutine(user, routine);
+    }
 }

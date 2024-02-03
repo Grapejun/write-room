@@ -54,6 +54,7 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
 
         challengeRoutineParticipationList.forEach(challengeRoutineParticipation -> {
             challengeRoutineParticipation.setChallengeRoutine(newChallengeRoutine);
+            challengeRoutineParticipation.setRoom(newChallengeRoutine.getRoom());
             //챌린지 참여 테이블에 추가하는 코드
             challengeRoutineParticipationRepository.save(challengeRoutineParticipation);
         } );
@@ -74,7 +75,7 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
 
     @Override
     @Transactional
-    public ChallengeRoutineParticipation giveUP(Long userId, Long routineId) {
+    public ChallengeRoutineParticipation giveUp(Long userId, Long routineId) {
         //회원, 챌린지 조회
         User user = userQueryService.findUser(userId);
         ChallengeRoutine routine = routineQueryService.findRoutine(routineId);
@@ -82,8 +83,9 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
         //회원과 챌린지로 챌린지 참여 조회
         ChallengeRoutineParticipation routineParticipation = challengeRoutineParticipationRepository.findByUserAndChallengeRoutine(user, routine);
         if (routineParticipation != null && routineParticipation.getChallengeStatus() == ChallengeStatus.PROGRESS) {
-            //챌린지 상태를 실패로 변경
-            routineParticipation.setChallengeStatus(ChallengeStatus.FAILURE);
+            //챌린지 상태를 포기로 변경
+            routineParticipation.setChallengeStatus(ChallengeStatus.GIVEUP);
+            routineParticipation.setStatusUpdatedAt(LocalDate.now());
         } else {
             throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);
         }
@@ -91,5 +93,10 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
         return routineParticipation;
     }
 
-
+    @Override
+    public void isStatusProgress(User user, ChallengeRoutine routine) {
+        if (routineQueryService.findRoutineParticipation(user, routine).getChallengeStatus() != ChallengeStatus.PROGRESS) {
+            throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);
+        }
+    }
 }
