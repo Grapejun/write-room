@@ -18,4 +18,6 @@ public interface ChallengeGoalsParticipationRepository extends JpaRepository<Cha
     public ChallengeGoalsParticipation findByUserAndChallengeGoals(User user, ChallengeGoals goals);
 
     public List<ChallengeGoalsParticipation> findByUserAndRoom(User user, Room room);
+
+    public List<ChallengeGoalsParticipation> findByChallengeGoals(ChallengeGoals goals);
 }

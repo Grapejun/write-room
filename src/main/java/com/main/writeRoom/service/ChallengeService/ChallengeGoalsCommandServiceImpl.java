@@ -91,4 +91,11 @@ public class ChallengeGoalsCommandServiceImpl implements ChallengeGoalsCommandSe
 
         return goalsParticipation;
     }
+
+    @Override
+    public void isStatusProgress(User user, ChallengeGoals goals) {
+        if (goalsQueryService.findGoalsParticipation(user, goals).getChallengeStatus() != ChallengeStatus.PROGRESS) {
+            throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);
+        }
+    }
 }

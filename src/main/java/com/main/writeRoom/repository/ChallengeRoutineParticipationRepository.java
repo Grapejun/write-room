@@ -16,4 +16,6 @@ public interface ChallengeRoutineParticipationRepository extends JpaRepository<C
     public ChallengeRoutineParticipation findByUserAndChallengeRoutine(User user, ChallengeRoutine routine);
 
     public List<ChallengeRoutineParticipation> findByUserAndRoom(User user, Room room);
+
+    public List<ChallengeRoutineParticipation> findByChallengeRoutine(ChallengeRoutine routine);
 }

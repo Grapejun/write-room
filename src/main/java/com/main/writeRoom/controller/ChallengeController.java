@@ -84,12 +84,15 @@ public class ChallengeController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4001", description = "챌린지 루틴이 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4004", description = "챌린지 마감 날짜 범위를 벗어났습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4002", description = "진행 중인 챌린지가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
     @Parameters
     public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> getChallengeRoutine(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
         User user = userQueryService.findUser(userId);
         ChallengeRoutine routine = routineQueryService.findRoutine(challengeId);
+        routineCommandService.isStatusProgress(user, routine);
         List<ChallengeResponseDTO.NoteDTO> noteList = routineQueryService.findNoteDate(user, routine);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeRoutineDTO(user, routine, noteList));
     }
@@ -167,6 +170,7 @@ public class ChallengeController {
     public ApiResponse<ChallengeResponseDTO.ChallengeGoalsDTO> getChallengeGoals(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
         User user = userQueryService.findUser(userId);
         ChallengeGoals goals = goalsQueryService.findGoals(challengeId);
+        goalsCommandService.isStatusProgress(user, goals);
         Integer achieveCount = goalsQueryService.findAchieveNote(user, goals);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeGoalsDTO(user, goals, achieveCount));
     }

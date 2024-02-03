@@ -46,7 +46,7 @@ public class ChallengeConverter {
     //2. 챌린지 루틴 조회
     public static ChallengeResponseDTO.ChallengeRoutineDTO toChallengeRoutineDTO(User user, ChallengeRoutine routine, List<ChallengeResponseDTO.NoteDTO> noteList)  {
         List<ChallengeResponseDTO.UserDTO> userList = routine.getChallengeRoutineParticipationList().stream()
-                .filter(participation -> (participation.getChallengeStatus() == ChallengeStatus.PROGRESS) || (participation.getChallengeStatus() == ChallengeStatus.SUCCESS))
+                .filter(participation -> participation.getChallengeStatus() != ChallengeStatus.GIVEUP)
                 .map(participation -> {
                         return ChallengeConverter.toUserDTO(participation.getUser());
                 }).collect(Collectors.toList());
@@ -111,7 +111,7 @@ public class ChallengeConverter {
     //챌린지 목표량 조회
     public static ChallengeResponseDTO.ChallengeGoalsDTO toChallengeGoalsDTO(User user, ChallengeGoals goals, Integer achieveCount)  {
         List<ChallengeResponseDTO.UserDTO> userList = goals.getChallengeGoalsParticipationList().stream()
-                .filter(participation -> (participation.getChallengeStatus() == ChallengeStatus.PROGRESS) || (participation.getChallengeStatus() == ChallengeStatus.SUCCESS))
+                .filter(participation -> participation.getChallengeStatus() != ChallengeStatus.GIVEUP)
                 .map(participation -> {
                     return ChallengeConverter.toUserDTO(participation.getUser());
                 }).collect(Collectors.toList());
@@ -133,11 +133,17 @@ public class ChallengeConverter {
         List<ChallengeResponseDTO.UserDTO> participantList = routine.getParticipantList().stream()
                 .map(participant -> ChallengeConverter.toUserDTO(participant)).collect(Collectors.toList());
 
+        LocalDate endDate;
+        if (routineParticipation.getChallengeStatus() == ChallengeStatus.GIVEUP) {
+            endDate = routineParticipation.getStatusUpdatedAt();
+        }
+        else endDate = routine.getDeadline();
+
         return ChallengeResponseDTO.MyChallengeDTO.builder()
                 .challengeName(routine.toString())
                 .participantList(participantList)
                 .status(routineParticipation.getChallengeStatus())
-                .endDate(routineParticipation.getStatusUpdatedAt())
+                .endDate(endDate)
                 .build();
     }
 
@@ -145,11 +151,17 @@ public class ChallengeConverter {
         List<ChallengeResponseDTO.UserDTO> participantList = goals.getParticipantList().stream()
                     .map(participant -> ChallengeConverter.toUserDTO(participant)).collect(Collectors.toList());
 
+        LocalDate endDate;
+        if (goalsParticipation.getChallengeStatus() == ChallengeStatus.GIVEUP) {
+            endDate = goalsParticipation.getStatusUpdatedAt();
+        }
+        else endDate = goals.getDeadline();
+
         return ChallengeResponseDTO.MyChallengeDTO.builder()
-                    .challengeName(goals.toString())
+                .challengeName(goals.toString())
                 .participantList(participantList)
                 .status(goalsParticipation.getChallengeStatus())
-                .endDate(goalsParticipation.getStatusUpdatedAt())
+                .endDate(endDate)
                 .build();
     }
 
