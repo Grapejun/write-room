@@ -51,14 +51,14 @@ public class SecurityConfig {
 
         http.exceptionHandling((exceptionHandling) -> exceptionHandling
                 .authenticationEntryPoint(authenticationEntryPoint)
-                .accessDeniedHandler(accessDeniedHandler)
+                    .accessDeniedHandler(accessDeniedHandler)
         );
 
         // 권한 규칙 작성
         http.authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(AUTH_WHITELIST).permitAll()
                 //@PreAuthorization을 사용할 것이기 때문에 모든 경로에 대한 인증 처리는 Pass
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
         );
         return http.build();
     }
