@@ -40,4 +40,16 @@ public class AuthServiceImpl implements AuthService{
 
         return UserConverter.UserSignInResultDTO(user, accessToken);
     }
+
+    @Transactional
+    public User join(UserRequestDTO.UserSignUp request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new UserHandler(ErrorStatus.EXIST_EMAIL);
+        }
+        // 비밀번호 해시 처리
+        String password = encoder.encode(request.getPassword());
+
+        User user = UserConverter.UserSignUpDTO(request, password);
+        return userRepository.save(user);
+    }
 }

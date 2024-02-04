@@ -1,6 +1,8 @@
 package com.main.writeRoom.converter;
 
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.enums.Role;
+import com.main.writeRoom.web.dto.user.UserRequestDTO;
 import com.main.writeRoom.web.dto.user.UserResponseDTO;
 
 public class UserConverter {
@@ -26,6 +28,15 @@ public class UserConverter {
                 .userId(user.getId())
                 .email(user.getEmail())
                 .role(user.getRole())
+                .build();
+    }
+
+    public static User UserSignUpDTO(UserRequestDTO.UserSignUp request, String password) {
+        return User.builder()
+                .email(request.getEmail())
+                .name(request.getNickName())
+                .password(password)
+                .role(Role.USER)
                 .build();
     }
 }

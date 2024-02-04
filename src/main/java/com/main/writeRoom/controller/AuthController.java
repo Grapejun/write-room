@@ -2,6 +2,8 @@ package com.main.writeRoom.controller;
 
 import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
+import com.main.writeRoom.converter.UserConverter;
+import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.service.AuthService.AuthService;
 import com.main.writeRoom.web.dto.user.UserRequestDTO;
 import com.main.writeRoom.web.dto.user.UserResponseDTO;
@@ -22,5 +24,11 @@ public class AuthController {
     public ApiResponse<UserResponseDTO.UserSignInResult> signIn(@RequestBody UserRequestDTO.UserSignIn request) {
         UserSignInResult response = authService.login(request);
         return ApiResponse.of(SuccessStatus._OK, response);
+    }
+
+    @PostMapping("/signUp")
+    public ApiResponse<UserResponseDTO.CustomUserInfo> addUser(@RequestBody UserRequestDTO.UserSignUp request) {
+        User user = authService.join(request);
+        return ApiResponse.of(SuccessStatus._OK, UserConverter.CustomUserInfoResultDTO(user));
     }
 }
