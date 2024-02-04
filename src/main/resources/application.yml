@@ -35,4 +35,4 @@ cloud:
 
 jwt:
   expiration_time: 86400000
-  secret: ${jwt_secret}
+  secret: ${JWT_SECRET}
