@@ -1,6 +1,7 @@
 package com.main.writeRoom.domain.User;
 
 import com.main.writeRoom.common.BaseEntity;
+import com.main.writeRoom.domain.enums.Role;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,6 +33,9 @@ public class User extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private JoinType joinType;
     private String profileImage;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @OneToMany(mappedBy = "user")
     private List<RoomParticipation> roomParticipationList = new ArrayList<>();
