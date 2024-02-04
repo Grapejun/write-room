@@ -28,7 +28,7 @@ public class JwtUtil {
 
     public JwtUtil(
             @Value("${jwt.secret}") String secretKey,
-            @Value("${jwt.expiration_time") long accessTokenExpTime
+            @Value("${jwt.expiration_time}") long accessTokenExpTime
     ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
@@ -36,7 +36,14 @@ public class JwtUtil {
     }
 
     /**
-     * Access Token 생성
+     * AccessToken 생성
+     */
+    public String createAccessToken(CustomUserInfo user) {
+        return createToken(user, accessTokenExpTime);
+    }
+
+    /**
+     * JWT 생성
      * @param user
      * @param expireTime
      */
