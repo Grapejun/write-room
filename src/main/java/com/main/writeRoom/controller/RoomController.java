@@ -3,6 +3,7 @@ package com.main.writeRoom.controller;
 import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
+import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.NoteConverter;
 import com.main.writeRoom.converter.RoomConverter;
 import com.main.writeRoom.domain.Category;
@@ -55,7 +56,7 @@ public class RoomController {
     private final CategoryQueryService categoryQueryService;
     private final RoomParticipationService roomParticipationService;
 
-    @GetMapping("/{userId}")
+    @GetMapping("/")
     @Operation(summary = "나의 룸 목록 조회 API", description = "해당 유저가 참여중인 룸의 목록들을 조회하는 API이며, 페이징을 포함합니다. query String으로 page 번호를 주세요. ")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
@@ -67,8 +68,8 @@ public class RoomController {
     @Parameters({
             @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
     })
-    public ApiResponse<List<MyRoomResultDto>> myRoomList(@PathVariable(name = "userId") Long userId, @PageLessNull @RequestParam(name = "page") Integer page) {
-        Page<RoomParticipation> room = roomCommandService.getMyRoomResultList(userId, page);
+    public ApiResponse<List<MyRoomResultDto>> myRoomList(@AuthUser long user, @PageLessNull @RequestParam(name = "page") Integer page) {
+        Page<RoomParticipation> room = roomCommandService.getMyRoomResultList(user, page);
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.myRoomListInfoDTO(room));
     }
 
