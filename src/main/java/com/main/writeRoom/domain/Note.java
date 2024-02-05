@@ -1,5 +1,6 @@
 package com.main.writeRoom.domain;
 
+import com.main.writeRoom.domain.Bookmark.BookmarkNote;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.common.BaseEntity;
 import com.main.writeRoom.domain.mapping.NoteTag;
@@ -42,8 +43,11 @@ public class Note extends BaseEntity {
     @JoinColumn(name = "category")
     private Category category;
 
-    @OneToMany(mappedBy = "note")
+    @OneToMany(mappedBy = "note",cascade = CascadeType.ALL)
     private List<NoteTag> noteTagList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "note", cascade = CascadeType.ALL)
+    private List<BookmarkNote> bookmarkNoteList = new ArrayList<>();
 
     public String daysSinceLastUpdate() {
         LocalDateTime now = LocalDateTime.now();

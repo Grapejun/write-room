@@ -24,10 +24,6 @@ public class Tag extends BaseEntity {
 
     private String content;
 
-    @ManyToOne
-    @JoinColumn(name = "category")
-    private Category category;
-
     @OneToMany(mappedBy = "tag")
     private List<NoteTag> noteTagList = new ArrayList<>();
 }
