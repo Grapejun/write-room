@@ -3,6 +3,7 @@ package com.main.writeRoom.controller;
 import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
+import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.ChallengeConverter;
 import com.main.writeRoom.converter.NoteConverter;
 import com.main.writeRoom.domain.Challenge.ChallengeGoals;
@@ -79,7 +80,7 @@ public class ChallengeController {
     }
 
     //챌린지 루틴 조회(참여자 클릭 시 조회도 동일)
-    @GetMapping("/challenge-routines/{userId}/{challengeId}")
+    @GetMapping("/challenge-routines/{challengeId}")
     @Operation(summary = "챌린지 루틴 조회 API", description = "루틴 만들기 챌린지 진행화면에서 챌린지 루틴을 조회하는 API입니다.(참여자 클릭 시의 챌린지 루틴 조회도 포함)")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
@@ -90,16 +91,20 @@ public class ChallengeController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4002", description = "진행 중인 챌린지가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
-    public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> getChallengeRoutine(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
-        User user = userQueryService.findUser(userId);
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "challengeId", description = "조회할 챌린지 루틴의 식별자를 입력하세요.")
+    })
+    public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> getChallengeRoutine(@AuthUser Long user, @PathVariable(name = "challengeId") Long challengeId) {
+        User user1 = userQueryService.findUser(user);
         ChallengeRoutine routine = routineQueryService.findRoutine(challengeId);
-        routineCommandService.isStatusProgress(user, routine);
-        List<ChallengeResponseDTO.NoteDTO> noteList = routineQueryService.findNoteDate(user, routine);
-        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeRoutineDTO(user, routine, noteList));
+        routineCommandService.isStatusProgress(user1, routine);
+        List<ChallengeResponseDTO.NoteDTO> noteList = routineQueryService.findNoteDate(user1, routine);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeRoutineDTO(user1, routine, noteList));
     }
 
     //챌린지 루틴 달성 노트 조회
-    @GetMapping("/challenge-routines/{userId}/{roomId}/notes")
+    @GetMapping("/challenge-routines/{roomId}/notes")
     @Operation(summary = "챌린지 루틴 달성 노트 조회 API", description = "루틴 만들기 챌린지 진행화면에서 챌린지 루틴 달성 스탬프를 눌렀을 때 해당 날짜에 작성된 200자 이상의 노트들이 조회되는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
@@ -109,13 +114,14 @@ public class ChallengeController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
     @Parameters({
-            @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
+            @Parameter(name = "user", description = "user", hidden = true),
             @Parameter(name = "roomId", description = "룸 아이디 입니다."),
+            @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
             @Parameter(name="date", description = "스탬프에 쓰여진 챌린지 달성 날짜입니다.")
     })
-    public ApiResponse<ChallengeResponseDTO.RoomResultByDate> getNoteListByDate(@PathVariable(name = "userId") Long userId, @PathVariable(name = "roomId") Long roomId, @PageLessNull @RequestParam(name = "page") Integer page, @RequestParam LocalDate date) {
+    public ApiResponse<ChallengeResponseDTO.RoomResultByDate> getNoteListByDate(@AuthUser Long user, @PathVariable(name = "roomId") Long roomId, @PageLessNull @RequestParam(name = "page") Integer page, @RequestParam LocalDate date) {
         Room room = roomQueryService.findRoom(roomId);
-        Page<Note> note = noteQueryService.findNoteListForRoomAndUser(room, userQueryService.findUser(userId), page);
+        Page<Note> note = noteQueryService.findNoteListForRoomAndUser(room, userQueryService.findUser(user), page);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toRoomResultByDate(room, note, date));
     }
 
@@ -132,10 +138,11 @@ public class ChallengeController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
     @Parameters({
-            @Parameter(name = "userId", description = "챌린지를 포기할 회원의 식별자를 입력하세요."),
+            @Parameter(name = "challengeId", description = "포기할 챌린지 루틴의 식별자를 입력하세요."),
+            @Parameter(name = "user", description = "user", hidden = true)
     })
-    public ApiResponse giveUpChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
-        ChallengeRoutineParticipation routineParticipation = routineCommandService.giveUp(userId, challengeId);
+    public ApiResponse giveUpChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @AuthUser Long user) {
+        ChallengeRoutineParticipation routineParticipation = routineCommandService.giveUp(user, challengeId);
         return ApiResponse.onSuccess();
     }
 
@@ -163,7 +170,7 @@ public class ChallengeController {
     }
 
     //챌린지 목표량 조회
-    @GetMapping("/challenge-goals/{userId}/{challengeId}")
+    @GetMapping("/challenge-goals/{challengeId}")
     @Operation(summary = "챌린지 목표량 조회 API", description = "목표량 달성하기 진행화면에서 챌린지 목표량을 조회하는 API입니다.(참여자 클릭 시의 챌린지 목표량 조회도 포함)")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
@@ -174,13 +181,16 @@ public class ChallengeController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4002", description = "진행 중인 챌린지가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
-    @Parameters
-    public ApiResponse<ChallengeResponseDTO.ChallengeGoalsDTO> getChallengeGoals(@PathVariable(name = "userId") Long userId, @PathVariable(name = "challengeId") Long challengeId) {
-        User user = userQueryService.findUser(userId);
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "challengeId", description = "조회할 챌린지 목표량의 식별자를 입력하세요.")
+    })
+    public ApiResponse<ChallengeResponseDTO.ChallengeGoalsDTO> getChallengeGoals(@AuthUser Long user, @PathVariable(name = "challengeId") Long challengeId) {
+        User user1 = userQueryService.findUser(user);
         ChallengeGoals goals = goalsQueryService.findGoals(challengeId);
-        goalsCommandService.isStatusProgress(user, goals);
-        Integer achieveCount = goalsQueryService.findAchieveNote(user, goals);
-        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeGoalsDTO(user, goals, achieveCount));
+        goalsCommandService.isStatusProgress(user1, goals);
+        Integer achieveCount = goalsQueryService.findAchieveNote(user1, goals);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeGoalsDTO(user1, goals, achieveCount));
     }
 
     //챌린지 목표량 포기
@@ -196,16 +206,17 @@ public class ChallengeController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
     @Parameters({
-            @Parameter(name = "userId", description = "챌린지를 포기할 회원의 식별자를 입력하세요."),
+            @Parameter(name = "challengeId", description = "포기할 챌린지 목표량의 식별자를 입력하세요."),
+            @Parameter(name = "user", description = "user", hidden = true)
     })
-    public ApiResponse giveUpChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
-        ChallengeGoalsParticipation goalsParticipation = goalsCommandService.giveUP(userId, challengeId);
+    public ApiResponse giveUpChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @AuthUser Long user) {
+        ChallengeGoalsParticipation goalsParticipation = goalsCommandService.giveUP(user, challengeId);
         return ApiResponse.onSuccess();
     }
 
     //나의 챌린지
     //나의 챌린지 이력 목록 조회
-    @GetMapping("/my-challenges/{userId}/{roomId}")
+    @GetMapping("/my-challenges/{roomId}")
     @Operation(summary = "나의 챌린지 목록 조회 API", description = "나의 챌린지 화면에서 나의 챌린지 목록을 조회하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
@@ -213,14 +224,14 @@ public class ChallengeController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
     @Parameters({
-            @Parameter(name = "userId", description = "나의 챌린지를 조회할 회원의 식별자를 입력하세요."),
+            @Parameter(name = "user", description = "user", hidden = true),
             @Parameter(name="roomId", description = "현재 룸의 식별자를 입력하세요.")
     })
-    public ApiResponse<ChallengeResponseDTO.MyChallengeListDTO> getMyChallengeList(@PathVariable(name = "userId") Long userId, @PathVariable(name = "roomId") Long roomId) {
-        List<ChallengeRoutineParticipation> routineParticipationList = myChallengeQueryService.findChallengeRoutineParticipation(userId, roomId).stream()
+    public ApiResponse<ChallengeResponseDTO.MyChallengeListDTO> getMyChallengeList(@AuthUser Long user, @PathVariable(name = "roomId") Long roomId) {
+        List<ChallengeRoutineParticipation> routineParticipationList = myChallengeQueryService.findChallengeRoutineParticipation(user, roomId).stream()
                 .filter(routineParticipation -> routineParticipation.getIsActive() == IsActive.ACTIVE).collect(Collectors.toList());
         List<ChallengeRoutine> routineList = myChallengeQueryService.findChallengeRoutine(routineParticipationList);
-        List<ChallengeGoalsParticipation> goalsParticipationList = myChallengeQueryService.findChallengeGoalsParticipation(userId, roomId).stream()
+        List<ChallengeGoalsParticipation> goalsParticipationList = myChallengeQueryService.findChallengeGoalsParticipation(user, roomId).stream()
                 .filter(goalsParticipation -> goalsParticipation.getIsActive() == IsActive.ACTIVE).collect(Collectors.toList());
         List<ChallengeGoals> goalsList = myChallengeQueryService.findChallengeGoals(goalsParticipationList);
 
@@ -251,14 +262,14 @@ public class ChallengeController {
     })
     @Parameters({
             @Parameter(name = "challengeId", description = "나의 챌린지에서 상세 조회할 챌린지의 식별자를 입력하세요."),
-            @Parameter(name = "userId", description = "나의 챌린지에서 상세 조회하는 회원의 식별자를 입력하세요.")
+            @Parameter(name = "user", description = "user", hidden = true),
     })
-    public ApiResponse<ChallengeResponseDTO.MyChallengeRoutineDTO> getMyChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
-        User user = userQueryService.findUser(userId);
+    public ApiResponse<ChallengeResponseDTO.MyChallengeRoutineDTO> getMyChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @AuthUser Long user) {
+        User user1 = userQueryService.findUser(user);
         ChallengeRoutine routine = routineQueryService.findRoutine(challengeId);
-        ChallengeRoutineParticipation routineParticipation = myChallengeQueryService.findByUserAndChallengeRoutine(user, routine);
-        List<ChallengeResponseDTO.NoteDTO> noteList = routineQueryService.findNoteDate(user, routine);
-        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toMyChallengeRoutineDTO(user, routine, noteList, routineParticipation));
+        ChallengeRoutineParticipation routineParticipation = myChallengeQueryService.findByUserAndChallengeRoutine(user1, routine);
+        List<ChallengeResponseDTO.NoteDTO> noteList = routineQueryService.findNoteDate(user1, routine);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toMyChallengeRoutineDTO(user1, routine, noteList, routineParticipation));
     }
 
     //나의 챌린지 상세 조회 - 목표량
@@ -275,14 +286,14 @@ public class ChallengeController {
     })
     @Parameters({
             @Parameter(name = "challengeId", description = "나의 챌린지에서 상세 조회할 챌린지의 식별자를 입력하세요."),
-            @Parameter(name = "userId", description = "나의 챌린지에서 상세 조회하는 회원의 식별자를 입력하세요.")
+            @Parameter(name = "user", description = "user", hidden = true),
     })
-    public ApiResponse<ChallengeResponseDTO.MyChallengeGoalsDTO> getMyChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
-        User user = userQueryService.findUser(userId);
+    public ApiResponse<ChallengeResponseDTO.MyChallengeGoalsDTO> getMyChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @AuthUser Long user) {
+        User user1 = userQueryService.findUser(user);
         ChallengeGoals goals = goalsQueryService.findGoals(challengeId);
-        ChallengeGoalsParticipation goalsParticipation = myChallengeQueryService.findByUserAndChallengeGoals(user, goals);
-        Integer achieveCount = goalsQueryService.findAchieveNote(user, goals);
-        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toMyChallengeGoalsDTO(user, goals, achieveCount, goalsParticipation));
+        ChallengeGoalsParticipation goalsParticipation = myChallengeQueryService.findByUserAndChallengeGoals(user1, goals);
+        Integer achieveCount = goalsQueryService.findAchieveNote(user1, goals);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toMyChallengeGoalsDTO(user1, goals, achieveCount, goalsParticipation));
     }
 
     //챌린지 내역 삭제 - 루틴
@@ -298,11 +309,11 @@ public class ChallengeController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
     @Parameters({
-            @Parameter(name = "userId", description = "회원의 식별자를 입력하세요."),
-            @Parameter(name = "userId", description = "나의 챌린지에서 상세 조회하는 회원의 식별자를 입력하세요.")
+            @Parameter(name = "challengeId", description = "나의 챌린지 내역에서 삭제할 챌린지 루틴의 식별자를 입력하세요."),
+            @Parameter(name = "user", description = "user", hidden = true)
     })
-    public ApiResponse deleteChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
-        ChallengeRoutineParticipation routineParticipation = myChallengeQueryService.findByUserAndChallengeRoutine(userQueryService.findUser(userId), routineQueryService.findRoutine(challengeId));
+    public ApiResponse deleteChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @AuthUser Long user) {
+        ChallengeRoutineParticipation routineParticipation = myChallengeQueryService.findByUserAndChallengeRoutine(userQueryService.findUser(user), routineQueryService.findRoutine(challengeId));
         myChallengeCommandService.inactiveRoutine(routineParticipation);
         return ApiResponse.onSuccess();
     }
@@ -320,11 +331,11 @@ public class ChallengeController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
     @Parameters({
-            @Parameter(name = "userId", description = "회원의 식별자를 입력하세요."),
-            @Parameter(name = "userId", description = "나의 챌린지에서 상세 조회하는 회원의 식별자를 입력하세요.")
+            @Parameter(name = "challengeId", description = "나의 챌린지 내역에서 삭제할 챌린지 목표량의 식별자를 입력하세요."),
+            @Parameter(name = "user", description = "user", hidden = true)
     })
-    public ApiResponse deleteChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @RequestParam Long userId) {
-        ChallengeGoalsParticipation goalsParticipation = myChallengeQueryService.findByUserAndChallengeGoals(userQueryService.findUser(userId), goalsQueryService.findGoals(challengeId));
+    public ApiResponse deleteChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @AuthUser Long user) {
+        ChallengeGoalsParticipation goalsParticipation = myChallengeQueryService.findByUserAndChallengeGoals(userQueryService.findUser(user), goalsQueryService.findGoals(challengeId));
         myChallengeCommandService.inactiveGoals(goalsParticipation);
         return ApiResponse.onSuccess();
     }
