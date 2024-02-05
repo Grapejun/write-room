@@ -37,6 +37,7 @@ public class CategoryConverter {
         return CategoryResponseDTO.CategoryList.builder()
                 .categoryId(category.getId())
                 .countNote(countNote)
+                .categoryName(category.getName())
                 .build();
     }
 }

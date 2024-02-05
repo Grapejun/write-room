@@ -41,6 +41,8 @@ public class Room extends BaseEntity {
     private List<RoomParticipation> roomParticipationList = new ArrayList<>();
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<Note> noteList = new ArrayList<>();
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    private List<Category> categoryList = new ArrayList<>();
 
     public String daysSinceLastUpdate() {
         LocalDateTime now = LocalDateTime.now();

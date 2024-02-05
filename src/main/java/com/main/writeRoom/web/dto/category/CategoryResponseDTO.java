@@ -25,5 +25,6 @@ public class CategoryResponseDTO {
     public static class CategoryList {
         Long categoryId;
         Long countNote;
+        String categoryName;
     }
 }
