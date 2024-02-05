@@ -95,7 +95,7 @@ public class ChallengeController {
             @Parameter(name = "user", description = "user", hidden = true),
             @Parameter(name = "challengeId", description = "조회할 챌린지 루틴의 식별자를 입력하세요.")
     })
-    public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> getChallengeRoutine(@AuthUser Long user, @PathVariable(name = "challengeId") Long challengeId) {
+    public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> getChallengeRoutine(@AuthUser long user, @PathVariable(name = "challengeId") Long challengeId) {
         User user1 = userQueryService.findUser(user);
         ChallengeRoutine routine = routineQueryService.findRoutine(challengeId);
         routineCommandService.isStatusProgress(user1, routine);
@@ -119,7 +119,7 @@ public class ChallengeController {
             @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
             @Parameter(name="date", description = "스탬프에 쓰여진 챌린지 달성 날짜입니다.")
     })
-    public ApiResponse<ChallengeResponseDTO.RoomResultByDate> getNoteListByDate(@AuthUser Long user, @PathVariable(name = "roomId") Long roomId, @PageLessNull @RequestParam(name = "page") Integer page, @RequestParam LocalDate date) {
+    public ApiResponse<ChallengeResponseDTO.RoomResultByDate> getNoteListByDate(@AuthUser long user, @PathVariable(name = "roomId") Long roomId, @PageLessNull @RequestParam(name = "page") Integer page, @RequestParam LocalDate date) {
         Room room = roomQueryService.findRoom(roomId);
         Page<Note> note = noteQueryService.findNoteListForRoomAndUser(room, userQueryService.findUser(user), page);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toRoomResultByDate(room, note, date));
@@ -141,7 +141,7 @@ public class ChallengeController {
             @Parameter(name = "challengeId", description = "포기할 챌린지 루틴의 식별자를 입력하세요."),
             @Parameter(name = "user", description = "user", hidden = true)
     })
-    public ApiResponse giveUpChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @AuthUser Long user) {
+    public ApiResponse giveUpChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @AuthUser long user) {
         ChallengeRoutineParticipation routineParticipation = routineCommandService.giveUp(user, challengeId);
         return ApiResponse.onSuccess();
     }
@@ -185,7 +185,7 @@ public class ChallengeController {
             @Parameter(name = "user", description = "user", hidden = true),
             @Parameter(name = "challengeId", description = "조회할 챌린지 목표량의 식별자를 입력하세요.")
     })
-    public ApiResponse<ChallengeResponseDTO.ChallengeGoalsDTO> getChallengeGoals(@AuthUser Long user, @PathVariable(name = "challengeId") Long challengeId) {
+    public ApiResponse<ChallengeResponseDTO.ChallengeGoalsDTO> getChallengeGoals(@AuthUser long user, @PathVariable(name = "challengeId") Long challengeId) {
         User user1 = userQueryService.findUser(user);
         ChallengeGoals goals = goalsQueryService.findGoals(challengeId);
         goalsCommandService.isStatusProgress(user1, goals);
@@ -209,7 +209,7 @@ public class ChallengeController {
             @Parameter(name = "challengeId", description = "포기할 챌린지 목표량의 식별자를 입력하세요."),
             @Parameter(name = "user", description = "user", hidden = true)
     })
-    public ApiResponse giveUpChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @AuthUser Long user) {
+    public ApiResponse giveUpChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @AuthUser long user) {
         ChallengeGoalsParticipation goalsParticipation = goalsCommandService.giveUP(user, challengeId);
         return ApiResponse.onSuccess();
     }
@@ -227,7 +227,7 @@ public class ChallengeController {
             @Parameter(name = "user", description = "user", hidden = true),
             @Parameter(name="roomId", description = "현재 룸의 식별자를 입력하세요.")
     })
-    public ApiResponse<ChallengeResponseDTO.MyChallengeListDTO> getMyChallengeList(@AuthUser Long user, @PathVariable(name = "roomId") Long roomId) {
+    public ApiResponse<ChallengeResponseDTO.MyChallengeListDTO> getMyChallengeList(@AuthUser long user, @PathVariable(name = "roomId") Long roomId) {
         List<ChallengeRoutineParticipation> routineParticipationList = myChallengeQueryService.findChallengeRoutineParticipation(user, roomId).stream()
                 .filter(routineParticipation -> routineParticipation.getIsActive() == IsActive.ACTIVE).collect(Collectors.toList());
         List<ChallengeRoutine> routineList = myChallengeQueryService.findChallengeRoutine(routineParticipationList);
@@ -264,7 +264,7 @@ public class ChallengeController {
             @Parameter(name = "challengeId", description = "나의 챌린지에서 상세 조회할 챌린지의 식별자를 입력하세요."),
             @Parameter(name = "user", description = "user", hidden = true),
     })
-    public ApiResponse<ChallengeResponseDTO.MyChallengeRoutineDTO> getMyChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @AuthUser Long user) {
+    public ApiResponse<ChallengeResponseDTO.MyChallengeRoutineDTO> getMyChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @AuthUser long user) {
         User user1 = userQueryService.findUser(user);
         ChallengeRoutine routine = routineQueryService.findRoutine(challengeId);
         ChallengeRoutineParticipation routineParticipation = myChallengeQueryService.findByUserAndChallengeRoutine(user1, routine);
@@ -288,7 +288,7 @@ public class ChallengeController {
             @Parameter(name = "challengeId", description = "나의 챌린지에서 상세 조회할 챌린지의 식별자를 입력하세요."),
             @Parameter(name = "user", description = "user", hidden = true),
     })
-    public ApiResponse<ChallengeResponseDTO.MyChallengeGoalsDTO> getMyChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @AuthUser Long user) {
+    public ApiResponse<ChallengeResponseDTO.MyChallengeGoalsDTO> getMyChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @AuthUser long user) {
         User user1 = userQueryService.findUser(user);
         ChallengeGoals goals = goalsQueryService.findGoals(challengeId);
         ChallengeGoalsParticipation goalsParticipation = myChallengeQueryService.findByUserAndChallengeGoals(user1, goals);
@@ -312,7 +312,7 @@ public class ChallengeController {
             @Parameter(name = "challengeId", description = "나의 챌린지 내역에서 삭제할 챌린지 루틴의 식별자를 입력하세요."),
             @Parameter(name = "user", description = "user", hidden = true)
     })
-    public ApiResponse deleteChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @AuthUser Long user) {
+    public ApiResponse deleteChallengeRoutine(@PathVariable(name = "challengeId") Long challengeId, @AuthUser long user) {
         ChallengeRoutineParticipation routineParticipation = myChallengeQueryService.findByUserAndChallengeRoutine(userQueryService.findUser(user), routineQueryService.findRoutine(challengeId));
         myChallengeCommandService.inactiveRoutine(routineParticipation);
         return ApiResponse.onSuccess();
@@ -334,7 +334,7 @@ public class ChallengeController {
             @Parameter(name = "challengeId", description = "나의 챌린지 내역에서 삭제할 챌린지 목표량의 식별자를 입력하세요."),
             @Parameter(name = "user", description = "user", hidden = true)
     })
-    public ApiResponse deleteChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @AuthUser Long user) {
+    public ApiResponse deleteChallengeGoals(@PathVariable(name = "challengeId") Long challengeId, @AuthUser long user) {
         ChallengeGoalsParticipation goalsParticipation = myChallengeQueryService.findByUserAndChallengeGoals(userQueryService.findUser(user), goalsQueryService.findGoals(challengeId));
         myChallengeCommandService.inactiveGoals(goalsParticipation);
         return ApiResponse.onSuccess();
