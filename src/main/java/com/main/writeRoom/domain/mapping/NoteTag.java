@@ -33,7 +33,4 @@ public class NoteTag {
     @JoinColumn(name = "tag")
     private Tag tag;
 
-    @ManyToOne
-    @JoinColumn(name = "room")
-    private Room room;
 }
