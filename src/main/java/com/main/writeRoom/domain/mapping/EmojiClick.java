@@ -24,7 +24,4 @@ public class EmojiClick {
     @JoinColumn(name = "note")
     private Note note;
 
-    @ManyToOne
-    @JoinColumn(name = "room")
-    private Room room;
 }
