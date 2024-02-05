@@ -46,7 +46,7 @@ public class NoteController {
             @Parameter(name = "noteId", description = "노트 아이디 입니다."),
             @Parameter(name = "user", description = "user", hidden = true),
     })
-    @PostMapping("/bookmark/{roomId}/{noteId}/{userId}")
+    @PostMapping("/bookmark/{roomId}/{noteId}")
     public ApiResponse<NoteResponseDTO.NoteResult> noteBookmark(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId, @AuthUser long user) {
         Note note = noteQueryService.findNote(noteId);
         noteCommandService.createBookmarkNote(roomId, note, user);
