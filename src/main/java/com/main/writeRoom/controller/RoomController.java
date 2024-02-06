@@ -1,5 +1,9 @@
 package com.main.writeRoom.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
@@ -166,11 +170,14 @@ public class RoomController {
             @Parameter(name = "user", description = "user", hidden = true)
     })
     @PostMapping(value = "/createRoom", consumes = "multipart/form-data")
-    public ApiResponse<RoomResponseDTO.RoomInfoResult> CreateRoom(@AuthUser long userId, @RequestPart(name = "request") RoomRequestDTO.CreateRoomDTO request,
-                                                                  @RequestPart(required = false, value = "roomImg")MultipartFile roomImg) {
+    public ApiResponse<RoomResponseDTO.RoomInfoResult> CreateRoom(@AuthUser long userId, @RequestParam(name = "request") String request,
+                                                                  @RequestPart(required = false, value = "roomImg")MultipartFile roomImg)
+            throws JsonProcessingException {
         User user = userQueryService.findUser(userId);
 
-        Room room = roomCommandService.createRoom(user, request, roomImg);
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        RoomRequestDTO.CreateRoomDTO jsonList = objectMapper.readValue(request, new TypeReference<>() {});
+        Room room = roomCommandService.createRoom(user, jsonList, roomImg);
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.toCreateRoomResultDTO(room));
     }
 
