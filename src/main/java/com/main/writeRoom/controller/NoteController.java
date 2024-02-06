@@ -1,5 +1,9 @@
 package com.main.writeRoom.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
@@ -16,6 +20,7 @@ import com.main.writeRoom.service.RoomService.RoomQueryService;
 import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.web.dto.note.NoteRequestDTO;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
+import com.main.writeRoom.web.dto.room.RoomRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -24,12 +29,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/notes")
+@RequestMapping("/")
 @Slf4j
 public class NoteController {
     private final NoteQueryService noteQueryService;
@@ -45,16 +52,21 @@ public class NoteController {
     })
     @Parameters({
             @Parameter(name = "roomId", description = "노트를 생성할 룸의 아이디입니다."),
+            @Parameter(name = "user", description = "user", hidden = true)
     })
     @PostMapping(value = "/rooms/{roomId}/notes", consumes = "multipart/form-data")
-    public ApiResponse<NoteResponseDTO.NoteResult> createNote(@PathVariable(name = "roomId")Long roomId,
-                                                              @RequestPart("request") NoteRequestDTO.createNoteDTO request,
-                                                              @RequestPart(required = false, value = "noteImg") MultipartFile noteImg) {
+    public ApiResponse<NoteResponseDTO.NoteResult> createNote(@AuthUser long userId,
+                                                              @PathVariable(name = "roomId")Long roomId,
+                                                              @RequestParam(name = "request") String request,
+                                                              @RequestPart(required = false, value = "noteImg") MultipartFile noteImg)
+            throws JsonProcessingException{
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        NoteRequestDTO.createNoteDTO jsonList = objectMapper.readValue(request, new TypeReference<>() {});
         Room room = roomQueryService.findRoom(roomId);
-        User user = userQueryService.findUser(request.getUserId());
-        Category category = categoryQueryService.findCategory(request.getCategoryId());
+        User user = userQueryService.findUser(userId);
+        Category category = categoryQueryService.findCategory(jsonList.getCategoryId());
 
-        NoteResponseDTO.PreNoteResult preNote = noteCommandService.createPreNote(room, user, category, noteImg, request);
+        NoteResponseDTO.PreNoteResult preNote = noteCommandService.createPreNote(room, user, category, noteImg, jsonList);
         Note note = noteCommandService.createNote(preNote);
 
         return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteResult(note));
@@ -69,9 +81,10 @@ public class NoteController {
     })
     @Parameters({
             @Parameter(name = "noteId", description = "조회할 노트의 아이디입니다."),
+            @Parameter(name = "user", description = "user", hidden = true)
     })
-    @GetMapping("/{noteId}/{userId}")
-    public ApiResponse<NoteResponseDTO.NoteResult> getNote(@PathVariable(name = "noteId")Long noteId, @PathVariable Long userId) {
+    @GetMapping("/notes/{noteId}")
+    public ApiResponse<NoteResponseDTO.NoteResult> getNote(@PathVariable(name = "noteId")Long noteId, @AuthUser long userId) {
 
         Note note = noteQueryService.findNote(noteId);
         // 해당 노트가 존재하는 룸의 사용자가 아닐 경우 에러 발생
@@ -86,18 +99,20 @@ public class NoteController {
             // 존재 하지 않는 노트일 때 에러
             // 작성자가 아닌 경우 수정 불가
     })
-    @PutMapping(value = "/{noteId}", consumes = "multipart/form-data")
-    public ApiResponse<NoteResponseDTO.NoteResult> updateNote(@PathVariable(name = "noteId")Long noteId,
-                                                              @RequestPart("request") NoteRequestDTO.patchNoteDTO request, // @RequestBody -> @RequestPart로 변경
-                                                              @RequestPart(required = false, value = "noteImg") MultipartFile noteImg) {
+    @PutMapping(value = "/notes/{noteId}", consumes = "multipart/form-data")
+    public ApiResponse<NoteResponseDTO.NoteResult> updateNote(
+            @PathVariable(name = "noteId")Long noteId,
+            @RequestParam(name = "request") String request,
+            @RequestPart(required = false, value = "noteImg") MultipartFile noteImg)
+            throws JsonProcessingException{
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        NoteRequestDTO.patchNoteDTO jsonList = objectMapper.readValue(request, new TypeReference<>() {});
         // 노트가 존재하지 않으면 에러
         Note note = noteQueryService.findNote(noteId);
         // 사용자의 노트가 아닐 경우 에러
-        Category category = categoryQueryService.findCategory(request.getCategoryId());
-
-        Note updatedNote = noteCommandService.updateNoteFields(note, category, noteImg, request);
+        Category category = categoryQueryService.findCategory(jsonList.getCategoryId());
+        Note updatedNote = noteCommandService.updateNoteFields(note, category, noteImg, jsonList);
         return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteResult(updatedNote));
-
     }
 
     @Operation(summary = "노트 삭제 API", description = "노트를 삭제하는 API입니다.") // 되는지 확인 해봐야 하고, 양방향 매핑도 삭제 해야 함. 이모지 태그 등
@@ -108,7 +123,7 @@ public class NoteController {
             @Parameter(name = "roomId", description = "삭제할 노트가 있는 룸의 아이디입니다."),
             @Parameter(name = "noteId", description = "삭제할 노트의 아이디입니다."),
     })
-    @DeleteMapping("{noteId}/{userId}")
+    @DeleteMapping("/notes/{noteId}/{userId}")
     public ApiResponse deleteNote(@PathVariable(name = "noteId")Long noteId, @PathVariable Long userId) {
         noteCommandService.deleteBookmarkNote(noteId);
         return ApiResponse.onSuccess();
@@ -129,7 +144,7 @@ public class NoteController {
             @Parameter(name = "noteId", description = "노트 아이디 입니다."),
             @Parameter(name = "user", description = "user", hidden = true),
     })
-    @PostMapping("/bookmark/{roomId}/{noteId}")
+    @PostMapping("/notes/bookmark/{roomId}/{noteId}")
     public ApiResponse<NoteResponseDTO.NoteResult> noteBookmark(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId, @AuthUser long user) {
         Note note = noteQueryService.findNote(noteId);
         noteCommandService.createBookmarkNote(roomId, note, user);
@@ -143,7 +158,7 @@ public class NoteController {
     @Parameters({
             @Parameter(name = "bookmarkNoteId", description = "북마크 노트 아이디입니다."),
     })
-    @DeleteMapping("/bookmark/delete/{bookmarkNoteId}")
+    @DeleteMapping("/notes/bookmark/delete/{bookmarkNoteId}")
     public ApiResponse deleteBookmark(@PathVariable(name = "bookmarkNoteId")Long bookmarkNoteId) {
         noteCommandService.deleteBookmarkNote(bookmarkNoteId);
         return ApiResponse.onSuccess();

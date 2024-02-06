@@ -19,20 +19,17 @@ public class NoteRequestDTO {
         String noteSubTitle;
         String noteContent;
         Long letterCount;
-        ArrayList<String> noteTagList; // 얘 스트링으로 받아
-        Long userId;
+        ArrayList<String> noteTagList;
         Long categoryId;
     }
 
-    // 노트 수정이 가능한 컨텐츠들 집어 넣기
     @Getter
     public static class patchNoteDTO {
         String noteTitle;
-        String noteSubtitle;
+        String noteSubTitle;
         String noteContent;
         Long categoryId;
         Long letterCount;
         ArrayList<String> noteTagList;
-        //userId 만 빠졌다
     }
 }

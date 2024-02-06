@@ -103,56 +103,37 @@ public class NoteCommandServiceImpl implements NoteCommandService{
             imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid), noteImg);
         }
 
+        noteTagRepository.deleteAll(existingNote.getNoteTagList());
+        existingNote.getNoteTagList().clear();
+
         List<String> tagStringList = request.getNoteTagList();
         List<Tag> newTagList = TagConverter.toTagList(tagStringList);
 
-        // 노트 아이디로 노트 태그 태이블에 접근해서 해당 노트가 아이디인 태그를 모두 포함하는 태그 리스트를 생성
-        List<Tag> existingTagList = existingNote.getNoteTagList().stream()
-                .map(NoteTag::getTag)
-                .toList();
-        // 태그 목록 비교 및 업데이트
-        updateTags(existingNote, newTagList);
-
-        // 생성된 태그 리스트를 전달받은 태그 리스트와 비교, 변경이 있다면 매핑 태이블과 노트의 매핑도 수정
-
         Note.NoteBuilder builder = existingNote.toBuilder();
         if (request.getNoteTitle() != null) builder.title(request.getNoteTitle());
-        if (request.getNoteSubtitle() != null) builder.subtitle(request.getNoteSubtitle());
+        if (request.getNoteSubTitle() != null) builder.subtitle(request.getNoteSubTitle());
         if (request.getNoteContent() != null) builder.content(request.getNoteContent());
         if (imgUrl != null) builder.coverImg(imgUrl);
         if (request.getLetterCount() >= 200) builder.achieve(ACHIEVE.TRUE);
         if (category != null) builder.category(category);
-        Note updatedNote = builder.build();
+
+        Note updatedNote = builder
+                .createdAt(existingNote.getCreatedAt())
+                .build();
+
+        // 새로운 노트태그 관계 생성 및 저장
+        List<NoteTag> newNoteTags = newTagList.stream()
+                .map(tag -> NoteTag.builder()
+                        .note(updatedNote)
+                        .tag(tag)
+                        .room(updatedNote.getRoom())
+                        .build()
+        )
+                .collect(Collectors.toList());
+        noteTagRepository.saveAll(newNoteTags);
+        updatedNote.getNoteTagList().addAll(newNoteTags); // 메모리 상의 노트 엔티티에도 노트태그 관계 추가
 
         return noteRepository.save(updatedNote);
-    }
-    @Transactional
-    public void updateTags(Note note, List<Tag> newTags) {
-        // 기존 NoteTag 관계를 모두 조회
-        List<NoteTag> existingNoteTags = note.getNoteTagList();
-
-        // 삭제할 NoteTag 관계 식별
-        List<NoteTag> noteTagsToRemove = existingNoteTags.stream()
-                .filter(noteTag -> !newTags.contains(noteTag.getTag()))
-                .collect(Collectors.toList());
-
-        // 새로운 태그에 대한 NoteTag 관계 추가
-        newTags.forEach(newTag -> {
-            boolean exists = existingNoteTags.stream()
-                    .anyMatch(noteTag -> noteTag.getTag().equals(newTag));
-            if (!exists) {
-                // 새로운 NoteTag 관계 생성 및 저장
-                NoteTag newNoteTag = NoteTag.builder()
-                        .note(note)
-                        .tag(newTag)
-                        .room(note.getRoom())
-                        .build();
-                noteTagRepository.save(newNoteTag);
-            }
-        });
-
-        // 더 이상 필요하지 않은 NoteTag 관계 삭제
-        noteTagsToRemove.forEach(noteTagRepository::delete);
     }
     
     @Transactional
