@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @Entity(name = "Note")
 @Getter
-@Builder
+@Builder(toBuilder = true) // toBuilder 속성을 true로 설정
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class Note extends BaseEntity {

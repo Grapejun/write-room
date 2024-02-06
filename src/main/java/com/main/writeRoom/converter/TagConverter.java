@@ -14,4 +14,6 @@ public class TagConverter {
                                 .build()
                 ).collect(Collectors.toList());
     }
+
+    // 노트태그 리스트를 태그 리스트로 바꿔야 함.
 }

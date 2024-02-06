@@ -40,6 +40,7 @@ public class NoteController {
     @Operation(summary = "노트 생성 API", description = "새로운 노트를 생성하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            // 존재하지 않는 룸의 아이디를 입력했을 경우 에러
     })
     @Parameters({
             @Parameter(name = "roomId", description = "노트를 생성할 룸의 아이디입니다."),
@@ -57,37 +58,51 @@ public class NoteController {
         return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteResult(note));
     }
 
+    // 노트 아이디 받아서 노트 조회
     @Operation(summary = "노트 조회 API", description = "노트를 조회하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            // 존재 하지 않는 노트일 때 에러
+            // 노트를 포함한 룸의 사용자가 아닐 경우 에러
     })
     @Parameters({
-            @Parameter(name = "roomId", description = "조회할 노트가 있는 룸의 아이디입니다."),
             @Parameter(name = "noteId", description = "조회할 노트의 아이디입니다."),
     })
-    @GetMapping("/rooms/{roomId}/notes/{noteId}")
-    public ApiResponse<NoteResponseDTO.NoteResult> getNote(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId) {
+    @GetMapping("/{noteId}/{userId}")
+    public ApiResponse<NoteResponseDTO.NoteResult> getNote(@PathVariable(name = "noteId")Long noteId, @PathVariable Long userId) {
 
-        // 노트 아이디 받아서 노트 조회
         Note note = noteQueryService.findNote(noteId);
-
+        // 해당 노트가 존재하는 룸의 사용자가 아닐 경우 에러 발생
         return ApiResponse.of(SuccessStatus._OK, noteCommandService.getNote(note));
     }
 
+    // 조회 페이지를 먼저 들어가서 수정 해야 함. 수정시에는 노트 아이디와 수정 컨텐츠를 같이 받을 것
     @Operation(summary = "노트 수정 API", description = "노트를 수정하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            // 형식이 맞지 않을 때 에러
+            // 존재 하지 않는 노트일 때 에러
+            // 작성자가 아닌 경우 수정 불가
     })
     @Parameters({
-            @Parameter(name = "roomId", description = "수정할 노트가 있는 룸의 아이디입니다."),
             @Parameter(name = "noteId", description = "수정할 노트의 아이디입니다."),
     })
-    @PatchMapping("/rooms/{roomId}/notes/{noteId}")
-    public ApiResponse<NoteResponseDTO.NoteResult> updateNote(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId) {
-        return null;
+    @PutMapping("/{noteId}/{userId}")
+    public ApiResponse<NoteResponseDTO.NoteResult> updateNote(@PathVariable(name = "noteId")Long noteId, @PathVariable Long userId, @RequestBody NoteRequestDTO.patchNoteDTO request
+            , @RequestPart(required = false, value = "roomImg") MultipartFile noteImg) {
+
+        // 노트가 존재하지 않으면 에러
+        Note note = noteQueryService.findNote(noteId);
+        // 사용자의 노트가 아닐 경우 에러
+        User user = userQueryService.findUser(userId);
+        Category category = categoryQueryService.findCategory(request.getCategoryId());
+
+        Note updatedNote = noteCommandService.updateNoteFields(note, category, noteImg, request);
+        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteResult(updatedNote));
+
     }
 
-    @Operation(summary = "노트 삭제 API", description = "노트를 삭제하는 API입니다.") // 되는지 확인 해봐야 하고, 양방향 매핑도 삭제 해야 함.
+    @Operation(summary = "노트 삭제 API", description = "노트를 삭제하는 API입니다.") // 되는지 확인 해봐야 하고, 양방향 매핑도 삭제 해야 함. 이모지 태그 등
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
@@ -95,8 +110,8 @@ public class NoteController {
             @Parameter(name = "roomId", description = "삭제할 노트가 있는 룸의 아이디입니다."),
             @Parameter(name = "noteId", description = "삭제할 노트의 아이디입니다."),
     })
-    @DeleteMapping("/rooms/{roomId}/notes/{noteId}")
-    public ApiResponse deleteNote(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId) {
+    @DeleteMapping("{noteId}/{userId}")
+    public ApiResponse deleteNote(@PathVariable(name = "noteId")Long noteId, @PathVariable Long userId) {
         noteCommandService.deleteBookmarkNote(noteId);
         return ApiResponse.onSuccess();
     }

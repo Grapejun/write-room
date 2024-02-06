@@ -1,12 +1,15 @@
 package com.main.writeRoom.converter;
 
+import com.main.writeRoom.domain.*;
 import com.main.writeRoom.domain.Bookmark.BookmarkNote;
-import com.main.writeRoom.domain.Note;
-import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.NoteTag;
+import com.main.writeRoom.web.dto.note.NoteRequestDTO;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
@@ -41,6 +44,23 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .build();
     }
 
+    public static NoteResponseDTO.NoteResult toNoteResponseDTO(Note note) {
+
+        return NoteResponseDTO.NoteResult.builder()
+                .noteCoverImg(note.getCoverImg())
+                .noteSubTitle(note.getSubtitle())
+                .noteTitle(note.getTitle())
+                .noteContent(note.getContent())
+                .createdAt(note.getCreatedAt())
+                .updatedAt(note.getUpdatedAt())
+                .noteId(note.getId())
+                .categoryName(note.getCategory().getName())
+                .emojiClickList(new ArrayList<>())
+                .writer(note.getUser().getName())
+                .tagList(new ArrayList<>())
+                .build();
+    }
+
     public static TagResponseDTO.TagList toNoteResultTagDTOList(NoteTag noteTag) {
         return TagResponseDTO.TagList.builder()
                 .tagId(noteTag.getTag().getId())
@@ -53,6 +73,45 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .noteId(note.getId())
                 .build();
     }
+
+    public static NoteResponseDTO.NoteResult toNoteResult(Note note) {
+    return NoteResponseDTO.NoteResult.builder()
+            .noteId(note.getId())
+            .createdAt(LocalDateTime.now())
+            .build();
+    }
+
+    // public static NoteResponseDTO.NoteResult toNoteDelete
+    /*
+    public static BookmarkResponseDTO.TopicResultDTO toDeleteResultDTO(Long id) {
+        return BookmarkResponseDTO.TopicResultDTO.builder()
+                .BookmarkId(id)
+                .createdAt(LocalDateTime.now())
+                .build();
+    }
+    */
+
+    public static Note toNote(Room room, User user, Category category, NoteRequestDTO.createNoteDTO request, String imgUrl) {
+
+    // challengeCheck
+        ACHIEVE achieve = ACHIEVE.FALSE;
+        // 200자 이상 시 true 로직 구현 -> check 받으면 TRUE로 받기
+        if (request.getLetterCount() >= 200)
+            achieve = ACHIEVE.TRUE;
+
+        return Note.builder()
+                .title(request.getNoteTitle())
+                .subtitle(request.getNoteSubTitle())
+                .coverImg(imgUrl)
+                .content(request.getNoteContent())
+                .achieve(achieve)
+                .noteTagList(new ArrayList<>())
+                .room(room)
+                .category(category)
+                .user(user)
+                .build();
+    }
+
 
     public static BookmarkNote toBookMarkNote(Room room, Note note, User user) {
         return BookmarkNote.builder()
