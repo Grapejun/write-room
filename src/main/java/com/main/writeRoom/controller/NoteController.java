@@ -47,8 +47,9 @@ public class NoteController {
             @Parameter(name = "roomId", description = "노트를 생성할 룸의 아이디입니다."),
     })
     @PostMapping(value = "/rooms/{roomId}/notes", consumes = "multipart/form-data")
-    public ApiResponse<NoteResponseDTO.NoteResult> createNote(@PathVariable(name = "roomId")Long roomId, @RequestBody NoteRequestDTO.createNoteDTO request
-    , @RequestPart(required = false, value = "noteImg") MultipartFile noteImg) {
+    public ApiResponse<NoteResponseDTO.NoteResult> createNote(@PathVariable(name = "roomId")Long roomId,
+                                                              @RequestPart("request") NoteRequestDTO.createNoteDTO request,
+                                                              @RequestPart(required = false, value = "noteImg") MultipartFile noteImg) {
         Room room = roomQueryService.findRoom(roomId);
         User user = userQueryService.findUser(request.getUserId());
         Category category = categoryQueryService.findCategory(request.getCategoryId());
@@ -87,7 +88,6 @@ public class NoteController {
     })
     @PutMapping(value = "/{noteId}", consumes = "multipart/form-data")
     public ApiResponse<NoteResponseDTO.NoteResult> updateNote(@PathVariable(name = "noteId")Long noteId,
-//                                                              @RequestBody NoteRequestDTO.patchNoteDTO request,
                                                               @RequestPart("request") NoteRequestDTO.patchNoteDTO request, // @RequestBody -> @RequestPart로 변경
                                                               @RequestPart(required = false, value = "noteImg") MultipartFile noteImg) {
         // 노트가 존재하지 않으면 에러
