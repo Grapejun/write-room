@@ -70,7 +70,6 @@ public class RoomConverter {
     public static Room toRoom(RoomRequestDTO.CreateRoomDTO request, String imgUrl) {
         return Room.builder()
                 .title(request.getRoomTitle())
-                .introduction(request.getRoomContent())
                 .coverImg(imgUrl)
                 .build();
     }
