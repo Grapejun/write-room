@@ -3,12 +3,7 @@ package com.main.writeRoom.domain.mapping;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.Tag;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,7 +24,7 @@ public class NoteTag {
     @JoinColumn(name = "note")
     private Note note;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL) // cascade 옵션 추가
     @JoinColumn(name = "tag")
     private Tag tag;
 

@@ -17,12 +17,22 @@ public class NoteRequestDTO {
     public static class createNoteDTO {
         String noteTitle;
         String noteSubTitle;
-        String noteCoverImage; // String 맞는지 확인
         String noteContent;
-        Boolean challengeCheck;
-        LocalDateTime createdAt;
+        Long letterCount;
         ArrayList<String> noteTagList; // 얘 스트링으로 받아
         Long userId;
         Long categoryId;
+    }
+
+    // 노트 수정이 가능한 컨텐츠들 집어 넣기
+    @Getter
+    public static class patchNoteDTO {
+        String noteTitle;
+        String noteSubtitle;
+        String noteContent;
+        Long letterCount;
+        ArrayList<String> noteTagList;
+        Long categoryId;
+        //userId 만 빠졌다
     }
 }

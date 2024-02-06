@@ -1,5 +1,9 @@
 package com.main.writeRoom.web.dto.note;
 
+import com.main.writeRoom.domain.Emoji;
+import com.main.writeRoom.domain.Note;
+import com.main.writeRoom.domain.Tag;
+import com.main.writeRoom.domain.mapping.EmojiClick;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,7 +44,27 @@ public class NoteResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class PreNoteResult {
+        Note note;
+        List<Tag> tagList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class NoteResult {
         Long noteId;
+        String noteTitle;
+        String noteSubTitle;
+        String noteContent;
+        String categoryName;
+        String writer;
+        String noteCoverImg;
+        LocalDateTime createdAt;
+        LocalDateTime updatedAt;
+        List<TagResponseDTO.TagList> tagList;
+        List<EmojiClick> emojiClickList; // EmojiResponseDTO로 변경
+
     }
 }
