@@ -58,21 +58,23 @@ public class RoomCommandServiceimpl implements RoomCommandService {
     @Override
     @Transactional
     public Room createRoom(User user, RoomRequestDTO.CreateRoomDTO request, MultipartFile roomImg) {
-        String uuid = UUID.randomUUID().toString();
-        Uuid savedUuid = uuidRepository.save(Uuid.builder()
-                .uuid(uuid).build());
-
         String imgUrl = null;
-        if (roomImg != null) {
+        Uuid savedUuid = null;
+        if (roomImg != null && !roomImg.isEmpty()) {
+            String uuid = UUID.randomUUID().toString();
+            savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
+
             imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid), roomImg);
         }
-        Room room = RoomConverter.toRoom(request, imgUrl);
 
+        Room room = RoomConverter.toRoom(request, imgUrl);
         RoomParticipation roomParticipation = RoomConverter.toUserRoom(room, user);
         userRoomRepository.save(roomParticipation);
 
         return roomRepository.save(room);
     }
+
+
 
     @Transactional
     public void deleteRoom(Room room, User user) {
