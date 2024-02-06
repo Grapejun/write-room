@@ -171,7 +171,7 @@ public class RoomController {
     })
     @PostMapping(value = "/createRoom", consumes = "multipart/form-data")
     public ApiResponse<RoomResponseDTO.RoomInfoResult> CreateRoom(@AuthUser long userId, @RequestParam(name = "request") String request,
-                                                                  @RequestPart(required = true, value = "roomImg")MultipartFile roomImg)
+                                                                  @RequestPart(required = false, value = "roomImg")MultipartFile roomImg)
             throws JsonProcessingException {
         User user = userQueryService.findUser(userId);
 
