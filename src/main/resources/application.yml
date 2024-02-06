@@ -11,11 +11,6 @@ spring:
     password: ${DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 200MB  # 최대 파일 사이즈
-      max-request-size: 200MB  # 최대 요청 사이즈
   jpa:
     properties:
       hibernate:
