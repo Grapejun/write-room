@@ -2,20 +2,13 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 100MB  # 최대 파일 사이즈
-      max-request-size: 100MB  # 최대 요청 사이즈
+      max-file-size: 200MB  # 최대 파일 사이즈
+      max-request-size: 300MB  # 최대 요청 사이즈
   datasource:
     url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
-
-  servlet:
-    multipart:
-      enabled: true
-      maxFileSize: 200MB
-      maxRequestSize: 300MB
-
   jpa:
     properties:
       hibernate:
