@@ -5,9 +5,16 @@ import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.NoteConverter;
+import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Note;
+import com.main.writeRoom.domain.Room;
+import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.service.CategoryService.CategoryQueryService;
 import com.main.writeRoom.service.NoteService.NoteCommandService;
 import com.main.writeRoom.service.NoteService.NoteQueryService;
+import com.main.writeRoom.service.RoomService.RoomQueryService;
+import com.main.writeRoom.service.UserService.UserQueryService;
+import com.main.writeRoom.web.dto.note.NoteRequestDTO;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -17,11 +24,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +34,73 @@ import org.springframework.web.bind.annotation.RestController;
 public class NoteController {
     private final NoteQueryService noteQueryService;
     private final NoteCommandService noteCommandService;
+    private final RoomQueryService roomQueryService;
+    private final UserQueryService userQueryService;
+    private final CategoryQueryService categoryQueryService;
+
+    @Operation(summary = "노트 생성 API", description = "새로운 노트를 생성하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @Parameters({
+            @Parameter(name = "roomId", description = "노트를 생성할 룸의 아이디입니다."),
+    })
+    @PostMapping("/rooms/{roomId}/notes")
+    public ApiResponse<NoteResponseDTO.NoteResult> createNote(@PathVariable(name = "roomId")Long roomId, @RequestBody NoteRequestDTO.createNoteDTO request
+    , @RequestPart(required = false, value = "roomImg") MultipartFile noteImg) {
+        Room room = roomQueryService.findRoom(roomId);
+        User user = userQueryService.findUser(request.getUserId());
+        Category category = categoryQueryService.findCategory(request.getCategoryId());
+
+        NoteResponseDTO.PreNoteResult preNote = noteCommandService.createPreNote(room, user, category, noteImg, request);
+        Note note = noteCommandService.createNote(preNote);
+
+        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteResult(note));
+    }
+
+    @Operation(summary = "노트 조회 API", description = "노트를 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @Parameters({
+            @Parameter(name = "roomId", description = "조회할 노트가 있는 룸의 아이디입니다."),
+            @Parameter(name = "noteId", description = "조회할 노트의 아이디입니다."),
+    })
+    @GetMapping("/rooms/{roomId}/notes/{noteId}")
+    public ApiResponse<NoteResponseDTO.NoteResult> getNote(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId) {
+
+        // 노트 아이디 받아서 노트 조회
+        Note note = noteQueryService.findNote(noteId);
+
+        return ApiResponse.of(SuccessStatus._OK, noteCommandService.getNote(note));
+    }
+
+    @Operation(summary = "노트 수정 API", description = "노트를 수정하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @Parameters({
+            @Parameter(name = "roomId", description = "수정할 노트가 있는 룸의 아이디입니다."),
+            @Parameter(name = "noteId", description = "수정할 노트의 아이디입니다."),
+    })
+    @PatchMapping("/rooms/{roomId}/notes/{noteId}")
+    public ApiResponse<NoteResponseDTO.NoteResult> updateNote(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId) {
+        return null;
+    }
+
+    @Operation(summary = "노트 삭제 API", description = "노트를 삭제하는 API입니다.") // 되는지 확인 해봐야 하고, 양방향 매핑도 삭제 해야 함.
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @Parameters({
+            @Parameter(name = "roomId", description = "삭제할 노트가 있는 룸의 아이디입니다."),
+            @Parameter(name = "noteId", description = "삭제할 노트의 아이디입니다."),
+    })
+    @DeleteMapping("/rooms/{roomId}/notes/{noteId}")
+    public ApiResponse deleteNote(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId) {
+        noteCommandService.deleteBookmarkNote(noteId);
+        return ApiResponse.onSuccess();
+    }
 
     @Operation(summary = "노트를 나의 북마크에 추가 API", description = "룸에 작성된 노트를 북마크에 추가하는 API입니다.")
     @ApiResponses({
