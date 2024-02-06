@@ -1,6 +1,7 @@
 package com.main.writeRoom.service.ChallengeService;
 
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
+import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 
@@ -12,5 +13,6 @@ public interface ChallengeRoutineCommandService {
 
     public void deadlineRange(LocalDate startDate, LocalDate deadline);
 
-    public ChallengeRoutineParticipation giveUP(Long userId, Long challengeRoutineId);
+    public ChallengeRoutineParticipation giveUp(Long userId, Long challengeRoutineId);
+    public void isStatusProgress(User user, ChallengeRoutine routine);
 }

@@ -1,8 +1,13 @@
 package com.main.writeRoom.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
+import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.NoteConverter;
 import com.main.writeRoom.converter.RoomConverter;
 import com.main.writeRoom.domain.Category;
@@ -55,7 +60,7 @@ public class RoomController {
     private final CategoryQueryService categoryQueryService;
     private final RoomParticipationService roomParticipationService;
 
-    @GetMapping("/{userId}")
+    @GetMapping("/myRoomList")
     @Operation(summary = "나의 룸 목록 조회 API", description = "해당 유저가 참여중인 룸의 목록들을 조회하는 API이며, 페이징을 포함합니다. query String으로 page 번호를 주세요. ")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
@@ -63,12 +68,15 @@ public class RoomController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "PAGE4001", description = "Page는 0부터 입니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON401", description = "인증이 필요합니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters({
-            @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다.")
     })
-    public ApiResponse<List<MyRoomResultDto>> myRoomList(@PathVariable(name = "userId") Long userId, @PageLessNull @RequestParam(name = "page") Integer page) {
-        Page<RoomParticipation> room = roomCommandService.getMyRoomResultList(userId, page);
+    public ApiResponse<List<MyRoomResultDto>> myRoomList(@AuthUser long user, @PageLessNull @RequestParam(name = "page") Integer page) {
+        Page<RoomParticipation> room = roomCommandService.getMyRoomResultList(user, page);
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.myRoomListInfoDTO(room));
     }
 
@@ -80,8 +88,12 @@ public class RoomController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
-    @GetMapping("/{roomId}/{userId}/userRoom")
-    public ApiResponse<userRoomResponseDTO.getUserRoom> getUserRoomInfoList(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "userId")Long userId) {
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "roomId", description = "룸 인덱스 입니다.")
+    })
+    @GetMapping("/{roomId}/userRoom")
+    public ApiResponse<userRoomResponseDTO.getUserRoom> getUserRoomInfoList(@PathVariable(name = "roomId")Long roomId, @AuthUser long userId) {
         Room room = roomQueryService.findRoom(roomId);
         User user = userQueryService.findUser(userId);
         RoomParticipation roomParticipation = roomCommandService.getUserRoomInfo(room, user);
@@ -93,8 +105,12 @@ public class RoomController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @DeleteMapping("/{roomId}/{userId}")
-    public ApiResponse leaveRoom(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "userId")Long userId) {
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "roomId", description = "룸 인덱스 입니다.")
+    })
+    @DeleteMapping("/{roomId}")
+    public ApiResponse leaveRoom(@PathVariable(name = "roomId")Long roomId, @AuthUser long userId) {
         Room room = roomQueryService.findRoom(roomId);
         User user = userQueryService.findUser(userId);
 
@@ -108,8 +124,13 @@ public class RoomController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTHORITY4001", description = "권한이 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
-    @DeleteMapping("/{roomId}/{userId}/{outUserId}")
-    public ApiResponse outRoom(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "userId")Long userId, @PathVariable(name = "outUserId")Long outUserId) {
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "roomId", description = "룸 인덱스 입니다."),
+            @Parameter(name = "outUserId", description = "내보낼 유저의 인덱스 입니다.")
+    })
+    @DeleteMapping("/{roomId}/{outUserId}")
+    public ApiResponse outRoom(@PathVariable(name = "roomId")Long roomId, @AuthUser long userId, @PathVariable(name = "outUserId")Long outUserId) {
         Room room = roomQueryService.findRoom(roomId);
         User user = userQueryService.findUser(userId);
         User outUser = userQueryService.findUser(outUserId);
@@ -126,8 +147,13 @@ public class RoomController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTHORITY4002", description = "올바른 권한 형식을 입력하세요.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
-    @PatchMapping("/authority/{roomId}/{userId}/{updateId}")
-    public ApiResponse updateAuthority(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "userId")Long userId, @PathVariable(name = "updateId")Long updateId, @RequestParam(name = "authority")String authority) {
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "roomId", description = "룸 인덱스 입니다."),
+            @Parameter(name = "updateId", description = "권한이 변경될 유저의 인덱스 입니다.")
+    })
+    @PatchMapping("/authority/{roomId}/{updateId}")
+    public ApiResponse updateAuthority(@PathVariable(name = "roomId")Long roomId, @AuthUser long userId, @PathVariable(name = "updateId")Long updateId, @RequestParam(name = "authority")String authority) {
         Room room = roomQueryService.findRoom(roomId);
         User user = userQueryService.findUser(userId);
         User updateUser = userQueryService.findUser(updateId);
@@ -140,12 +166,18 @@ public class RoomController {
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
-    @PostMapping(value = "/{userId}", consumes = "multipart/form-data")
-    public ApiResponse<RoomResponseDTO.RoomInfoResult> CreateRoom(@PathVariable(name = "userId")Long userId, @RequestPart(name = "request") RoomRequestDTO.CreateRoomDTO request,
-                                                                  @RequestPart(required = false, value = "roomImg")MultipartFile roomImg) {
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true)
+    })
+    @PostMapping(value = "/createRoom", consumes = "multipart/form-data")
+    public ApiResponse<RoomResponseDTO.RoomInfoResult> CreateRoom(@AuthUser long userId, @RequestParam(name = "request") String request,
+                                                                  @RequestPart(required = false, value = "roomImg")MultipartFile roomImg)
+            throws JsonProcessingException {
         User user = userQueryService.findUser(userId);
 
-        Room room = roomCommandService.createRoom(user, request, roomImg);
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        RoomRequestDTO.CreateRoomDTO jsonList = objectMapper.readValue(request, new TypeReference<>() {});
+        Room room = roomCommandService.createRoom(user, jsonList, roomImg);
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.toCreateRoomResultDTO(room));
     }
 
@@ -155,8 +187,12 @@ public class RoomController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTHORITY4001", description = "권한이 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
-    @DeleteMapping("/delete/{roomId}/{userId}")
-    public ApiResponse deleteRoom(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "userId")Long userId) {
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "roomId", description = "룸 인덱스 입니다.")
+    })
+    @DeleteMapping("/delete/{roomId}")
+    public ApiResponse deleteRoom(@PathVariable(name = "roomId")Long roomId, @AuthUser long userId) {
         Room room = roomQueryService.findRoom(roomId);
         User user = userQueryService.findUser(userId);
 
@@ -227,8 +263,12 @@ public class RoomController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER4001", description = "유저가 존재하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
-    @PostMapping("/roomParticipation/{roomId}/{userId}")
-    public ApiResponse<RoomResponseDTO.RoomInfoResult> roomParticipationUser(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "userId")Long userId) {
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "roomId", description = "룸 아이디 입니다.")
+    })
+    @PostMapping("/roomParticipation/{roomId}")
+    public ApiResponse<RoomResponseDTO.RoomInfoResult> roomParticipationUser(@PathVariable(name = "roomId")Long roomId, @AuthUser long userId) {
         Room room = roomQueryService.findRoom(roomId);
         User user = userQueryService.findUser(userId);
         Room response = roomCommandService.roomParticipateIn(room, user);

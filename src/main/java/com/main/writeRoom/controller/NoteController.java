@@ -3,6 +3,7 @@ package com.main.writeRoom.controller;
 import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
+import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.NoteConverter;
 import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Note;
@@ -126,12 +127,12 @@ public class NoteController {
     @Parameters({
             @Parameter(name = "roomId", description = "룸 아이디 입니다."),
             @Parameter(name = "noteId", description = "노트 아이디 입니다."),
-            @Parameter(name = "userId", description = "유ㅇ 아이디 입니다."),
+            @Parameter(name = "user", description = "user", hidden = true),
     })
-    @PostMapping("/bookmark/{roomId}/{noteId}/{userId}")
-    public ApiResponse<NoteResponseDTO.NoteResult> noteBookmark(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId, @PathVariable(name = "userId")Long userId) {
+    @PostMapping("/bookmark/{roomId}/{noteId}")
+    public ApiResponse<NoteResponseDTO.NoteResult> noteBookmark(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId, @AuthUser long user) {
         Note note = noteQueryService.findNote(noteId);
-        noteCommandService.createBookmarkNote(roomId, note, userId);
+        noteCommandService.createBookmarkNote(roomId, note, user);
         return ApiResponse.of(SuccessStatus._OK, NoteConverter.toBookMarkNoteResult(note));
     }
 

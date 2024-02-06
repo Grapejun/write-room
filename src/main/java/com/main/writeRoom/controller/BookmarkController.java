@@ -2,6 +2,7 @@ package com.main.writeRoom.controller;
 import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
+import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.BookmarkConverter;
 import com.main.writeRoom.domain.Bookmark.BookmarkMaterial;
 import com.main.writeRoom.service.BookmarkService.BookmarkQueryService;
@@ -52,7 +53,7 @@ public class BookmarkController {
         return ApiResponse.of(SuccessStatus._OK, bookmarkService.deleteMaterial(id));
     }
 
-    @GetMapping("/topics/{userId}")
+    @GetMapping("/topics")
     @Operation(summary = "북마크한 오늘의 소재 목록 조회 API", description = "특정 사용자가 북마크한 '오늘의 소재' 목록을 조회하는 API 이며 페이징을 포함합니다. query String 으로 page 번호를 주세요")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
@@ -60,11 +61,11 @@ public class BookmarkController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters({
-            @Parameter(name = "userId", description = "사용자 아이디, path variable 입니다!"),
+            @Parameter(name = "user", description = "사용자", hidden = true),
             @Parameter(name = "page", description = "페이지 번호, 0번이 1페이지 입니다.")
     })
-    public ApiResponse<BookmarkResponseDTO.BookMarkMaterialListDTO> getBookmarks(@PathVariable Long userId, @RequestParam Integer page) {
-        return ApiResponse.of(SuccessStatus._OK, BookmarkConverter.toBookMarkMaterialListDTO(bookmarkQueryService.getBookmarkMaterialList(userId, page)));
+    public ApiResponse<BookmarkResponseDTO.BookMarkMaterialListDTO> getBookmarks(@AuthUser long user, @RequestParam Integer page) {
+        return ApiResponse.of(SuccessStatus._OK, BookmarkConverter.toBookMarkMaterialListDTO(bookmarkQueryService.getBookmarkMaterialList(user, page)));
     }
 
 }

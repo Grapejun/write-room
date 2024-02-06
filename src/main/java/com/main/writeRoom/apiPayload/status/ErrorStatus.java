@@ -15,7 +15,13 @@ public enum ErrorStatus implements BaseErrorCode {
     _UNAUTHORIZED(HttpStatus.UNAUTHORIZED,"COMMON401","인증이 필요합니다."),
     _FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
     TEMP_EXCEPTION(HttpStatus.BAD_REQUEST, "TEMP4001", "이거는 테스트"),
+    // 유저 에러
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "MEMBER4001", "사용자가 없습니다."),
+    EMAIL_NOT_FOUND(HttpStatus.BAD_REQUEST, "USER4002", "이메일이 존재하지 않습니다."),
+    PASSWORD_NOT_MATCH(HttpStatus.BAD_REQUEST, "USER4003", "비밀번호가 일치하지 않습니다."),
+    EXIST_EMAIL(HttpStatus.BAD_REQUEST, "USER4004", "이미 존재하는 이메일입니다."),
+
+
     PAGE_LESS_NULL(HttpStatus.BAD_REQUEST, "PAGE4001", "Page는 0부터 입니다."),
     ROOM_NOT_FOUND(HttpStatus.BAD_REQUEST, "ROOM4001", "룸이 없습니다."),
     CATEGORY_NOT_FOUND(HttpStatus.BAD_REQUEST, "CATEGORY4001", "카테고리가 없습니다."),
@@ -29,7 +35,9 @@ public enum ErrorStatus implements BaseErrorCode {
     PROGRESS_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4002", "진행 중인 챌린지가 없습니다."),
     STARTDATE_NOT_TODAY(HttpStatus.BAD_REQUEST, "CHALLENGE4003", "챌린지 시작 날짜가 오늘부터여야 합니다."),
     DEADLINE_OUT_RANGE(HttpStatus.BAD_REQUEST, "CHALLENGE4004", "챌린지 마감 날짜 범위를 벗어났습니다."),
-    GOALS_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4005", "챌린지 목표량이 없습니다.")
+    GOALS_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4005", "챌린지 목표량이 없습니다."),
+    NOT_PARTICIPATE(HttpStatus.BAD_REQUEST, "CHALLENGE4006", "해당 챌린지에 사용자가 참여하지 않았습니다."),
+    CHALLENGE_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4007", "룸과 회원에 해당하는 챌린지가 없습니다.")
     ;
 
     private final HttpStatus httpStatus;

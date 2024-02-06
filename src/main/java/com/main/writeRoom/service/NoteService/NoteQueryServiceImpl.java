@@ -4,6 +4,7 @@ import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
+import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.handler.NoteHandler;
 import com.main.writeRoom.repository.NoteRepository;
 import java.util.List;
@@ -35,5 +36,10 @@ public class NoteQueryServiceImpl implements NoteQueryService{
     public Page<Note> findNoteForRoomAndCategory(Category category, Room room, Integer page) {
         PageRequest pageRequest = PageRequest.of(page, 10);
         return noteRepository.findAllByRoomAndCategory(room, category, pageRequest);
+    }
+
+    public Page<Note> findNoteListForRoomAndUser(Room room, User user, Integer page) {
+        PageRequest pageRequest = PageRequest.of(page, 10);
+        return noteRepository.findAllByRoomAndUser(room, user, pageRequest);
     }
 }
