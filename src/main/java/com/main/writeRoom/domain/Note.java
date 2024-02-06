@@ -14,12 +14,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity(name = "Note")
 @Getter
 @Builder(toBuilder = true) // toBuilder 속성을 true로 설정
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class Note extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +53,12 @@ public class Note extends BaseEntity {
     @OneToMany(mappedBy = "note", cascade = CascadeType.ALL)
     private List<BookmarkNote> bookmarkNoteList = new ArrayList<>();
 
+    @CreatedDate
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
     public String daysSinceLastUpdate() {
         LocalDateTime now = LocalDateTime.now();
         Duration duration = Duration.between(this.getUpdatedAt(), now);
@@ -64,4 +74,5 @@ public class Note extends BaseEntity {
             return duration.toDays() + "일 전";
         }
     }
+    
 }
