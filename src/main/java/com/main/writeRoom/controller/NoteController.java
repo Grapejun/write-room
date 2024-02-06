@@ -46,9 +46,9 @@ public class NoteController {
     @Parameters({
             @Parameter(name = "roomId", description = "노트를 생성할 룸의 아이디입니다."),
     })
-    @PostMapping("/rooms/{roomId}/notes")
+    @PostMapping(value = "/rooms/{roomId}/notes", consumes = "multipart/form-data")
     public ApiResponse<NoteResponseDTO.NoteResult> createNote(@PathVariable(name = "roomId")Long roomId, @RequestBody NoteRequestDTO.createNoteDTO request
-    , @RequestPart(required = false, value = "roomImg") MultipartFile noteImg) {
+    , @RequestPart(required = false, value = "noteImg") MultipartFile noteImg) {
         Room room = roomQueryService.findRoom(roomId);
         User user = userQueryService.findUser(request.getUserId());
         Category category = categoryQueryService.findCategory(request.getCategoryId());
@@ -85,17 +85,14 @@ public class NoteController {
             // 존재 하지 않는 노트일 때 에러
             // 작성자가 아닌 경우 수정 불가
     })
-    @Parameters({
-            @Parameter(name = "noteId", description = "수정할 노트의 아이디입니다."),
-    })
-    @PutMapping("/{noteId}/{userId}")
-    public ApiResponse<NoteResponseDTO.NoteResult> updateNote(@PathVariable(name = "noteId")Long noteId, @PathVariable Long userId, @RequestBody NoteRequestDTO.patchNoteDTO request
-            , @RequestPart(required = false, value = "roomImg") MultipartFile noteImg) {
-
+    @PutMapping(value = "/{noteId}", consumes = "multipart/form-data")
+    public ApiResponse<NoteResponseDTO.NoteResult> updateNote(@PathVariable(name = "noteId")Long noteId,
+//                                                              @RequestBody NoteRequestDTO.patchNoteDTO request,
+                                                              @RequestPart("request") NoteRequestDTO.patchNoteDTO request, // @RequestBody -> @RequestPart로 변경
+                                                              @RequestPart(required = false, value = "noteImg") MultipartFile noteImg) {
         // 노트가 존재하지 않으면 에러
         Note note = noteQueryService.findNote(noteId);
         // 사용자의 노트가 아닐 경우 에러
-        User user = userQueryService.findUser(userId);
         Category category = categoryQueryService.findCategory(request.getCategoryId());
 
         Note updatedNote = noteCommandService.updateNoteFields(note, category, noteImg, request);
