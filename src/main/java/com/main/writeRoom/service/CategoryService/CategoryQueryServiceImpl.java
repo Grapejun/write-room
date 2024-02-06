@@ -18,6 +18,7 @@ public class CategoryQueryServiceImpl implements CategoryQueryService {
     private final CategoryRepository categoryRepository;
 
     public Category findCategory(Long categoryId) {
+        System.out.println("Requested categoryId: " + categoryId); // 로그 추가
         return categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CategoryHandler(ErrorStatus.CATEGORY_NOT_FOUND));
     }
