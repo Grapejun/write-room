@@ -19,6 +19,8 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
 
     return NoteResponseDTO.RoomResult.builder()
             .roomId(room.getId())
+            .roomTitle(room.getTitle())
+            .roomIntroduction(room.getIntroduction())
             .noteList(toRoomResultNoteDTOList)
             .build();
 }
