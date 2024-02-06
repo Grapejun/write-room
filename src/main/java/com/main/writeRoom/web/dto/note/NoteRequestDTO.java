@@ -30,9 +30,9 @@ public class NoteRequestDTO {
         String noteTitle;
         String noteSubtitle;
         String noteContent;
+        Long categoryId;
         Long letterCount;
         ArrayList<String> noteTagList;
-        Long categoryId;
         //userId 만 빠졌다
     }
 }
