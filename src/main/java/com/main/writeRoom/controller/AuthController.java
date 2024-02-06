@@ -31,4 +31,6 @@ public class AuthController {
         User user = authService.join(request);
         return ApiResponse.of(SuccessStatus._OK, UserConverter.CustomUserInfoResultDTO(user));
     }
+
+
 }

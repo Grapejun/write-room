@@ -7,4 +7,6 @@ import com.main.writeRoom.web.dto.user.UserResponseDTO;
 public interface AuthService {
     UserResponseDTO.UserSignInResult login(UserRequestDTO.UserSignIn request);
     User join(UserRequestDTO.UserSignUp request);
+
+    //UserResponseDTO.UserSignInResult kakaoLogin(String code);
 }
