@@ -9,7 +9,7 @@ spring:
     multipart:
       enabled: true
       maxFileSize: 200MB
-      maxRequestSize: 300MB;
+      maxRequestSize: 300MB
 
   jpa:
     properties:
