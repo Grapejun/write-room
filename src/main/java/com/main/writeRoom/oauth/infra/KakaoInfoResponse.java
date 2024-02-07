@@ -37,7 +37,7 @@ public class KakaoInfoResponse implements OAuthInfoResponse {
         if (kakaoAccount != null) {
             return kakaoAccount.email;
         }
-        return null; // 또는 적절한 기본값 혹은 예외 처리
+        return null;
     }
 
 
@@ -52,7 +52,7 @@ public class KakaoInfoResponse implements OAuthInfoResponse {
         if (kakaoAccount != null && kakaoAccount.profile != null) {
             return kakaoAccount.profile.nickname;
         }
-        return null; // 또는 적절한 기본값 혹은 예외 처리
+        return null;
     }
 
     @Override
