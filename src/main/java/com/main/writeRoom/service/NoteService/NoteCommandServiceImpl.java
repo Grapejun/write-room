@@ -135,17 +135,6 @@ public class NoteCommandServiceImpl implements NoteCommandService{
 
         return noteRepository.save(updatedNote);
     }
-    
-    @Transactional
-    public NoteResponseDTO.NoteResult getNote(Note note) {
-        
-        // 컨버터에서 노트 빌드
-        // 서비스에서 양방향 매핑
-        NoteResponseDTO.NoteResult noteResult = NoteConverter.toNoteResult(note);
-
-        return noteResult;
-
-    }
 
     @Transactional
     public NoteResponseDTO.NoteResult deleteNote(Long roomId, Long noteId) {
