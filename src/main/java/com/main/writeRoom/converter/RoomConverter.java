@@ -51,6 +51,10 @@ public class RoomConverter {
                 .map(userRoom -> userRoomInfoListDTO(userRoom.getUser(), userRoom)).collect(Collectors.toList());
 
         return userRoomResponseDTO.getUserRoom.builder()
+                .isLast(roomParticipations.isFirst())
+                .totalPage(roomParticipations.getTotalPages())
+                .totalElements(roomParticipations.getTotalElements())
+                .listSize(roomParticipations.getSize())
                 .userId(roomParticipation.getUser().getId())
                 .name(roomParticipation.getUser().getName())
                 .authority(roomParticipation.getAuthority())
