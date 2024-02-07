@@ -62,7 +62,7 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .updatedAt(note.getUpdatedAt())
                 .noteId(note.getId())
                 .categoryName(note.getCategory().getName())
-                .emojiClickList(new ArrayList<>())
+                .emojiList(new ArrayList<>())
                 .writer(note.getUser().getName())
                 .tagList(new ArrayList<>())
                 .build();
