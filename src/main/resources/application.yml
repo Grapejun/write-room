@@ -1,3 +1,9 @@
+#logging:
+#  level:
+#    root: DEBUG
+#    org.springframework.web: DEBUG
+#    com.main.writeRoom: DEBUG
+
 spring:
   servlet:
     multipart:
@@ -40,3 +46,11 @@ cloud:
 jwt:
   expiration_time: 86400000
   secret: ${JWT_SECRET}
+
+
+oauth:
+  kakao:
+    url:
+      auth: https://kauth.kakao.com
+      api: https://kapi.kakao.com
+    client-id: 911519431154557d9c40bec40ec8884c
