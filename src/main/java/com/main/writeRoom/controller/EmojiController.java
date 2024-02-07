@@ -29,6 +29,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,7 +63,7 @@ public class EmojiController {
 
         return ApiResponse.of(SuccessStatus._OK, emojiCommandService.postEmoji(note, user, emojiNum)); // DTO로 바꿔서 응답
     }
-    // 이모지 수정 - 구현 중
+    // 이모지 수정 - 구현 중, 일단 삭제 후 수정을 만들어 보자, 트랜잭션 안 걸어도 되나??
     @Operation(summary = "이모지 수정 API", description = "이모지를 수정하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
@@ -73,20 +74,23 @@ public class EmojiController {
             @Parameter(name = "user", description = "user", hidden = true)
     })
     @PatchMapping(value = "/{noteId}")
-    public ApiResponse<EmojiResponseDTO.EmojiClickResult> updateEmoji(@AuthUser long userId,
+    public ApiResponse<EmojiResponseDTO.EmojiUpdateResult> updateEmoji(@AuthUser long userId,
                                                                       @PathVariable(name = "noteId")Long noteId,
                                                                       @RequestParam(name = "emojiNum") Long emojiNum)
     {
         Note note = noteQueryService.findNote(noteId);
         User user = userQueryService.findUser(userId);
+        EmojiClick emojiClick = emojiQueryService.findByNoteAndUser(note, user);
 
-        return ApiResponse.of(SuccessStatus._OK, emojiCommandService.postEmoji(note, user, emojiNum)); // DTO로 바꿔서 응답
+        return ApiResponse.of(SuccessStatus._OK, emojiCommandService.updateEmoji(note, user, emojiClick, emojiNum));
     }
     // 이모지 삭제
     @Operation(summary = "이모지 삭제 API", description = "이모지를 삭제하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             // 에러 상황 정리
+            // 노트가 존재 하지 않을 경우 에러 처리 O
+            // 사용자가 남긴 이모지가 없을 경우 에러 처리 O
     })
     @Parameters({
             @Parameter(name = "noteId", description = "이모지를 삭제할 노트의 아이디입니다."),
