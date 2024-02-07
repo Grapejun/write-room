@@ -64,7 +64,7 @@ public class RoomCommandServiceimpl implements RoomCommandService {
             String uuid = UUID.randomUUID().toString();
             savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
 
-            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid), roomImg);
+            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid, "room"), roomImg);
         }
 
         Room room = RoomConverter.toRoom(request, imgUrl);
