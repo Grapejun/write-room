@@ -1,8 +1,8 @@
-logging:
-  level:
-    root: DEBUG
-    org.springframework.web: DEBUG
-    com.main.writeRoom: DEBUG
+#logging:
+#  level:
+#    root: DEBUG
+#    org.springframework.web: DEBUG
+#    com.main.writeRoom: DEBUG
 
 spring:
   servlet:
@@ -47,20 +47,10 @@ jwt:
   expiration_time: 86400000
   secret: ${JWT_SECRET}
 
-#kakao:
-#  auth:
-#    token:
-#      url: http://kauth.kakao.com/oauth/token
-#    user:
-#      url: http://kapi.kakao.com/v2/user/me
-#  client:
-#    id: 911519431154557d9c40bec40ec8884c
-#  redirect:
-#    uri: http://localhost:3000/oauth
 
 oauth:
   kakao:
     url:
-      auth: https://example.com/auth
-      api: https://example.com/api
+      auth: https://kauth.kakao.com
+      api: https://kapi.kakao.com
     client-id: 911519431154557d9c40bec40ec8884c
