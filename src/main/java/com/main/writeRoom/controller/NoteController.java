@@ -69,7 +69,7 @@ public class NoteController {
         NoteResponseDTO.PreNoteResult preNote = noteCommandService.createPreNote(room, user, category, noteImg, jsonList);
         Note note = noteCommandService.createNote(preNote);
 
-        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteResult(note));
+        return getNote(note.getId());
     }
 
     @Operation(summary = "노트 조회 API", description = "노트를 조회하는 API입니다.")
@@ -110,7 +110,7 @@ public class NoteController {
         // 사용자의 노트가 아닐 경우 에러
         Category category = categoryQueryService.findCategory(jsonList.getCategoryId());
         Note updatedNote = noteCommandService.updateNoteFields(note, category, noteImg, jsonList);
-        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteResult(updatedNote));
+        return getNote(updatedNote.getId());
     }
 
     @Operation(summary = "노트 삭제 API", description = "노트를 삭제하는 API입니다.") // 되는지 확인 해봐야 하고, 양방향 매핑도 삭제 해야 함. 이모지 태그 등
