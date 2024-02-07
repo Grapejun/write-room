@@ -5,6 +5,7 @@ import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
+import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.handler.ChallengeHandler;
 import com.main.writeRoom.repository.ChallengeGoalsParticipationRepository;
 import com.main.writeRoom.repository.ChallengeGoalsRepository;
@@ -39,5 +40,10 @@ public class ChallengeGoalsQueryServiceImpl implements ChallengeGoalsQueryServic
     @Override
     public ChallengeGoalsParticipation findGoalsParticipation(User user, ChallengeGoals goals) {
         return goalsParticipationRepository.findByUserAndChallengeGoals(user, goals);
+    }
+
+    @Override
+    public ChallengeGoalsParticipation findProgressGoalsParticipation(User user, Room room) {
+        return goalsParticipationRepository.findProgressGoalsParticipation(user, room);
     }
 }

@@ -50,4 +50,10 @@ public class ChallengeRoutineQueryServiceImpl implements ChallengeRoutineQuerySe
     public ChallengeRoutineParticipation findRoutineParticipation(User user, ChallengeRoutine routine) {
         return routineParticipationRepository.findByUserAndChallengeRoutine(user, routine);
     }
+
+    @Override
+    public ChallengeRoutineParticipation findProgressRoutineParticipation(User user, Room room) {
+        return routineParticipationRepository.findProgressRoutineParticipation(user, room);
+    }
+
 }

@@ -66,7 +66,7 @@ public class NoteController {
         User user = userQueryService.findUser(userId);
         Category category = categoryQueryService.findCategory(jsonList.getCategoryId());
 
-        NoteResponseDTO.PreNoteResult preNote = noteCommandService.createPreNote(room, user, category, noteImg, jsonList);
+        NoteResponseDTO.PreNoteResult preNote = noteCommandService.createPreNote(room, user, category, noteImg, jsonList); //여기에 챌린지 달성 코드 추가
         Note note = noteCommandService.createNote(preNote);
 
         return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteResult(note));

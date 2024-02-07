@@ -35,6 +35,9 @@ public class ChallengeGoalsParticipation {
     @ColumnDefault("'ACTIVE'")
     private IsActive isActive;  //나의 챌린지에서 내역 삭제를 하면 비활성화가 되어 내역에서 안보인다. 내역에선 안뜨고, 다른 회원이 봤을 땐 참여자로 떠야하기 때문. -> 참여자 모두 포기한 상태면 db에서 챌린지 참여와 챌린지 삭제
 
+    @ColumnDefault("0")
+    private Integer achieveCount; //달성한 노트가 몇 개인지 세기 위한 필드
+
     @ManyToOne
     @JoinColumn(name = "user")
     private User user;
@@ -72,5 +75,9 @@ public class ChallengeGoalsParticipation {
 
     public void setIsActive(IsActive isActive) {
         this.isActive = isActive;
+    }
+
+    public void plusAchieveCount() {
+        this.achieveCount++;
     }
 }

@@ -34,6 +34,12 @@ public class ChallengeRoutineParticipation {
     @ColumnDefault("'ACTIVE'")
     private IsActive isActive;
 
+    @ColumnDefault("0")
+    private Integer achieveCount; //달성한 노트가 몇 개인지 세기 위한 필드
+
+    @ColumnDefault("false")
+    private Boolean isNoteToday; //오늘 노트를 작성했는 지 표시하기 위한 필드
+
     @ManyToOne
     @JoinColumn(name = "user")
     private User user;
@@ -71,5 +77,17 @@ public class ChallengeRoutineParticipation {
 
     public void setIsActive(IsActive isActive) {
         this.isActive = isActive;
+    }
+
+    public void plusAchieveCount() {
+        this.achieveCount++;
+    }
+
+    public void setAchieveCount(int achieveCount) {
+        this.achieveCount = achieveCount;
+    }
+
+    public void setIsNoteToday() {
+        this.isNoteToday = true;
     }
 }
