@@ -1,17 +1,9 @@
-<<<<<<< HEAD
+
 #logging:
 #  level:
 #    root: DEBUG
 #    org.springframework.web: DEBUG
 #    com.main.writeRoom: DEBUG
-=======
-logging:
-  level:
-    root: DEBUG
-    org.springframework.web: DEBUG
-    com.main.writeRoom: DEBUG
->>>>>>> a53a4e0 (feat: oauth설정)
-
 spring:
   servlet:
     multipart:
@@ -55,8 +47,7 @@ jwt:
   expiration_time: 86400000
   secret: ${JWT_SECRET}
 
-<<<<<<< HEAD
-=======
+
 #kakao:
 #  auth:
 #    token:
@@ -67,16 +58,11 @@ jwt:
 #    id: 911519431154557d9c40bec40ec8884c
 #  redirect:
 #    uri: http://localhost:3000/oauth
->>>>>>> a53a4e0 (feat: oauth설정)
+
 
 oauth:
   kakao:
     url:
-<<<<<<< HEAD
       auth: https://kauth.kakao.com
       api: https://kapi.kakao.com
-=======
-      auth: https://example.com/auth
-      api: https://example.com/api
->>>>>>> a53a4e0 (feat: oauth설정)
     client-id: 911519431154557d9c40bec40ec8884c

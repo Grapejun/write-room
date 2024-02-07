@@ -4,10 +4,6 @@ package com.main.writeRoom.oauth.config;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.oauth.provider.JwtTokenProvider;
 import com.main.writeRoom.repository.UserRepository;
-<<<<<<< HEAD
-=======
-import com.main.writeRoom.web.dto.user.UserResponseDTO;
->>>>>>> a53a4e0 (feat: oauth설정)
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,10 +15,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-<<<<<<< HEAD
 import com.main.writeRoom.oauth.exception.NotFoundMemberException;
-=======
->>>>>>> a53a4e0 (feat: oauth설정)
+
 
 
 import java.io.IOException;
@@ -60,10 +54,5 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         return null;
     }
-<<<<<<< HEAD
-
-
-=======
->>>>>>> a53a4e0 (feat: oauth설정)
 }
 
