@@ -1,16 +1,9 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> 99439b52e834532ae3860a668f1d3b0ed3654721
 #logging:
 #  level:
 #    root: DEBUG
 #    org.springframework.web: DEBUG
 #    com.main.writeRoom: DEBUG
-<<<<<<< HEAD
-=======
 
->>>>>>> 99439b52e834532ae3860a668f1d3b0ed3654721
 spring:
   servlet:
     multipart:
@@ -55,7 +48,6 @@ jwt:
   secret: ${JWT_SECRET}
 
 
-<<<<<<< HEAD
 #kakao:
 #  auth:
 #    token:
@@ -68,8 +60,6 @@ jwt:
 #    uri: http://localhost:3000/oauth
 
 
-=======
->>>>>>> 99439b52e834532ae3860a668f1d3b0ed3654721
 oauth:
   kakao:
     url:
