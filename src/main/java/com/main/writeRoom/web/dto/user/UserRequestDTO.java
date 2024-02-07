@@ -26,4 +26,9 @@ public class UserRequestDTO {
         @NotNull(message = "닉네임 입력은 필수입니다.")
         String nickName;
     }
+
+    @Getter
+    public static class UpdatedMyprofile {
+        String nickName;
+    }
 }
