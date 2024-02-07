@@ -41,12 +41,12 @@ public class EmojiController {
     private final EmojiCommandService emojiCommandService;
     private final NoteQueryService noteQueryService;
     private final UserQueryService userQueryService;
-    private final UserRepository userRepository;
     // 이모지 남기기
     @Operation(summary = "이모지 남기기 API", description = "새로운 이모지를 생성하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             // 에러 상황 정리
+            // 한 사람당 하나만 등록 가능 하게
     })
     @Parameters({
             @Parameter(name = "noteId", description = "이모지를 남길 노트의 아이디입니다."),
@@ -62,10 +62,66 @@ public class EmojiController {
 
         return ApiResponse.of(SuccessStatus._OK, emojiCommandService.postEmoji(note, user, emojiNum)); // DTO로 바꿔서 응답
     }
-    // 이모지 수정
-    
+    // 이모지 수정 - 구현 중
+    @Operation(summary = "이모지 수정 API", description = "이모지를 수정하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            // 에러 상황 정리
+    })
+    @Parameters({
+            @Parameter(name = "noteId", description = "이모지를 수정할 노트의 아이디입니다."),
+            @Parameter(name = "user", description = "user", hidden = true)
+    })
+    @PatchMapping(value = "/{noteId}")
+    public ApiResponse<EmojiResponseDTO.EmojiClickResult> updateEmoji(@AuthUser long userId,
+                                                                      @PathVariable(name = "noteId")Long noteId,
+                                                                      @RequestParam(name = "emojiNum") Long emojiNum)
+    {
+        Note note = noteQueryService.findNote(noteId);
+        User user = userQueryService.findUser(userId);
+
+        return ApiResponse.of(SuccessStatus._OK, emojiCommandService.postEmoji(note, user, emojiNum)); // DTO로 바꿔서 응답
+    }
     // 이모지 삭제
-    
+    @Operation(summary = "이모지 삭제 API", description = "이모지를 삭제하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            // 에러 상황 정리
+    })
+    @Parameters({
+            @Parameter(name = "noteId", description = "이모지를 삭제할 노트의 아이디입니다."),
+            @Parameter(name = "user", description = "user", hidden = true)
+    })
+    @DeleteMapping(value = "/{noteId}")
+    public ApiResponse<EmojiResponseDTO.EmojiDeleteResult> deleteEmoji(@AuthUser long userId,
+                                                                      @PathVariable(name = "noteId")Long noteId)
+    {
+        Note note = noteQueryService.findNote(noteId);
+        User user = userQueryService.findUser(userId);
+        EmojiClick emojiClick = emojiQueryService.findByNoteAndUser(note, user);
+
+        return ApiResponse.of(SuccessStatus._OK, emojiCommandService.deleteEmoji(emojiClick)); // DTO로 바꿔서 응답
+    }
     // 이모지 리스트 조회
+    @Operation(summary = "이모지 조회 API", description = "이모지를 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            // 에러 상황 정리
+    })
+    @Parameters({
+            @Parameter(name = "noteId", description = "이모지를 조회할 노트의 아이디입니다."),
+            @Parameter(name = "user", description = "user", hidden = true)
+    })
+    @GetMapping(value = "/{noteId}")
+    public ApiResponse<EmojiResponseDTO.EmojiDeleteResult> getEmoji(@AuthUser long userId,
+                                                                      @PathVariable(name = "noteId")Long noteId)
+    {
+        Note note = noteQueryService.findNote(noteId);
+        User user = userQueryService.findUser(userId);
+        EmojiClick emojiClick = emojiQueryService.findByNoteAndUser(note, user);
+
+
+        return ApiResponse.of(SuccessStatus._OK, emojiCommandService.deleteEmoji(emojiClick)); // DTO로 바꿔서 응답
+    }
 
 }

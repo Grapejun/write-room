@@ -25,4 +25,11 @@ public class EmojiConverter {
                 .build();
     }
 
+    public static EmojiResponseDTO.EmojiDeleteResult toEmojiDeleteResult(EmojiClick emojiClick) {
+
+        return EmojiResponseDTO.EmojiDeleteResult.builder()
+                .emojiClickId(emojiClick.getId())
+                .build();
+    }
+
 }
