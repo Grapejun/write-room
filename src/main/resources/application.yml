@@ -28,7 +28,7 @@ cloud:
     s3:
       bucket: writeroom-dev
       path:
-        room: rooms
+        room: writeroom
     region:
       static: ap-northeast-2
     stack:
