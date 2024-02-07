@@ -25,12 +25,10 @@ public class KakaoInfoResponse implements OAuthInfoResponse {
         private String nickname;
     }
 
-
 //    @Override
 //    public String getEmail() {
 //        return kakaoAccount.email;
 //    }
-
 
 
     public String getEmail() {
