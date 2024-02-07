@@ -21,6 +21,11 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
             .map(NoteConverter::toRoomResultNoteDTOList).collect(Collectors.toList());
 
     return NoteResponseDTO.RoomResult.builder()
+            .isFirst(notes.isFirst())
+            .isLast(notes.isFirst())
+            .totalPage(notes.getTotalPages())
+            .totalElements(notes.getTotalElements())
+            .listSize(notes.getSize())
             .roomId(room.getId())
             .roomTitle(room.getTitle())
             .roomIntroduction(room.getIntroduction())

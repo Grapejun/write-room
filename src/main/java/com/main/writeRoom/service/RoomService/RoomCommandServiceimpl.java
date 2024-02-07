@@ -39,7 +39,7 @@ public class RoomCommandServiceimpl implements RoomCommandService {
     public Page<RoomParticipation> getMyRoomResultList(Long userId, Integer page) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        PageRequest pageRequest = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("room.updatedAt")));
+        PageRequest pageRequest = PageRequest.of(page, 12, Sort.by(Sort.Order.desc("room.updatedAt")));
         return userRoomRepository.findAllByUser(user, pageRequest);
     }
 
@@ -64,7 +64,7 @@ public class RoomCommandServiceimpl implements RoomCommandService {
             String uuid = UUID.randomUUID().toString();
             savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
 
-            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid), roomImg);
+            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid, "room"), roomImg);
         }
 
         Room room = RoomConverter.toRoom(request, imgUrl);

@@ -20,6 +20,11 @@ public class NoteResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class RoomResult {
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
         Long roomId;
         String roomTitle;
         String roomIntroduction;
@@ -31,6 +36,12 @@ public class NoteResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class NoteList {
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+
         Long noteId;
         String noteTitle;
         String noteSubtitle;

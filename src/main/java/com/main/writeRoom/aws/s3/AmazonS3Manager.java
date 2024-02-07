@@ -32,7 +32,7 @@ public class AmazonS3Manager {
 
         return amazonS3.getUrl(amazonConfig.getBucket(), keyName).toString();
     }
-    public String generateReviewKeyName(Uuid uuid) {
-        return amazonConfig.getRoomPath() + '/' + uuid.getUuid();
+    public String generateReviewKeyName(Uuid uuid, String dirName) {
+        return amazonConfig.getWriteRoom() + '/' + dirName + '/' + uuid.getUuid();
     }
 }
