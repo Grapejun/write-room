@@ -7,6 +7,8 @@ import com.main.writeRoom.domain.mapping.EmojiClick;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -64,7 +66,7 @@ public class NoteResponseDTO {
         LocalDateTime createdAt;
         LocalDateTime updatedAt;
         List<TagResponseDTO.TagList> tagList;
-        List<EmojiClick> emojiClickList; // EmojiResponseDTO로 변경
+        List<Emoji> emojiList; // EmojiResponseDTO로 변경할지 고민
 
     }
 }
