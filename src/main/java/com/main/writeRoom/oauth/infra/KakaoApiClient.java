@@ -6,13 +6,13 @@ import com.main.writeRoom.oauth.domain.OAuthLoginParams;
 import com.main.writeRoom.oauth.domain.OAuthProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Collections;
 
 @Component
 @RequiredArgsConstructor
@@ -55,20 +55,22 @@ public class KakaoApiClient implements OAuthApiClient {
         assert response != null;
         return response.getAccessToken();
     }
-
-    @Override   // AccessToken 으로 사용자 정보 요청하는 메서드
+    @Override
     public OAuthInfoResponse requestOauthInfo(String accessToken) {
         String url = apiUrl + "/v2/user/me"; // 사용자 정보를 요청할 URL
+
         // HTTP 요청 헤더 설정
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        httpHeaders.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         httpHeaders.set("Authorization", "Bearer " + accessToken);
-        // HTTP 요청 바디 설정
-        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-        body.add("property_keys", "[\"kakao_account.email\", \"kakao_account.profile\"]");
-        // 요청 객체 생성
-        HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
-        // 실제 외부  HTTP 요청 수행 및 응답 수신
-        return restTemplate.postForObject(url, request, KakaoInfoResponse.class);
+
+        // HttpEntity 객체 생성 (여기서는 본문이 필요 없으므로, 헤더만 포함)
+        HttpEntity<?> request = new HttpEntity<>(httpHeaders);
+
+        // RestTemplate을 사용하여 GET 요청 수행 및 응답 수신
+        ResponseEntity<KakaoInfoResponse> response = restTemplate.exchange(
+                url, HttpMethod.GET, request, KakaoInfoResponse.class);
+
+        return response.getBody();
     }
 }
