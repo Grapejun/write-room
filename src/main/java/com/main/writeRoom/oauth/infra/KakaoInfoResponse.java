@@ -30,7 +30,7 @@ public class KakaoInfoResponse implements OAuthInfoResponse {
 //        return kakaoAccount.email;
 //    }
 
-    @Override
+
     public String getEmail() {
         if (kakaoAccount != null) {
             return kakaoAccount.email;
@@ -43,6 +43,7 @@ public class KakaoInfoResponse implements OAuthInfoResponse {
 //    public String getNickname() {
 //        return kakaoAccount.profile.nickname;
 //    }
+
 
     @Override
     public String getNickname() {

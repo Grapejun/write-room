@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.main.writeRoom.oauth.exception.NotFoundMemberException;
 
-
 import java.io.IOException;
 import java.util.Collections;
 
@@ -53,7 +52,6 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         return null;
     }
-
 
 }
 
