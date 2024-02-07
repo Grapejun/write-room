@@ -50,4 +50,15 @@ public class UserResponseDTO {
         private String message;
         private LocalDateTime timestamp;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MyProfileDTO {
+        private Long userId;
+        String profileImg;
+        String nickName;
+        String email;
+    }
 }
