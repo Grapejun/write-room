@@ -106,6 +106,11 @@ public class RoomConverter {
                             .profileImg(user.getProfileImage())
                             .name(user.getName())
                             .updateAt(String.join(", ", noteUpdateDates))
+                            .isFirst(roomParticipations.isFirst())
+                            .isLast(roomParticipations.isLast())
+                            .totalPage(roomParticipations.getTotalPages())
+                            .totalElements(roomParticipations.getTotalElements())
+                            .listSize(roomParticipations.getSize())
                             .build();
                 })
                 .collect(Collectors.toList());
