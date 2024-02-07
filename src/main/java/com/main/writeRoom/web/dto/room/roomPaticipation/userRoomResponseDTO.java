@@ -23,6 +23,11 @@ public class userRoomResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class getUserRoom {
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
         Long userId;
         String name;
         Authority authority;
