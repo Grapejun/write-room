@@ -54,7 +54,7 @@ public class NoteCommandServiceImpl implements NoteCommandService{
 
         String imgUrl = null;
         if (noteImg != null) {
-            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid), noteImg);
+            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid, "note"), noteImg);
         }
         Note newNote = NoteConverter.toNote(room, user, category, request, imgUrl);
 
@@ -100,7 +100,7 @@ public class NoteCommandServiceImpl implements NoteCommandService{
         if (noteImg != null) {
             String uuid = UUID.randomUUID().toString();
             Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
-            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid), noteImg);
+            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid, "note"), noteImg);
         }
 
         noteTagRepository.deleteAll(existingNote.getNoteTagList());

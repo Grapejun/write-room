@@ -29,7 +29,7 @@ public class AmazonConfig {
     private String bucket;
 
     @Value("${cloud.aws.s3.path.room}")
-    private String roomPath;
+    private String writeRoom;
 
     @PostConstruct
     public void init() { this.awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
