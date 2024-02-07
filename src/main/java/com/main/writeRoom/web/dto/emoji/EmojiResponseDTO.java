@@ -18,4 +18,11 @@ public class EmojiResponseDTO {
         LocalDateTime createdAt;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EmojiDeleteResult {
+        Long emojiClickId;
+    }
 }
