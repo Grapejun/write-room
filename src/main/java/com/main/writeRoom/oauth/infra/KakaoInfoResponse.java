@@ -26,22 +26,25 @@ public class KakaoInfoResponse implements OAuthInfoResponse {
     }
 
 
+//    @Override
+//    public String getEmail() {
+//        return kakaoAccount.email;
+//    }
 
 
-    @Override
+
     public String getEmail() {
         if (kakaoAccount != null) {
             return kakaoAccount.email;
         }
-        return null;
+        return null; // 또는 적절한 기본값 혹은 예외 처리
     }
-
 
 
 //    @Override
 //    public String getNickname() {
 //        return kakaoAccount.profile.nickname;
-
+//    }
 
 
     @Override
@@ -49,10 +52,8 @@ public class KakaoInfoResponse implements OAuthInfoResponse {
         if (kakaoAccount != null && kakaoAccount.profile != null) {
             return kakaoAccount.profile.nickname;
         }
-        return null;
+        return null; // 또는 적절한 기본값 혹은 예외 처리
     }
-
-
 
     @Override
     public OAuthProvider getOAuthProvider() {
