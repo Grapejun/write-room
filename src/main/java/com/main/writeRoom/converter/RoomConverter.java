@@ -51,6 +51,11 @@ public class RoomConverter {
                 .map(userRoom -> userRoomInfoListDTO(userRoom.getUser(), userRoom)).collect(Collectors.toList());
 
         return userRoomResponseDTO.getUserRoom.builder()
+                .isFirst(roomParticipations.isFirst())
+                .isLast(roomParticipations.isLast())
+                .totalPage(roomParticipations.getTotalPages())
+                .totalElements(roomParticipations.getTotalElements())
+                .listSize(roomParticipations.getSize())
                 .userId(roomParticipation.getUser().getId())
                 .name(roomParticipation.getUser().getName())
                 .authority(roomParticipation.getAuthority())
@@ -101,6 +106,11 @@ public class RoomConverter {
                             .profileImg(user.getProfileImage())
                             .name(user.getName())
                             .updateAt(String.join(", ", noteUpdateDates))
+                            .isFirst(roomParticipations.isFirst())
+                            .isLast(roomParticipations.isLast())
+                            .totalPage(roomParticipations.getTotalPages())
+                            .totalElements(roomParticipations.getTotalElements())
+                            .listSize(roomParticipations.getSize())
                             .build();
                 })
                 .collect(Collectors.toList());
