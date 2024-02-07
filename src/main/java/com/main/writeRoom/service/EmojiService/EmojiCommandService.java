@@ -7,6 +7,7 @@ import com.main.writeRoom.web.dto.emoji.EmojiResponseDTO;
 
 public interface EmojiCommandService {
     EmojiResponseDTO.EmojiClickResult postEmoji(Note note, User user, Long emojiNum);
+    EmojiResponseDTO.EmojiUpdateResult updateEmoji(Note note, User user, EmojiClick emojiClick, Long emojiNum);
 
     EmojiResponseDTO.EmojiDeleteResult deleteEmoji(EmojiClick emojiClick);
 

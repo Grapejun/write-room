@@ -25,4 +25,14 @@ public class EmojiResponseDTO {
     public static class EmojiDeleteResult {
         Long emojiClickId;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EmojiUpdateResult {
+        Long emojiId;
+        Long emojiNum;
+        LocalDateTime updatedAT;
+    }
 }
