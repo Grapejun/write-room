@@ -15,4 +15,5 @@ public interface NoteCommandService {
 
     void createBookmarkNote(Long roomId, Note note, Long userId);
     void deleteBookmarkNote(Long bookmarkNoteId);
+    NoteResponseDTO.NoteDeleteResult deleteNote(Long noteId, User user);
 }

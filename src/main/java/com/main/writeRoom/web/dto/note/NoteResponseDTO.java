@@ -80,4 +80,13 @@ public class NoteResponseDTO {
         List<Emoji> emojiList; // EmojiResponseDTO로 변경할지 고민
 
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteDeleteResult {
+        Long noteId;
+    }
+
 }

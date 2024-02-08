@@ -35,4 +35,8 @@ public class EmojiResponseDTO {
         Long emojiNum;
         LocalDateTime updatedAT;
     }
+
+    // 개별 이모지 조회
+
+    // 이모지 리스트 조회
 }

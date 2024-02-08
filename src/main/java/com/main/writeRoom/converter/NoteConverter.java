@@ -81,10 +81,9 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .build();
     }
 
-    public static NoteResponseDTO.NoteResult toNoteResult(Note note) {
-    return NoteResponseDTO.NoteResult.builder()
+    public static NoteResponseDTO.NoteDeleteResult toDeleteNoteResult(Note note) {
+    return NoteResponseDTO.NoteDeleteResult.builder()
             .noteId(note.getId())
-            .createdAt(LocalDateTime.now())
             .build();
     }
 

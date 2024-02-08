@@ -13,7 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +31,7 @@ public class SearchService {
     @Transactional
     public List<SearchResponseDTO.VocabularyResultDTO> getSynonyms(String request) {
         this.openAiService = new OpenAiService(apiKey, Duration.ofSeconds(20));
-        String prompt = request + " 에 해당하는 동의어를 5개 이하로 아무런 부가 설명 없이 단어만 알려줘.";
+        String prompt = request + " 에 해당하는 동의어를 5개 이하로 아무런 부가 설명 없이 단어만 알려줘. 객체 하나에 단어를 모두 담은 형태로 응답 해줘.";
 
         ChatCompletionRequest requester = ChatCompletionRequest.builder()
                 .model(MODEL)
@@ -46,7 +49,7 @@ public class SearchService {
     @Transactional
     public List<SearchResponseDTO.VocabularyResultDTO> getSimilarKeywords(String request) {
         this.openAiService = new OpenAiService(apiKey, Duration.ofSeconds(20));
-        String prompt = request + " 와 유사한 키워드 5개를 아무런 부가 설명 없이 단어만 알려줘.";
+        String prompt = request + " 와 유사한 키워드 5개를 아무런 부가 설명 없이 단어만 알려줘. 객체 하나에 단어를 모두 담은 형태로 응답 해줘.";
 
         ChatCompletionRequest requester = ChatCompletionRequest.builder()
                 .model(MODEL)
@@ -64,7 +67,8 @@ public class SearchService {
     @Transactional
     public List<SearchResponseDTO.VocabularyResultDTO> getTopics() {
         this.openAiService = new OpenAiService(apiKey, Duration.ofSeconds(20));
-        String prompt = "글쓰기를 위한 주제 5개를 아무런 부가 설명 없이 단어만 알려줘. 예시: 첫눈이 오면, 공통 되는 부분, 연예인 vs 배우, 코딩 공부란, 애정에 관하여 ";
+        String prompt = "글쓰기를 위한 주제 5개를 아무런 부가 설명 없이 단어만 알려줘. 예시: 첫눈이 오면, 공통 되는 부분, 연예인 vs 배우, 코딩 공부란, 애정에 관하여 " +
+                "형식 예시: 명랑, 활기, 활발, 생기, 산뜻 와 같이 voca 객체 하나에 나열한 단어를 모두 담아서 응답 해줘. 여러 개의 voca 객체가 아닌 하나의 voca 객체만 응답해";
 
         ChatCompletionRequest requester = ChatCompletionRequest.builder()
                 .model(MODEL)
@@ -79,9 +83,23 @@ public class SearchService {
         return extractKeywords(contentResult);
     }
 
-
-
     private List<SearchResponseDTO.VocabularyResultDTO> extractKeywords(String content) {
+        // 먼저 전체 텍스트를 하나의 문자열로 합치는데, 특수 문자, 숫자, 공백을 제거합니다.
+        String joinedKeywords = Arrays.stream(content.split("\\r?\\n"))
+                .map(s -> s.replaceAll("[^\\p{IsAlphabetic}]", ""))
+                .collect(Collectors.joining(", "));
+
+        // 이제 모든 키워드를 담은 하나의 'voca' 객체를 생성합니다.
+        SearchResponseDTO.VocabularyResultDTO keywordDto =
+                SearchResponseDTO.VocabularyResultDTO.builder().voca(joinedKeywords).build();
+
+        // 단일 객체를 리스트에 추가하여 반환합니다.
+        return Collections.singletonList(keywordDto);
+    }
+
+
+    // 기존 메소드
+    /*private List<SearchResponseDTO.VocabularyResultDTO> extractKeywords(String content) {
         List<SearchResponseDTO.VocabularyResultDTO> keywords = new ArrayList<>();
 
         // 개행 문자로 분할하여 리스트로 변환
@@ -92,7 +110,7 @@ public class SearchService {
             SearchResponseDTO.VocabularyResultDTO keywordDto = SearchResponseDTO.VocabularyResultDTO.builder().voca(cleanTitle).build();
             keywords.add(keywordDto);
         }
-        return keywords;
-    }
+        return keywords;*/
+
 
 }
