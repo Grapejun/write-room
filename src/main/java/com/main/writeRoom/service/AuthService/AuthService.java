@@ -8,7 +8,8 @@ import jakarta.mail.MessagingException;
 public interface AuthService {
     UserResponseDTO.UserSignInResult login(UserRequestDTO.UserSignIn request);
     User join(UserRequestDTO.UserSignUp request);
-    User resetPwd(UserRequestDTO.ResetPasswordForEmail request) throws MessagingException;
+    User sendResetPwd(UserRequestDTO.ResetPasswordForEmail request) throws MessagingException;
+    User resetPwd(UserRequestDTO.ResetPassword request, String resetToken);
 
     //UserResponseDTO.UserSignInResult kakaoLogin(String code);
 }

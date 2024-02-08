@@ -33,6 +33,7 @@ public class User extends BaseEntity {
     private JoinType joinType;
     private String profileImage;
     private OAuthProvider oAuthProvider;
+    private String resetToken;
 
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -45,9 +46,11 @@ public class User extends BaseEntity {
         this.profileImage = userImg != null ? userImg : profileImage;
         return this;
     }
-
     public User setPassword(String updatedPwd) {
         this.password = updatedPwd;
         return this;
+    }
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
     }
 }

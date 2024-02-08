@@ -46,4 +46,10 @@ public class UserRequestDTO {
         @Email
         String email;
     }
+
+    @Getter
+    public static class ResetPassword {
+        @NotNull(message = "비밀번호 입력은 필수입니다.")
+        String password;
+    }
 }

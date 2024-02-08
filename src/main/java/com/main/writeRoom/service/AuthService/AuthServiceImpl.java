@@ -4,6 +4,7 @@ import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.config.utils.JwtUtil;
 import com.main.writeRoom.converter.UserConverter;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.handler.TokenHandler;
 import com.main.writeRoom.handler.UserHandler;
 import com.main.writeRoom.repository.UserRepository;
 import com.main.writeRoom.service.MailService.EmailService;
@@ -11,6 +12,7 @@ import com.main.writeRoom.web.dto.user.UserRequestDTO;
 import com.main.writeRoom.web.dto.user.UserResponseDTO;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.mail.MessagingException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -58,12 +60,26 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Transactional
-    public User resetPwd(UserRequestDTO.ResetPasswordForEmail request) throws MessagingException, UnsupportedJwtException {
+    public User sendResetPwd(UserRequestDTO.ResetPasswordForEmail request) throws MessagingException, UnsupportedJwtException {
         User user  = userRepository.findByEmail(request.getEmail());
         if (user == null) {
             throw new UserHandler(ErrorStatus.MEMBER_NOT_FOUND);
         }
-        emailService.sendEmail(request.getEmail(), user);
+
+        String resetToken = UUID.randomUUID().toString();
+        user.setResetToken(resetToken);
+        emailService.sendEmail(request.getEmail(), user, resetToken);
+        return user;
+    }
+
+    @Transactional
+    public User resetPwd(UserRequestDTO.ResetPassword request, String resetToken) {
+        User user = userRepository.findByResetToken(resetToken);
+        if (user == null) {
+            throw new TokenHandler(ErrorStatus.TOKEN_NOT_FOUND);
+        }
+        user.setPassword(encoder.encode((request.getPassword())));
+        user.setResetToken(null);
         return user;
     }
 }
