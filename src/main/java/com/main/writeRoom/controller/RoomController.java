@@ -11,11 +11,16 @@ import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.NoteConverter;
 import com.main.writeRoom.converter.RoomConverter;
 import com.main.writeRoom.domain.Category;
+import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
+import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import com.main.writeRoom.service.CategoryService.CategoryQueryService;
+import com.main.writeRoom.service.ChallengeService.ChallengeGoalsQueryService;
+import com.main.writeRoom.service.ChallengeService.ChallengeRoutineQueryService;
 import com.main.writeRoom.service.NoteService.NoteQueryService;
 import com.main.writeRoom.service.RoomParticipationService.RoomParticipationService;
 import com.main.writeRoom.service.RoomService.RoomCommandService;
@@ -59,6 +64,8 @@ public class RoomController {
     private final NoteQueryService noteQueryService;
     private final CategoryQueryService categoryQueryService;
     private final RoomParticipationService roomParticipationService;
+    private final ChallengeRoutineQueryService routineQueryService;
+    private final ChallengeGoalsQueryService goalsQueryService;
 
     @GetMapping("/myRoomList")
     @Operation(summary = "나의 룸 목록 조회 API", description = "해당 유저가 참여중인 룸의 목록들을 조회하는 API이며, 페이징을 포함합니다. query String으로 page 번호를 주세요. ")
@@ -273,5 +280,27 @@ public class RoomController {
         User user = userQueryService.findUser(userId);
         Room response = roomCommandService.roomParticipateIn(room, user);
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.toCreateRoomResultDTO(response));
+    }
+
+    //챌린지 달성률 조회
+    @GetMapping("/challenges/{roomId}")
+    @Operation(summary = "챌린지 달성률 조회 API", description = "룸에서 진행 중인 챌린지 루틴과 챌린지 목표량의 달성률을 조회하는 API입니다. 진행 중인 챌린지가 없다면 null과 0을 반환합니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER4001", description = "유저가 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "roomId", description = "룸 아이디 입니다.")
+    })
+    public ApiResponse<RoomResponseDTO.ChallengeAchieveResult> getChallengesAchieve(@AuthUser long user, @PathVariable(name = "roomId") Long roomId) {
+        User user1 = userQueryService.findUser(user);
+        Room room = roomQueryService.findRoom(roomId);
+        ChallengeRoutineParticipation crp = routineQueryService.findProgressRoutineParticipation(user1, room);
+        ChallengeGoalsParticipation cgp = goalsQueryService.findProgressGoalsParticipation(user1, room);
+        return ApiResponse.of(SuccessStatus._OK, RoomConverter.toChallengeAchieveResult(crp, cgp));
     }
 }
