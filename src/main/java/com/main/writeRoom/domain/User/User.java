@@ -45,4 +45,9 @@ public class User extends BaseEntity {
         this.profileImage = userImg != null ? userImg : profileImage;
         return this;
     }
+
+    public User setPassword(String updatedPwd) {
+        this.password = updatedPwd;
+        return this;
+    }
 }
