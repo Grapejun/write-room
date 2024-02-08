@@ -10,13 +10,14 @@ import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.NoteConverter;
 import com.main.writeRoom.converter.RoomConverter;
+import com.main.writeRoom.converter.TagConverter;
 import com.main.writeRoom.domain.Category;
-import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
+import com.main.writeRoom.domain.mapping.NoteTag;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import com.main.writeRoom.service.CategoryService.CategoryQueryService;
 import com.main.writeRoom.service.ChallengeService.ChallengeGoalsQueryService;
@@ -25,6 +26,7 @@ import com.main.writeRoom.service.NoteService.NoteQueryService;
 import com.main.writeRoom.service.RoomParticipationService.RoomParticipationService;
 import com.main.writeRoom.service.RoomService.RoomCommandService;
 import com.main.writeRoom.service.RoomService.RoomQueryService;
+import com.main.writeRoom.service.TagService.TagQueryService;
 import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.validation.annotation.PageLessNull;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
@@ -32,6 +34,7 @@ import com.main.writeRoom.web.dto.room.RoomRequestDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO.MyRoomResultDto;
 import com.main.writeRoom.web.dto.room.roomPaticipation.userRoomResponseDTO;
+import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -66,6 +69,7 @@ public class RoomController {
     private final RoomParticipationService roomParticipationService;
     private final ChallengeRoutineQueryService routineQueryService;
     private final ChallengeGoalsQueryService goalsQueryService;
+    private final TagQueryService tagQueryService;
 
     @GetMapping("/myRoomList")
     @Operation(summary = "나의 룸 목록 조회 API", description = "해당 유저가 참여중인 룸의 목록들을 조회하는 API이며, 페이징을 포함합니다. query String으로 page 번호를 주세요. ")
@@ -302,5 +306,41 @@ public class RoomController {
         ChallengeRoutineParticipation crp = routineQueryService.findProgressRoutineParticipation(user1, room);
         ChallengeGoalsParticipation cgp = goalsQueryService.findProgressGoalsParticipation(user1, room);
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.toChallengeAchieveResult(crp, cgp));
+    }
+
+    @Operation(summary = "노트태그 리스트 조회 API", description = "해당 룸에 존재하는 노트에 달린 태그 리스트를 조회하며, query String으로 page 번호를 주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
+            @Parameter(name = "roomId", description = "룸 아이디 입니다.")
+    })
+    @GetMapping("/tagList/{roomId}")
+    public ApiResponse<TagResponseDTO.tagListForRoom> getTagListForRoom(@PathVariable(name = "roomId")Long roomId,
+                                                                        @PageLessNull @RequestParam(name = "page")Integer page) {
+        Page<NoteTag> tag = tagQueryService.getTagListForRoom(roomId, page);
+        return ApiResponse.of(SuccessStatus._OK, TagConverter.toTagListForRoom(tag, roomId));
+    }
+
+    @Operation(summary = "태그 검색 API", description = "해당 룸에 존재하는 노트에 달린 태그를 통해 검색하며, query String으로 page 번호와 param으로 태그 String을 주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
+            @Parameter(name = "roomId", description = "룸 아이디 입니다."),
+            @Parameter(name = "tag", description = "태그 이름입니다.")
+    })
+    @GetMapping("/search/noteListForTag/{roomId}")
+    public ApiResponse<NoteResponseDTO.RoomResultForTag> findNoteListForTag(@PathVariable(name = "roomId")Long roomId, @RequestParam(name = "tag")String tag,
+                                                                   @PageLessNull @RequestParam(name = "page")Integer page) {
+        Room room = roomQueryService.findRoom(roomId);
+        Page<NoteTag> note = tagQueryService.findNoteForRoomAndTag(room, tag, page);
+        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteListForTag(room, note));
     }
 }
