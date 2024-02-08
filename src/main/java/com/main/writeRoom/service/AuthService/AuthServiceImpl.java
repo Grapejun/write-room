@@ -6,14 +6,15 @@ import com.main.writeRoom.converter.UserConverter;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.handler.UserHandler;
 import com.main.writeRoom.repository.UserRepository;
+import com.main.writeRoom.service.MailService.EmailService;
 import com.main.writeRoom.web.dto.user.UserRequestDTO;
 import com.main.writeRoom.web.dto.user.UserResponseDTO;
+import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class AuthServiceImpl implements AuthService{
     private final JwtUtil jwtUtil;
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     @Transactional
     public UserResponseDTO.UserSignInResult login(UserRequestDTO.UserSignIn request) {
@@ -53,5 +55,15 @@ public class AuthServiceImpl implements AuthService{
 
         User user = UserConverter.UserSignUpDTO(request, password);
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public User resetPwd(UserRequestDTO.ResetPasswordForEmail request) throws MessagingException, UnsupportedJwtException {
+        User user  = userRepository.findByEmail(request.getEmail());
+        if (user == null) {
+            throw new UserHandler(ErrorStatus.MEMBER_NOT_FOUND);
+        }
+        emailService.sendEmail(request.getEmail(), user);
+        return user;
     }
 }

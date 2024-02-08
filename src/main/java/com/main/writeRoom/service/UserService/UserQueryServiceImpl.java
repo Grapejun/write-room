@@ -16,8 +16,7 @@ public class UserQueryServiceImpl implements UserQueryService{
     private final UserRepository userRepository;
 
     public User findUser(Long userId) {
-        User user = userRepository.findById(userId)
+        return userRepository.findById(userId)
                 .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
-        return user;
     }
 }

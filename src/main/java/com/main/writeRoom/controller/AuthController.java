@@ -8,6 +8,8 @@ import com.main.writeRoom.service.AuthService.AuthService;
 import com.main.writeRoom.web.dto.user.UserRequestDTO;
 import com.main.writeRoom.web.dto.user.UserResponseDTO;
 import com.main.writeRoom.web.dto.user.UserResponseDTO.UserSignInResult;
+import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,5 +34,10 @@ public class AuthController {
         return ApiResponse.of(SuccessStatus._OK, UserConverter.CustomUserInfoResultDTO(user));
     }
 
-
+    @PostMapping("/resetPassword")
+    public ApiResponse<UserResponseDTO.CustomUserInfo> resetPassword(@RequestBody UserRequestDTO.ResetPasswordForEmail request)
+            throws MessagingException, UnsupportedJwtException {
+        User user = authService.resetPwd(request);
+        return ApiResponse.of(SuccessStatus._OK, UserConverter.CustomUserInfoResultDTO(user));
+    }
 }

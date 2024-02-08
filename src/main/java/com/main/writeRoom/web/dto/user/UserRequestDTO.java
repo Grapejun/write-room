@@ -39,4 +39,11 @@ public class UserRequestDTO {
         @NotNull(message = "변경 비밀번호 입력은 필수입니다.")
         String updatePwd;
     }
+
+    @Getter
+    public static class ResetPasswordForEmail {
+        @NotNull(message = "이메일 입력은 필수입니다.")
+        @Email
+        String email;
+    }
 }
