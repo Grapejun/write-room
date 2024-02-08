@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -24,10 +26,16 @@ public class AuthServiceImpl implements AuthService{
     @Transactional
     public UserResponseDTO.UserSignInResult login(UserRequestDTO.UserSignIn request) {
 
-        User user = userRepository.findByEmail(request.getEmail());
-        if (user == null) {
+//        User user = userRepository.findByEmail(request.getEmail());
+//        if (user == null) {
+//            throw new UserHandler(ErrorStatus.EMAIL_NOT_FOUND);
+//        }
+        Optional<User> userOptional = userRepository.findByEmail(request.getEmail());
+        if (!userOptional.isPresent()) {
             throw new UserHandler(ErrorStatus.EMAIL_NOT_FOUND);
         }
+
+        User user = userOptional.get();
 
         // 암호화된 password를 디코딩한 값과 입력한 패스워드 값이 다르면 null 반환
         if (!encoder.matches(request.getPassword(), user.getPassword())) {
@@ -52,4 +60,7 @@ public class AuthServiceImpl implements AuthService{
         User user = UserConverter.UserSignUpDTO(request, password);
         return userRepository.save(user);
     }
+
+
+
 }

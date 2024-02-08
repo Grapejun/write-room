@@ -65,7 +65,7 @@ public class NoteCommandServiceImpl implements NoteCommandService{
 
         String imgUrl = null;
         if (noteImg != null) {
-            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid), noteImg);
+            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid, "note"), noteImg);
         }
         Note newNote = NoteConverter.toNote(room, user, category, request, imgUrl); //챌린지 200자 검사
 
@@ -143,7 +143,7 @@ public class NoteCommandServiceImpl implements NoteCommandService{
         if (noteImg != null) {
             String uuid = UUID.randomUUID().toString();
             Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
-            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid), noteImg);
+            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid, "note"), noteImg);
         }
 
         noteTagRepository.deleteAll(existingNote.getNoteTagList());
@@ -177,17 +177,6 @@ public class NoteCommandServiceImpl implements NoteCommandService{
         updatedNote.getNoteTagList().addAll(newNoteTags); // 메모리 상의 노트 엔티티에도 노트태그 관계 추가
 
         return noteRepository.save(updatedNote);
-    }
-    
-    @Transactional
-    public NoteResponseDTO.NoteResult getNote(Note note) {
-        
-        // 컨버터에서 노트 빌드
-        // 서비스에서 양방향 매핑
-        NoteResponseDTO.NoteResult noteResult = NoteConverter.toNoteResult(note);
-
-        return noteResult;
-
     }
 
     @Transactional

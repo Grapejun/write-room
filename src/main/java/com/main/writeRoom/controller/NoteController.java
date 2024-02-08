@@ -69,26 +69,24 @@ public class NoteController {
         NoteResponseDTO.PreNoteResult preNote = noteCommandService.createPreNote(room, user, category, noteImg, jsonList); //여기에 챌린지 달성 코드 추가
         Note note = noteCommandService.createNote(preNote);
 
-        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteResult(note));
+        return getNote(note.getId());
     }
 
-    // 노트 아이디 받아서 노트 조회
     @Operation(summary = "노트 조회 API", description = "노트를 조회하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             // 존재 하지 않는 노트일 때 에러
-            // 노트를 포함한 룸의 사용자가 아닐 경우 에러
+            // 조회에서도 룸 안의 사람만 조회 가능한가? 필요하면 조건 추가.
+            // 노트 생성 수정 시 바로 노트 조회 반환해도 좋을 듯 함.
     })
     @Parameters({
             @Parameter(name = "noteId", description = "조회할 노트의 아이디입니다."),
-            @Parameter(name = "user", description = "user", hidden = true)
     })
     @GetMapping("/notes/{noteId}")
-    public ApiResponse<NoteResponseDTO.NoteResult> getNote(@PathVariable(name = "noteId")Long noteId, @AuthUser long userId) {
+    public ApiResponse<NoteResponseDTO.NoteResult> getNote(@PathVariable(name = "noteId")Long noteId) {
 
         Note note = noteQueryService.findNote(noteId);
-        // 해당 노트가 존재하는 룸의 사용자가 아닐 경우 에러 발생
-        return ApiResponse.of(SuccessStatus._OK, noteCommandService.getNote(note));
+        return ApiResponse.of(SuccessStatus._OK, noteQueryService.getNote(note)); // 이거 노트 쿼리에서 서비스 임플 만들어야 하는거 아닌가
     }
 
     // 조회 페이지를 먼저 들어가서 수정 해야 함. 수정시에는 노트 아이디와 수정 컨텐츠를 같이 받을 것
@@ -112,7 +110,7 @@ public class NoteController {
         // 사용자의 노트가 아닐 경우 에러
         Category category = categoryQueryService.findCategory(jsonList.getCategoryId());
         Note updatedNote = noteCommandService.updateNoteFields(note, category, noteImg, jsonList);
-        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteResult(updatedNote));
+        return getNote(updatedNote.getId());
     }
 
     @Operation(summary = "노트 삭제 API", description = "노트를 삭제하는 API입니다.") // 되는지 확인 해봐야 하고, 양방향 매핑도 삭제 해야 함. 이모지 태그 등

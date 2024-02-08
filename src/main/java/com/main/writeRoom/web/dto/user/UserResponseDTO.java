@@ -2,10 +2,9 @@ package com.main.writeRoom.web.dto.user;
 
 import com.main.writeRoom.domain.enums.Role;
 import java.time.LocalDateTime;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+
+import lombok.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserResponseDTO {
 
@@ -49,5 +48,16 @@ public class UserResponseDTO {
         private int statusCode;
         private String message;
         private LocalDateTime timestamp;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MyProfileDTO {
+        private Long userId;
+        String profileImg;
+        String nickName;
+        String email;
     }
 }
