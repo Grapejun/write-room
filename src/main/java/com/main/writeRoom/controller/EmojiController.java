@@ -107,7 +107,7 @@ public class EmojiController {
         return ApiResponse.of(SuccessStatus._OK, emojiCommandService.deleteEmoji(emojiClick)); // DTO로 바꿔서 응답
     }
     // 이모지 리스트 조회
-    @Operation(summary = "이모지 조회 API", description = "이모지를 조회하는 API입니다.")
+    @Operation(summary = "이모지 목록 조회 API", description = "이모지 목록을 조회하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             // 에러 상황 정리

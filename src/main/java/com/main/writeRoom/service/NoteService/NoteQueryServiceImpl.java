@@ -2,21 +2,19 @@ package com.main.writeRoom.service.NoteService;
 
 import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.converter.NoteConverter;
-import com.main.writeRoom.domain.Category;
-import com.main.writeRoom.domain.Note;
-import com.main.writeRoom.domain.Room;
-import com.main.writeRoom.domain.Tag;
+import com.main.writeRoom.domain.*;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.EmojiClick;
 import com.main.writeRoom.domain.mapping.NoteTag;
 import com.main.writeRoom.handler.NoteHandler;
 import com.main.writeRoom.repository.NoteRepository;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.main.writeRoom.repository.NoteTagRepository;
 import com.main.writeRoom.repository.TagRepository;
+import com.main.writeRoom.web.dto.emoji.EmojiResponseDTO;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -48,9 +46,21 @@ public class NoteQueryServiceImpl implements NoteQueryService{
     }
 
     @Transactional
-    public NoteResponseDTO.NoteResult getNote(Note note) {
+    public NoteResponseDTO.NoteResult getNote(Note note, List<EmojiClick> emojiClickList) {
 
-        NoteResponseDTO.NoteResult noteResult = NoteConverter.toNoteResponseDTO(note);
+        ArrayList<Integer> emojiCountList = new ArrayList<>(Collections.nCopies(6, 0));
+
+
+        // emojiClickList를 순회하면서 각 이모지의 개수를 계산.
+        emojiClickList.forEach(emojiClick -> {
+            Emoji emoji = emojiClick.getEmoji();
+            if (emoji.getEmojiNum() >= 1 && emoji.getEmojiNum() <= 6) {
+                long index = emoji.getEmojiNum() - 1; // 리스트의 인덱스는 0부터 시작
+                emojiCountList.set((int)index, emojiCountList.get((int)index) + 1); // 카운트 증가
+            }
+        });
+
+        NoteResponseDTO.NoteResult noteResult = NoteConverter.toNoteResponseDTO(note, emojiCountList);
 
         // NoteTag 리스트에서 Tag 객체를 가져오고, Note 객체의 참조를 제거하여 순환 참조 방지
         List<TagResponseDTO.TagList> tagDTOList = note.getNoteTagList().stream()
@@ -59,7 +69,6 @@ public class NoteQueryServiceImpl implements NoteQueryService{
                 .map(tag -> new TagResponseDTO.TagList(tag.getId(), tag.getContent())) // TagDTO는 순환 참조가 없는 DTO
                 .toList();
 
-        // NoteResult에 TagDTO 리스트를 추가
         noteResult.getTagList().addAll(tagDTOList);
 
         return noteResult;

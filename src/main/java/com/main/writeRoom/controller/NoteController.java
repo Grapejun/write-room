@@ -13,7 +13,9 @@ import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.EmojiClick;
 import com.main.writeRoom.service.CategoryService.CategoryQueryService;
+import com.main.writeRoom.service.EmojiService.EmojiQueryService;
 import com.main.writeRoom.service.NoteService.NoteCommandService;
 import com.main.writeRoom.service.NoteService.NoteQueryService;
 import com.main.writeRoom.service.RoomService.RoomQueryService;
@@ -34,6 +36,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/")
@@ -44,6 +48,7 @@ public class NoteController {
     private final RoomQueryService roomQueryService;
     private final UserQueryService userQueryService;
     private final CategoryQueryService categoryQueryService;
+    private final EmojiQueryService emojiQueryService;
 
     @Operation(summary = "노트 생성 API", description = "새로운 노트를 생성하는 API입니다.")
     @ApiResponses({
@@ -86,7 +91,10 @@ public class NoteController {
     public ApiResponse<NoteResponseDTO.NoteResult> getNote(@PathVariable(name = "noteId")Long noteId) {
 
         Note note = noteQueryService.findNote(noteId);
-        return ApiResponse.of(SuccessStatus._OK, noteQueryService.getNote(note)); // 이거 노트 쿼리에서 서비스 임플 만들어야 하는거 아닌가
+        List<EmojiClick> emojiClickList = emojiQueryService.findAllByNote(note);
+
+        // 노트에 해당하는 이모지 전체 조회
+        return ApiResponse.of(SuccessStatus._OK, noteQueryService.getNote(note, emojiClickList));
     }
 
     // 조회 페이지를 먼저 들어가서 수정 해야 함. 수정시에는 노트 아이디와 수정 컨텐츠를 같이 받을 것

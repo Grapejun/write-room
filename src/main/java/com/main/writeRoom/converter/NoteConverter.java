@@ -4,6 +4,7 @@ import com.main.writeRoom.domain.*;
 import com.main.writeRoom.domain.Bookmark.BookmarkNote;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.NoteTag;
+import com.main.writeRoom.web.dto.emoji.EmojiResponseDTO;
 import com.main.writeRoom.web.dto.note.NoteRequestDTO;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
@@ -51,7 +52,7 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .build();
     }
 
-    public static NoteResponseDTO.NoteResult toNoteResponseDTO(Note note) {
+    public static NoteResponseDTO.NoteResult toNoteResponseDTO(Note note, ArrayList<Integer> emojiCountList) {
 
         return NoteResponseDTO.NoteResult.builder()
                 .noteCoverImg(note.getCoverImg())
@@ -62,7 +63,9 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .updatedAt(note.getUpdatedAt())
                 .noteId(note.getId())
                 .categoryName(note.getCategory().getName())
-                .emojiList(new ArrayList<>())
+                .emojiList(EmojiResponseDTO.EmojiListResult.builder()
+                        .emojiCounts(emojiCountList)
+                        .build())
                 .writer(note.getUser().getName())
                 .tagList(new ArrayList<>())
                 .build();
