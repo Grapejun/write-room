@@ -10,6 +10,7 @@ import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import com.main.writeRoom.handler.RoomHandler;
+import com.main.writeRoom.handler.RoomParticipationHandler;
 import com.main.writeRoom.handler.UserHandler;
 import com.main.writeRoom.repository.RoomParticipationRepository;
 import com.main.writeRoom.repository.RoomRepository;
@@ -92,6 +93,10 @@ public class RoomCommandServiceimpl implements RoomCommandService {
 
     @Transactional
     public Room roomParticipateIn(Room room, User user) {
+        boolean isUserAlreadyParticipation = userRoomRepository.existsByRoomAndUser(room, user);
+        if (isUserAlreadyParticipation) {
+            throw new RoomParticipationHandler(ErrorStatus.ROOM_ALREADY_PARTICIPATION);
+        }
         RoomParticipation response = RoomConverter.toUserParticipateIn(room, user);
         return userRoomRepository.save(response).getRoom();
     }
