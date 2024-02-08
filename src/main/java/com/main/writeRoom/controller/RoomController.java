@@ -324,4 +324,23 @@ public class RoomController {
         Page<NoteTag> tag = tagQueryService.getTagListForRoom(roomId, page);
         return ApiResponse.of(SuccessStatus._OK, TagConverter.toTagListForRoom(tag, roomId));
     }
+
+    @Operation(summary = "태그 검색 API", description = "해당 룸에 존재하는 노트에 달린 태그를 통해 검색하며, query String으로 page 번호와 param으로 태그 String을 주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
+            @Parameter(name = "roomId", description = "룸 아이디 입니다."),
+            @Parameter(name = "tag", description = "태그 이름입니다.")
+    })
+    @GetMapping("/search/noteListForTag/{roomId}")
+    public ApiResponse<NoteResponseDTO.RoomResultForTag> findNoteListForTag(@PathVariable(name = "roomId")Long roomId, @RequestParam(name = "tag")String tag,
+                                                                   @PageLessNull @RequestParam(name = "page")Integer page) {
+        Room room = roomQueryService.findRoom(roomId);
+        Page<NoteTag> note = tagQueryService.findNoteForRoomAndTag(room, tag, page);
+        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteListForTag(room, note));
+    }
 }
