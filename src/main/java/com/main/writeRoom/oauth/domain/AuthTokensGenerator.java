@@ -1,7 +1,9 @@
 package com.main.writeRoom.oauth.domain;
 
+import com.main.writeRoom.config.utils.JwtUtil;
 import com.main.writeRoom.oauth.AuthTokens;
 import com.main.writeRoom.oauth.provider.JwtTokenProvider;
+import com.main.writeRoom.web.dto.user.UserResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,9 +17,10 @@ public class AuthTokensGenerator {
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;  // RefreshToken 14일
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtUtil jwtUtil;
 
     // 사용자 식별자
-    public AuthTokens generate(Long memberId) {
+    public AuthTokens generate(UserResponseDTO.CustomUserInfo response) {
         long now = (new Date()).getTime();
 
         // 각 토큰의 만료 시간을 계산
@@ -25,9 +28,11 @@ public class AuthTokensGenerator {
         Date refreshTokenExpiredAt = new Date(now + REFRESH_TOKEN_EXPIRE_TIME);
 
         // 멤버 ID를 JWT의 subject로 사용
-        String subject = memberId.toString();
+        String subject = response.getUserId().toString();
+        String accessTokenJWT = jwtUtil.createAccessToken(response);
         // 각 토큰(accessToken, refreshToken) 을 생성
-        String accessTokenJWT = jwtTokenProvider.generate(subject, accessTokenExpiredAt);
+        //String accessTokenJWT = jwtTokenProvider.generate(subject, accessTokenExpiredAt);
+
         String refreshToken = jwtTokenProvider.generate(subject, refreshTokenExpiredAt);
         // 생성된 토큰들과 추가 정보를 함께 반환
         return AuthTokens.of(accessTokenJWT, refreshToken, BEARER_TYPE, ACCESS_TOKEN_EXPIRE_TIME / 1000L);

@@ -1,11 +1,13 @@
 package com.main.writeRoom.oauth;
 
+import com.main.writeRoom.converter.UserConverter;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.oauth.domain.AuthTokensGenerator;
 import com.main.writeRoom.oauth.domain.OAuthInfoResponse;
 import com.main.writeRoom.oauth.domain.OAuthLoginParams;
 import com.main.writeRoom.oauth.domain.RequestOAuthInfoService;
 import com.main.writeRoom.repository.UserRepository;
+import com.main.writeRoom.web.dto.user.UserResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +27,10 @@ public class OAuthLoginService {
         OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
         // 멤버를 찾거나 새로 생성한 후 해당 멤버의 ID를 반환
         Long memberId = findOrCreateMember(oAuthInfoResponse);
+        User user = memberRepository.getReferenceById(memberId);
+        UserResponseDTO.CustomUserInfo info = UserConverter.CustomUserInfoResultDTO(user);
         // 멤버 ID를 사용하여 인증 토큰을 생성해서 반환
-        return authTokensGenerator.generate(memberId);
+        return authTokensGenerator.generate(info);
     }
 
     // 주어진 OAuth 정보를 사용하여 멤버를 찾거나 새로 생성
