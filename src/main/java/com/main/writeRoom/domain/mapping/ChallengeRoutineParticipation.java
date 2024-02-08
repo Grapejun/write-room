@@ -87,7 +87,7 @@ public class ChallengeRoutineParticipation {
         this.achieveCount = achieveCount;
     }
 
-    public void setIsNoteToday() {
-        this.isNoteToday = true;
+    public void setIsNoteToday(boolean isNoteToday) {
+        this.isNoteToday = isNoteToday;
     }
 }

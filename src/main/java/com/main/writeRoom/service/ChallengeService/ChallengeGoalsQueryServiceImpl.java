@@ -6,6 +6,7 @@ import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
+import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import com.main.writeRoom.handler.ChallengeHandler;
 import com.main.writeRoom.repository.ChallengeGoalsParticipationRepository;
 import com.main.writeRoom.repository.ChallengeGoalsRepository;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -45,5 +47,10 @@ public class ChallengeGoalsQueryServiceImpl implements ChallengeGoalsQueryServic
     @Override
     public ChallengeGoalsParticipation findProgressGoalsParticipation(User user, Room room) {
         return goalsParticipationRepository.findProgressGoalsParticipation(user, room);
+    }
+
+    @Override
+    public List<ChallengeGoalsParticipation> findByChallengeStatus(ChallengeStatus challengeStatus) {
+        return goalsParticipationRepository.findByChallengeStatus(challengeStatus);
     }
 }

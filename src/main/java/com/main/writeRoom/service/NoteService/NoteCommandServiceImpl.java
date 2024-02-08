@@ -88,7 +88,7 @@ public class NoteCommandServiceImpl implements NoteCommandService{
 
                 if (!routineParticipation.getIsNoteToday() && LocalDate.now().isAfter(routine.getStartDate().minusDays(1)) && LocalDate.now().isBefore(routine.getDeadline().plusDays(1))) {
                     routineParticipation.plusAchieveCount(); //달성했으므로 카운트 증가 -> 일주일 지나고 리셋(by스케줄러)
-                    routineParticipation.setIsNoteToday();   //오늘 이미 작성했다는 것을 표시.
+                    routineParticipation.setIsNoteToday(true);   //오늘 이미 작성했다는 것을 표시.
 
                     if ((LocalDate.now().isAfter(routine.getDeadline().minusDays(7)) && LocalDate.now().isBefore(routine.getDeadline().plusDays(1))) && routineParticipation.getAchieveCount() >= routine.getTargetCount()) { //만약 마지막 주라면 성공여부 검사
                         routineParticipation.setChallengeStatus(ChallengeStatus.SUCCESS);  //마지막 주에 목표 카운트를 도달했으므로 챌린지 성공.
