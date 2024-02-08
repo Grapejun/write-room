@@ -18,4 +18,9 @@ public interface ChallengeRoutineParticipationRepository extends JpaRepository<C
     public List<ChallengeRoutineParticipation> findByUserAndRoom(User user, Room room);
 
     public List<ChallengeRoutineParticipation> findByChallengeRoutine(ChallengeRoutine routine);
+
+    @Query("select crp from ChallengeRoutineParticipation crp where crp.user = :user and crp.room = :room and crp.challengeStatus = 'PROGRESS'")
+    public ChallengeRoutineParticipation findProgressRoutineParticipation(@Param("user") User user, @Param("room") Room room);
+
+    public List<ChallengeRoutineParticipation> findByChallengeStatus(ChallengeStatus challengeStatus);
 }
