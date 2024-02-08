@@ -31,4 +31,12 @@ public class UserRequestDTO {
     public static class UpdatedMyprofile {
         String nickName;
     }
+
+    @Getter
+    public static class UpdatedPassword {
+        @NotNull(message = "기존 비밀번호 입력은 필수입니다.")
+        String password;
+        @NotNull(message = "변경 비밀번호 입력은 필수입니다.")
+        String updatePwd;
+    }
 }

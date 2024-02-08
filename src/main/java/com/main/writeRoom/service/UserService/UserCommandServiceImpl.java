@@ -1,12 +1,15 @@
 package com.main.writeRoom.service.UserService;
 
+import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.aws.s3.AmazonS3Manager;
 import com.main.writeRoom.aws.s3.Uuid;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.handler.UserHandler;
 import com.main.writeRoom.repository.UuidRepository;
 import com.main.writeRoom.web.dto.user.UserRequestDTO;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +21,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final UserQueryService userQueryService;
     private final UuidRepository uuidRepository;
     private final AmazonS3Manager s3Manager;
+    private final PasswordEncoder encoder;
 
     @Override
     @Transactional
@@ -34,5 +38,15 @@ public class UserCommandServiceImpl implements UserCommandService {
             imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid, "user"), userImg);
         }
         return user.setProfile(request.getNickName(), imgUrl);
+    }
+
+    @Transactional
+    public User updatedPassword(Long userId, UserRequestDTO.UpdatedPassword request) {
+        User user = userQueryService.findUser(userId);
+        if (!encoder.matches(request.getPassword(), user.getPassword())) {
+            throw new UserHandler(ErrorStatus.PASSWORD_NOT_MATCH);
+        }
+        String updatedPwd = encoder.encode(request.getUpdatePwd());
+        return user.setPassword(updatedPwd);
     }
 }

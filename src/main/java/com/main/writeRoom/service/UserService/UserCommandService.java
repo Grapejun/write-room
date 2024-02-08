@@ -6,4 +6,5 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface UserCommandService {
     User updatedMyProfile(Long userId, UserRequestDTO.UpdatedMyprofile request, MultipartFile userImg);
+    User updatedPassword(Long userId, UserRequestDTO.UpdatedPassword request);
 }

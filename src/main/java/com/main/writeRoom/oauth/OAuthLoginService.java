@@ -11,8 +11,6 @@ import com.main.writeRoom.web.dto.user.UserResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
 public class OAuthLoginService {
@@ -26,7 +24,7 @@ public class OAuthLoginService {
         // OAuth 인증 정보를 요청
         OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
         // 멤버를 찾거나 새로 생성한 후 해당 멤버의 ID를 반환
-        Long memberId = findOrCreateMember(oAuthInfoResponse);
+        long memberId = findOrCreateMember(oAuthInfoResponse);
         User user = memberRepository.getReferenceById(memberId);
         UserResponseDTO.CustomUserInfo info = UserConverter.CustomUserInfoResultDTO(user);
         // 멤버 ID를 사용하여 인증 토큰을 생성해서 반환
@@ -35,14 +33,15 @@ public class OAuthLoginService {
 
     // 주어진 OAuth 정보를 사용하여 멤버를 찾거나 새로 생성
     private Long findOrCreateMember(OAuthInfoResponse oAuthInfoResponse) {
-        // 이메일을 기반으로 멤버를 find
-
-        return memberRepository.findByEmail(oAuthInfoResponse.getEmail())
-                .map(User::getId)
-                .orElseGet(() -> newMember(oAuthInfoResponse));
+        User user = memberRepository.findByEmail(oAuthInfoResponse.getEmail());
+        if (user != null) {
+            return user.getId();
+        } else {
+            return newMember(oAuthInfoResponse);
+        }
     }
 
-    // 새 멤버를 생성하고 저장
+        // 새 멤버를 생성하고 저장
     private Long newMember(OAuthInfoResponse oAuthInfoResponse) {
         // OAuth 정보를 사용하여 멤버 객체를 생성
         User member = User.builder()

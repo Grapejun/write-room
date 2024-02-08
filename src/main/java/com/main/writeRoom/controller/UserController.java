@@ -21,6 +21,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -54,5 +55,19 @@ public class UserController {
         UserRequestDTO.UpdatedMyprofile jsonList = objectMapper.readValue(request, new TypeReference<>() {});
         User user = userCommandService.updatedMyProfile(userId, jsonList, userImg);
         return ApiResponse.of(SuccessStatus._OK, UserConverter.MyprofileInfoResult(user));
+    }
+
+    @Operation(summary = "유저 비밀번호 변경 API", description = "유저의 비밀번호 변경 API이며, 입력한 기존 비밀번호와 데이터베이스 비밀번호가 일치 하지 않으면 예외 처리됩니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER4003", description = "비밀번호가 일치하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @PatchMapping("/password")
+    public ApiResponse<UserResponseDTO.CustomUserInfo> updatedPassword(@AuthUser long userId, @RequestBody UserRequestDTO.UpdatedPassword request) {
+        User user = userCommandService.updatedPassword(userId, request);
+        return ApiResponse.of(SuccessStatus._OK, UserConverter.CustomUserInfoResultDTO(user));
     }
 }
