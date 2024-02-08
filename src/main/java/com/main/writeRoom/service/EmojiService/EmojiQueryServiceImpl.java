@@ -24,6 +24,9 @@ public class EmojiQueryServiceImpl implements EmojiQueryService{
         return emojiClickRepository.findByNoteAndUser(note, user).orElseThrow(() -> new EmojiHandler(ErrorStatus.EMOJI_NOT_FOUNT));
     }
 
+    public List<EmojiClick> findAllByNote(Note note) {
+        return emojiClickRepository.findAllByNote(note);
+    }
 
     /*public List<Note> findNoteForCategoryAndRoom(Category category, Room room) {
         return noteRepository.findAllByCategoryAndRoom(category, room);

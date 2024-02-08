@@ -4,6 +4,7 @@ import com.main.writeRoom.domain.Emoji;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Tag;
 import com.main.writeRoom.domain.mapping.EmojiClick;
+import com.main.writeRoom.web.dto.emoji.EmojiResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -77,7 +78,16 @@ public class NoteResponseDTO {
         LocalDateTime createdAt;
         LocalDateTime updatedAt;
         List<TagResponseDTO.TagList> tagList;
-        List<Emoji> emojiList; // EmojiResponseDTO로 변경할지 고민
+        EmojiResponseDTO.EmojiListResult emojiList; // EmojiResponseDTO로 변경할지 고민
 
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteDeleteResult {
+        Long noteId;
+    }
+
 }

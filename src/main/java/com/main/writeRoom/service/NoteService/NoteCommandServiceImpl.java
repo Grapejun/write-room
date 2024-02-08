@@ -11,6 +11,7 @@ import com.main.writeRoom.domain.Bookmark.BookmarkNote;
 import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.EmojiClick;
 import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeStatus;
@@ -34,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -54,6 +56,7 @@ public class NoteCommandServiceImpl implements NoteCommandService{
     private final UuidRepository uuidRepository;
     private final ChallengeRoutineQueryService routineQueryService;
     private final ChallengeGoalsQueryService goalsQueryService;
+    private final EmojiClickRepository emojiClickRepository;
 
     @Override
     @Transactional
@@ -180,26 +183,18 @@ public class NoteCommandServiceImpl implements NoteCommandService{
     }
 
     @Transactional
-    public NoteResponseDTO.NoteResult deleteNote(Long roomId, Long noteId) {
-        // 어차피 노트 아이디가 룸마다 안겹치면 굳이 노트를 경로로 타고 들어가야 하나?
+    public NoteResponseDTO.NoteDeleteResult deleteNote(Long noteId, User user) {
+        // 노트가 사라지면 이모지 클릭이 없어지면서 이모지가, 노트 태그 태이블 데이터가 지워지며 노트 태그가 함께 사라 지면 된다.
+
         Note note = noteRepository.findById(noteId)
                 .orElseThrow(() -> new NoteHandler(NOTE_NOT_FOUND));
 
+        Optional<EmojiClick> emojiClick = emojiClickRepository.findByNoteAndUser(note, user);
+        emojiClick.ifPresent(click -> emojiClickRepository.deleteById(click.getId()));
+
         noteRepository.delete(note);
-        return NoteConverter.toNoteResult(note);
+        return NoteConverter.toDeleteNoteResult(note);
     }
-    /* delete 함수 구현 참고
-    @Override
-    public BookmarkResponseDTO.TopicResultDTO deleteMaterial(Long id) {
-
-        BookmarkMaterial bookmarkMaterial = bookmarkMaterialRepository.findById(id)
-                        .orElseThrow(() -> new BookmarkHandler(ErrorStatus.BOOKMARK_NOT_FOUND));
-
-        bookmarkMaterialRepository.delete(bookmarkMaterial);
-
-        return BookmarkConverter.toDeleteResultDTO(id);
-    }
-    */
 
     @Transactional
     public void createBookmarkNote(Long roomId, Note note, Long userId) {
