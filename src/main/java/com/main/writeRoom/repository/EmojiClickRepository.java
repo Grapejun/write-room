@@ -10,5 +10,6 @@ import java.util.Optional;
 
 public interface EmojiClickRepository extends JpaRepository<EmojiClick, Long> {
     Optional<EmojiClick> findByNoteAndUser(Note note, User user);
+    List<EmojiClick> findAllByNote(Note note);
 
 }

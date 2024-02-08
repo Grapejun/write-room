@@ -13,7 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -79,8 +82,6 @@ public class SearchService {
         return extractKeywords(contentResult);
     }
 
-
-
     private List<SearchResponseDTO.VocabularyResultDTO> extractKeywords(String content) {
         List<SearchResponseDTO.VocabularyResultDTO> keywords = new ArrayList<>();
 
@@ -94,5 +95,4 @@ public class SearchService {
         }
         return keywords;
     }
-
 }
