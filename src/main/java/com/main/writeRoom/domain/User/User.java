@@ -39,4 +39,10 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user")
     private List<RoomParticipation> roomParticipationList = new ArrayList<>();
+
+    public User setProfile(String nickName, String userImg) {
+        this.name = nickName != null ? nickName : name;
+        this.profileImage = userImg != null ? userImg : profileImage;
+        return this;
+    }
 }

@@ -39,4 +39,13 @@ public class UserConverter {
                 .role(Role.USER)
                 .build();
     }
+
+    public static UserResponseDTO.MyProfileDTO MyprofileInfoResult(User user) {
+        return UserResponseDTO.MyProfileDTO.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .nickName(user.getName())
+                .profileImg(user.getProfileImage())
+                .build();
+    }
 }
