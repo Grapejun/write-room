@@ -7,6 +7,7 @@ import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
+import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import com.main.writeRoom.handler.ChallengeHandler;
 import com.main.writeRoom.repository.*;
 import com.main.writeRoom.service.UserService.UserQueryService;
@@ -50,4 +51,15 @@ public class ChallengeRoutineQueryServiceImpl implements ChallengeRoutineQuerySe
     public ChallengeRoutineParticipation findRoutineParticipation(User user, ChallengeRoutine routine) {
         return routineParticipationRepository.findByUserAndChallengeRoutine(user, routine);
     }
+
+    @Override
+    public ChallengeRoutineParticipation findProgressRoutineParticipation(User user, Room room) {
+        return routineParticipationRepository.findProgressRoutineParticipation(user, room);
+    }
+
+    @Override
+    public List<ChallengeRoutineParticipation> findByChallengeStatus(ChallengeStatus challengeStatus) {
+        return routineParticipationRepository.findByChallengeStatus(challengeStatus);
+    }
+
 }

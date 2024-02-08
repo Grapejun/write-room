@@ -8,12 +8,19 @@ import com.main.writeRoom.converter.RoomConverter;
 import com.main.writeRoom.converter.TagConverter;
 import com.main.writeRoom.domain.*;
 import com.main.writeRoom.domain.Bookmark.BookmarkNote;
+import com.main.writeRoom.domain.Challenge.ChallengeGoals;
+import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.EmojiClick;
+import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
+import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
+import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import com.main.writeRoom.domain.mapping.NoteTag;
 import com.main.writeRoom.handler.NoteHandler;
 import com.main.writeRoom.repository.*;
 import com.main.writeRoom.service.CategoryService.CategoryQueryService;
+import com.main.writeRoom.service.ChallengeService.ChallengeGoalsQueryService;
+import com.main.writeRoom.service.ChallengeService.ChallengeRoutineQueryService;
 import com.main.writeRoom.service.RoomService.RoomQueryService;
 import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.web.dto.note.NoteRequestDTO;
@@ -23,7 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +54,8 @@ public class NoteCommandServiceImpl implements NoteCommandService{
     private final NoteTagRepository noteTagRepository;
     private final AmazonS3Manager s3Manager;
     private final UuidRepository uuidRepository;
+    private final ChallengeRoutineQueryService routineQueryService;
+    private final ChallengeGoalsQueryService goalsQueryService;
     private final EmojiClickRepository emojiClickRepository;
 
     @Override
@@ -59,7 +70,7 @@ public class NoteCommandServiceImpl implements NoteCommandService{
         if (noteImg != null) {
             imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid, "note"), noteImg);
         }
-        Note newNote = NoteConverter.toNote(room, user, category, request, imgUrl);
+        Note newNote = NoteConverter.toNote(room, user, category, request, imgUrl); //챌린지 200자 검사
 
         List<String> tagStringList = request.getNoteTagList();
         List<Tag> tagList = TagConverter.toTagList(tagStringList);
@@ -69,6 +80,38 @@ public class NoteCommandServiceImpl implements NoteCommandService{
                 .tagList(tagList)
                 .build();
 
+
+        //챌린지 달성 코드
+        if (newNote.getAchieve() == ACHIEVE.TRUE) {
+            ChallengeRoutineParticipation routineParticipation = routineQueryService.findProgressRoutineParticipation(user, room);
+            ChallengeGoalsParticipation goalsParticipation = goalsQueryService.findProgressGoalsParticipation(user, room);
+
+            if (routineParticipation != null) { //null이라면 진행 중인 루틴 챌린지가 없는거임
+                ChallengeRoutine routine = routineParticipation.getChallengeRoutine();
+
+                if (!routineParticipation.getIsNoteToday() && LocalDate.now().isAfter(routine.getStartDate().minusDays(1)) && LocalDate.now().isBefore(routine.getDeadline().plusDays(1))) {
+                    routineParticipation.plusAchieveCount(); //달성했으므로 카운트 증가 -> 일주일 지나고 리셋(by스케줄러)
+                    routineParticipation.setIsNoteToday(true);   //오늘 이미 작성했다는 것을 표시.
+
+                    if ((LocalDate.now().isAfter(routine.getDeadline().minusDays(7)) && LocalDate.now().isBefore(routine.getDeadline().plusDays(1))) && routineParticipation.getAchieveCount() >= routine.getTargetCount()) { //만약 마지막 주라면 성공여부 검사
+                        routineParticipation.setChallengeStatus(ChallengeStatus.SUCCESS);  //마지막 주에 목표 카운트를 도달했으므로 챌린지 성공.
+                        routineParticipation.setStatusUpdatedAt(LocalDate.now()); //성공 날짜 저장.
+                    }
+                }
+            }
+
+            if (goalsParticipation != null) {
+                ChallengeGoals goals = goalsParticipation.getChallengeGoals();
+                if ((goals.getDeadline() == null) || (LocalDate.now().isAfter(goals.getStartDate().minusDays(1)) && LocalDate.now().isBefore(goals.getDeadline().plusDays(1)))) {
+                    goalsParticipation.plusAchieveCount(); //달성했으므로 카운트 증가
+
+                    if (goalsParticipation.getAchieveCount() >= goals.getTargetCount()) {
+                        goalsParticipation.setChallengeStatus(ChallengeStatus.SUCCESS);  //목표 카운트를 도달했으므로 챌린지 성공.
+                        goalsParticipation.setStatusUpdatedAt(LocalDate.now()); //성공 날짜 저장.
+                    }
+                }
+            }
+        }
         tagRepository.saveAll(tagList);
         noteRepository.save(newNote);
         return preNoteResult;
