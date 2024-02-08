@@ -1,4 +1,4 @@
-package com.main.writeRoom.service;
+package com.main.writeRoom.service.SearchService;
 
 //import com.main.writeRoom.web.dto.topic.TopicResponseDTO;
 import com.main.writeRoom.web.dto.search.SearchResponseDTO;
@@ -13,15 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SearchService {
+public class SearchQueryServiceImpl implements SearchQueryService{
     private OpenAiService openAiService;
     private static final String MODEL = "gpt-3.5-turbo";
 
