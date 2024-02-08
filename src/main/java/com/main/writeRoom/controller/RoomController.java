@@ -316,7 +316,6 @@ public class RoomController {
     })
     @Parameters({
             @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
-            @Parameter(name = "user", description = "user", hidden = true),
             @Parameter(name = "roomId", description = "룸 아이디 입니다.")
     })
     @GetMapping("/tagList/{roomId}")
