@@ -249,7 +249,7 @@ public class ChallengeController {
     }
 
     //나의 챌린지 상세 조회 - 루틴
-    @GetMapping("/my-challenge/challenge-routines/{challengeId}")
+    @GetMapping("/my-challenges/challenge-routines/{challengeId}")
     @Operation(summary = "나의 챌린지 루틴 상세 조회 API", description = "나의 챌린지 > 챌린지 상세 화면에서 나의 챌린지 루틴을 조회하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
