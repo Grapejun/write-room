@@ -47,6 +47,12 @@ public class UserController {
         return ApiResponse.of(SuccessStatus._OK, UserConverter.MyprofileInfoResult(user));
     }
 
+    @Operation(summary = "유저 프로필 수정 API", description = "유저의 프로필 수정 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
     @PatchMapping("/update/myProfile")
     public ApiResponse<UserResponseDTO.MyProfileDTO> updateMyprofile(@AuthUser long userId, @RequestParam(name = "request") String request,
                                                                      @RequestPart(required = false, value = "userImg") MultipartFile userImg) throws JsonProcessingException {
