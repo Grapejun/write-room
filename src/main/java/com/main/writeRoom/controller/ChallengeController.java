@@ -88,26 +88,29 @@ public class ChallengeController {
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toCreateChallengeRoutineResultDTO(challengeRoutine));
     }
 
-    //챌린지 루틴 조회(참여자 클릭 시 조회도 동일)
-    @GetMapping("/challenge-routines/{challengeId}")
-    @Operation(summary = "챌린지 루틴 조회 API", description = "루틴 만들기 챌린지 진행화면에서 챌린지 루틴을 조회하는 API입니다.(참여자 클릭 시의 챌린지 루틴 조회도 포함)")
+    //챌린지 루틴 조회
+    @GetMapping("/challenge-routines/{roomId}")
+    @Operation(summary = "챌린지 루틴 조회 API", description = "루틴 만들기 챌린지 진행화면에서 챌린지 루틴을 조회하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4001", description = "챌린지 루틴이 없습니다.",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4002", description = "진행 중인 챌린지가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
     @Parameters({
             @Parameter(name = "user", description = "user", hidden = true),
-            @Parameter(name = "challengeId", description = "조회할 챌린지 루틴의 식별자를 입력하세요.")
+            @Parameter(name = "roomId", description = "룸 식별자를 입력하세요.")
     })
-    public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> getChallengeRoutine(@AuthUser long user, @PathVariable(name = "challengeId") Long challengeId) {
+    public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> getChallengeRoutine(@AuthUser long user, @PathVariable(name = "roomId") Long roomId) {
         User user1 = userQueryService.findUser(user);
-        ChallengeRoutine routine = routineQueryService.findRoutine(challengeId);
-        routineCommandService.isStatusProgress(user1, routine);
+        ChallengeRoutineParticipation routineParticipation = routineQueryService.findProgressRoutineParticipation(user1, roomQueryService.findRoom(roomId));
+        if (routineParticipation == null) {
+            throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);
+        }
+        ChallengeRoutine routine = routineParticipation.getChallengeRoutine();
         List<ChallengeResponseDTO.NoteDTO> noteList = routineQueryService.findNoteDate(user1, routine);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeRoutineDTO(user1, routine, noteList));
     }
@@ -186,25 +189,28 @@ public class ChallengeController {
     }
 
     //챌린지 목표량 조회
-    @GetMapping("/challenge-goals/{challengeId}")
-    @Operation(summary = "챌린지 목표량 조회 API", description = "목표량 달성하기 진행화면에서 챌린지 목표량을 조회하는 API입니다.(참여자 클릭 시의 챌린지 목표량 조회도 포함)")
+    @GetMapping("/challenge-goals/{roomId}")
+    @Operation(summary = "챌린지 목표량 조회 API", description = "목표량 달성하기 진행화면에서 챌린지 목표량을 조회하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4005", description = "챌린지 목표량이 없습니다.",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4002", description = "진행 중인 챌린지가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
     })
     @Parameters({
             @Parameter(name = "user", description = "user", hidden = true),
-            @Parameter(name = "challengeId", description = "조회할 챌린지 목표량의 식별자를 입력하세요.")
+            @Parameter(name = "roomId", description = "룸 식별자를 입력하세요.")
     })
-    public ApiResponse<ChallengeResponseDTO.ChallengeGoalsDTO> getChallengeGoals(@AuthUser long user, @PathVariable(name = "challengeId") Long challengeId) {
+    public ApiResponse<ChallengeResponseDTO.ChallengeGoalsDTO> getChallengeGoals(@AuthUser long user, @PathVariable(name = "roomId") Long roomId) {
         User user1 = userQueryService.findUser(user);
-        ChallengeGoals goals = goalsQueryService.findGoals(challengeId);
-        goalsCommandService.isStatusProgress(user1, goals);
+        ChallengeGoalsParticipation goalsParticipation = goalsQueryService.findProgressGoalsParticipation(user1, roomQueryService.findRoom(roomId));
+        if (goalsParticipation == null) {
+            throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);
+        }
+        ChallengeGoals goals = goalsParticipation.getChallengeGoals();
         Integer achieveCount = goalsQueryService.findAchieveNote(user1, goals);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeGoalsDTO(user1, goals, achieveCount));
     }

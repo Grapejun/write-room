@@ -92,11 +92,4 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
 
         return routineParticipation;
     }
-
-    @Override
-    public void isStatusProgress(User user, ChallengeRoutine routine) {
-        if (routineQueryService.findRoutineParticipation(user, routine).getChallengeStatus() != ChallengeStatus.PROGRESS) {
-            throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);
-        }
-    }
 }
