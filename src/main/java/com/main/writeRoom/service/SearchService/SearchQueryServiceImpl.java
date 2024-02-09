@@ -102,7 +102,16 @@ public class SearchQueryServiceImpl implements SearchQueryService {
     }
 
     @Transactional
-    public List<Note> searchNotesInUserRooms(List<Room> userRooms, String searchWord) {
-        return noteRepository.findByRoomsAndSearchWord(userRooms, searchWord);
+    public List<Note> searchNotesInUserRooms(List<Room> roomList, String normalizedSearchWord, String searchType) {
+
+        if (searchType == null || searchType.isBlank()) {
+            searchType = "default";
+        }
+        return switch (searchType) {
+            case "title" -> noteRepository.findByTitleInUserRooms(roomList, normalizedSearchWord);
+            case "content" -> noteRepository.findByContentInUserRooms(roomList, normalizedSearchWord);
+            case "tag" -> noteRepository.findByTagInUserRooms(roomList, normalizedSearchWord);
+            default -> noteRepository.findByRoomsAndSearchWord(roomList, normalizedSearchWord);
+        };
     }
 }

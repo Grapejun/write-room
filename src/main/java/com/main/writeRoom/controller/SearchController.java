@@ -36,7 +36,6 @@ import static org.springframework.data.domain.PageRequest.*;
 public class SearchController {
 
     private final SearchQueryServiceImpl searchQueryServiceImpl;
-    private final NoteQueryServiceImpl noteQueryService;
     private final RoomCommandService roomCommandService;
 
     @GetMapping("/synonyms")
@@ -76,10 +75,9 @@ public class SearchController {
         return ApiResponse.of(SuccessStatus._OK, response);
     }
 
-    // 룸 제목 넘겨야 한다.
-    // 페이징
     // 검색 조건화
-    @Operation(summary = "노트 검색 API", description = "사용자가 속한 룸의 노트를 검색 하는 API입니다.")
+    @Operation(summary = "노트 검색 API", description = "사용자가 속한 모든 룸의 노트를 검색 하는 API입니다. searchType에는 title, content, tag 를 넣어 노트를 검색할 수 있으며," +
+            "그 외의 문자를 넣거나 아무 것도 넣지 않는다면 3가지 모두 검색 조건으로 활용 됩니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             // 에러 정리
@@ -88,13 +86,11 @@ public class SearchController {
             @Parameter(name = "searchWord", description = "검색어를 입력해 주세요."),
             @Parameter(name = "user", description = "user", hidden = true)
     })
-    @GetMapping("/") // 이거 되나 확인
+    @GetMapping("/")
     public ApiResponse<NoteResponseDTO.NoteListDTO> searchNotes(
             @AuthUser long userId,
             @RequestParam String searchWord,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String contents,
-            @RequestParam(required = false) String tag
+            @RequestParam(required = false) String searchType
     )
     {
         List<RoomParticipation> roomParticipationList = roomCommandService.getMyRoomResultList(userId);
@@ -104,7 +100,10 @@ public class SearchController {
                 .distinct() // 중복 제거 - 매니저, 참여자 동시 참여 가능
                 .toList(); // 결과를 List<Room>으로 수집
 
-        List<Note> noteList = searchQueryServiceImpl.searchNotesInUserRooms(roomList, searchWord);
+        String normalizedSearchWord = "%" + searchWord.toLowerCase() + "%";
+
+
+        List<Note> noteList = searchQueryServiceImpl.searchNotesInUserRooms(roomList, normalizedSearchWord, searchType);
         // 각각의 룸 아이디로 룸에 들어가서 searchWord를 포함하는 title, contents, tag 가 있는 룸들을 모두 리스트에 저장
 
         List<NoteResponseDTO.SearchNoteDTO> noteDTOList = NoteConverter.toNoteDTOList(noteList);

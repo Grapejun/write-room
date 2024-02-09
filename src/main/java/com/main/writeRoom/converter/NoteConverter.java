@@ -90,16 +90,6 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
             .build();
     }
 
-    // public static NoteResponseDTO.NoteResult toNoteDelete
-    /*
-    public static BookmarkResponseDTO.TopicResultDTO toDeleteResultDTO(Long id) {
-        return BookmarkResponseDTO.TopicResultDTO.builder()
-                .BookmarkId(id)
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-    */
-
     public static Note toNote(Room room, User user, Category category, NoteRequestDTO.createNoteDTO request, String imgUrl) {
 
     // challengeCheck
@@ -129,12 +119,6 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .user(user)
                 .build();
     }
-
-    /*public static NoteResponseDTO.NoteListDTO toNoteListDTO(List<Note> noteList) {
-        return NoteResponseDTO.NoteListDTO.builder()
-                .noteList(noteList)
-                .build();
-    }*/
 
     public static List<NoteResponseDTO.SearchNoteDTO> toNoteDTOList(List<Note> noteList) {
         return noteList.stream()
