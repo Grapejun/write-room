@@ -115,6 +115,27 @@ public class ChallengeController {
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeRoutineDTO(user1, routine, noteList));
     }
 
+    //다른 참여자꺼 챌린지 루틴 조회
+    @GetMapping("/challenge-routines/{participantsId}/{challengeId}")
+    @Operation(summary = "다른 참여자 챌린지 루틴 조회 API", description = "루틴 만들기 챌린지 진행화면에서 다른 참여자의 챌린지 루틴 진행화면을 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4001", description = "챌린지 루틴이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
+    })
+    @Parameters({
+            @Parameter(name = "participantsId", description = "다른 참여자의 회원 식별자를 입력하세요."),
+            @Parameter(name = "challengeId", description = "챌린지 루틴 식별자를 입력하세요.")
+    })
+    public ApiResponse<ChallengeResponseDTO.ChallengeRoutineDTO> getParticipantsRoutine(@PathVariable(name = "participantsId") Long participantsId, @PathVariable(name = "challengeId") Long challengeId) {
+        User user1 = userQueryService.findUser(participantsId);
+        ChallengeRoutine routine = routineQueryService.findRoutine(challengeId);
+        List<ChallengeResponseDTO.NoteDTO> noteList = routineQueryService.findNoteDate(user1, routine);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeRoutineDTO(user1, routine, noteList));
+    }
+
     //챌린지 루틴 달성 노트 조회
     @GetMapping("/challenge-routines/{roomId}/notes")
     @Operation(summary = "챌린지 루틴 달성 노트 조회 API", description = "루틴 만들기 챌린지 진행화면에서 챌린지 루틴 달성 스탬프를 눌렀을 때 해당 날짜에 작성된 200자 이상의 노트들이 조회되는 API입니다.")
