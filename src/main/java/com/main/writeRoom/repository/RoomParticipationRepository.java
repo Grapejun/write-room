@@ -8,6 +8,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface RoomParticipationRepository extends JpaRepository<RoomParticipation, Long> {
     Page<RoomParticipation> findAllByUser(User user, PageRequest pageRequest);
@@ -15,4 +17,5 @@ public interface RoomParticipationRepository extends JpaRepository<RoomParticipa
     RoomParticipation findByRoomAndUser(Room room, User user);
     void deleteByRoomAndUser(Room room, User user);
     boolean existsByRoomAndUser(Room room, User user);
+    List<RoomParticipation> findByRoom(Room room);
 }

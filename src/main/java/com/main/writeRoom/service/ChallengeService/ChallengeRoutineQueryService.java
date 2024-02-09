@@ -18,4 +18,5 @@ public interface ChallengeRoutineQueryService {
     public ChallengeRoutineParticipation findProgressRoutineParticipation(User user, Room room);
 
     public List<ChallengeRoutineParticipation> findByChallengeStatus(ChallengeStatus challengeStatus);
+    public List<User> findRoutineUsers(Room room);
 }

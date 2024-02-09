@@ -26,6 +26,7 @@ import com.main.writeRoom.validation.annotation.PageLessNull;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
+import com.main.writeRoom.web.dto.room.RoomResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -72,7 +73,7 @@ public class ChallengeController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4004", description = "챌린지 마감 날짜의 범위를 벗어났습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4008", description = "챌린지 마감 날짜의 범위를 벗어났습니다.",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4008", description = "이미 진행 중인 챌린지가 있습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters({
@@ -87,6 +88,25 @@ public class ChallengeController {
         ChallengeRoutine challengeRoutine = routineCommandService.create(roomId, request);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toCreateChallengeRoutineResultDTO(challengeRoutine));
     }
+
+    //같은 룸에 있는 참여 가능한 회원 조회 - 루틴
+    @GetMapping("/challenge-routines/create/users")
+    @Operation(summary = "챌린지 루틴 생성 시 참여 가능한 회원 조회 API", description = "루틴 만들기 화면에서 챌린지 루틴의 참여자를 등록할 때, 참여 가능 회원을 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
+    })
+    @Parameters({
+            @Parameter(name = "roomId", description = "챌린지가 진행될 룸의 식별자를 입력하세요."),
+    })
+    public ApiResponse<ChallengeResponseDTO.UserList> getRoutineUsers(@RequestParam(name = "roomId") Long roomId) {
+        List<ChallengeResponseDTO.UserDTO> userList = routineQueryService.findRoutineUsers(roomQueryService.findRoom(roomId)).stream()
+                .map(user -> ChallengeConverter.toUserDTO(user)).collect(Collectors.toList());
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toUserList(userList));
+    }
+    //같은 룸에 있는 참여 가능한 회원 조회 - 목표량
+
 
     //챌린지 루틴 조회
     @GetMapping("/challenge-routines/{roomId}")
@@ -193,7 +213,7 @@ public class ChallengeController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4004", description = "챌린지 마감 날짜의 범위를 벗어났습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4008", description = "챌린지 마감 날짜의 범위를 벗어났습니다.",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4008", description = "이미 진행 중인 챌린지가 있습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters({

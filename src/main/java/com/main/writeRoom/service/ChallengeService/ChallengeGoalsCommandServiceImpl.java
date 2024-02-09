@@ -13,6 +13,7 @@ import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import com.main.writeRoom.handler.ChallengeHandler;
 import com.main.writeRoom.repository.ChallengeGoalsParticipationRepository;
 import com.main.writeRoom.repository.ChallengeGoalsRepository;
+import com.main.writeRoom.repository.RoomParticipationRepository;
 import com.main.writeRoom.service.RoomService.RoomQueryService;
 import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;

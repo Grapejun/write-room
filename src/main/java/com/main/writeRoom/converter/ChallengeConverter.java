@@ -216,4 +216,11 @@ public class ChallengeConverter {
                 .challengeStatus(goalsParticipation.getChallengeStatus())
                 .build();
     }
+
+    //참여가능한 회원 목록 dto로 변환
+    public static ChallengeResponseDTO.UserList toUserList(List<ChallengeResponseDTO.UserDTO> userDTOList) {
+        return ChallengeResponseDTO.UserList.builder()
+                .userList(userDTOList)
+                .build();
+    }
 }

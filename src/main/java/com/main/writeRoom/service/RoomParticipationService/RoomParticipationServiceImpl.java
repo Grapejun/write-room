@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -40,5 +43,12 @@ public class RoomParticipationServiceImpl implements RoomParticipationService {
         }
         RoomParticipation updateRoom = roomParticipationRepository.findByRoomAndUser(room, updateUser);
         updateRoom.updateAuthority(authority);
+    }
+
+    public List<User> findRoomUserList(Room room) {
+        List<User> userList = roomParticipationRepository.findByRoom(room).stream()
+                .map(roomParticipation -> roomParticipation.getUser())
+                .collect(Collectors.toList());
+        return userList;
     }
 }
