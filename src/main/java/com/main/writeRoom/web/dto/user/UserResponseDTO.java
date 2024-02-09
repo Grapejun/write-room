@@ -39,6 +39,18 @@ public class UserResponseDTO {
         String accessToken;
     }
 
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class OauthLoginDTO {
+        private Long userId;
+        private String email;
+        private String name;
+        private String role; // Role 필드 추가
+        private String accessToken;
+    }
+
     @Builder
     @Getter
     @NoArgsConstructor

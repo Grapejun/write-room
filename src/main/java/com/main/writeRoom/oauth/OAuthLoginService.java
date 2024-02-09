@@ -2,10 +2,13 @@ package com.main.writeRoom.oauth;
 
 import com.main.writeRoom.converter.UserConverter;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.enums.Role;
 import com.main.writeRoom.oauth.domain.AuthTokensGenerator;
 import com.main.writeRoom.oauth.domain.OAuthInfoResponse;
 import com.main.writeRoom.oauth.domain.OAuthLoginParams;
 import com.main.writeRoom.oauth.domain.RequestOAuthInfoService;
+import com.main.writeRoom.oauth.infra.KakaoInfoResponse;
+import com.main.writeRoom.oauth.infra.KakaoLoginParams;
 import com.main.writeRoom.repository.UserRepository;
 import com.main.writeRoom.web.dto.user.UserResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,32 @@ public class OAuthLoginService {
         UserResponseDTO.CustomUserInfo info = UserConverter.CustomUserInfoResultDTO(user);
         // 멤버 ID를 사용하여 인증 토큰을 생성해서 반환
         return authTokensGenerator.generate(info);
+    }
+
+    public UserResponseDTO.OauthLoginDTO login(KakaoLoginParams params) {
+        // 카카오 인증 정보 요청
+        OAuthInfoResponse oAuthInfoResponse = requestOAuthInfoService.request(params);
+        Long memberId = findOrCreateMember(oAuthInfoResponse);
+        User user = memberRepository.getReferenceById(memberId);
+
+        // CustomUserInfo 객체 생성
+        UserResponseDTO.CustomUserInfo customUserInfo = UserResponseDTO.CustomUserInfo.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .role(Role.USER) // 역할 설정을 열거형 값으로 변경
+                .build();
+
+        // 토큰 생성
+        AuthTokens tokens = authTokensGenerator.generate(customUserInfo);
+
+        // OauthLoginDTO 객체 생성 및 반환
+        return UserResponseDTO.OauthLoginDTO.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .role(Role.USER.name()) // 'USER' 문자열 대신 Role 열거형의 name() 메서드를 사용
+                .accessToken(tokens.getAccessToken())
+                .build();
     }
 
     // 주어진 OAuth 정보를 사용하여 멤버를 찾거나 새로 생성
