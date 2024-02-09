@@ -236,6 +236,27 @@ public class ChallengeController {
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeGoalsDTO(user1, goals, achieveCount));
     }
 
+    //다른 참여자꺼 챌린지 목표량 조회
+    @GetMapping("/challenge-goals/{participantsId}/{challengeId}")
+    @Operation(summary = "다른 참여자 챌린지 목표량 조회 API", description = "목표량 달성하기 진행화면에서 다른 참여자의 챌린지 목표량 진행화면을 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4005", description = "챌린지 목표량이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
+    })
+    @Parameters({
+            @Parameter(name = "participantsId", description = "다른 참여자의 회원 식별자를 입력하세요."),
+            @Parameter(name = "challengeId", description = "챌린지 목표량 식별자를 입력하세요.")
+    })
+    public ApiResponse<ChallengeResponseDTO.ChallengeGoalsDTO> getParticipantsGoals(@PathVariable(name = "participantsId") Long participantsId, @PathVariable(name = "challengeId") Long challengeId) {
+        User user1 = userQueryService.findUser(participantsId);
+        ChallengeGoals goals = goalsQueryService.findGoals(challengeId);
+        Integer achieveCount = goalsQueryService.findAchieveNote(user1, goals);
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeGoalsDTO(user1, goals, achieveCount));
+    }
+
     //챌린지 목표량 포기
     @PatchMapping("challenge-goals/give-up/{challengeId}")
     @Operation(summary = "챌린지 목표량 포기 API", description = "챌린지 포기하기 팝업에서 챌린지 목표량을 포기하는 API입니다.")
