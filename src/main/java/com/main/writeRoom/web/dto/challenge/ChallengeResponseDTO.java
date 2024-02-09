@@ -26,6 +26,15 @@ public class ChallengeResponseDTO {
         Long challengeId;
     }
 
+    //참여 가능한 회원 목록 조회
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserList {
+        List<UserDTO> userList;
+    }
+
     //2. 챌린지 루틴 조회
     @Builder
     @Getter
