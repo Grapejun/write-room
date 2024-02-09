@@ -17,4 +17,5 @@ public interface RoomParticipationRepository extends JpaRepository<RoomParticipa
     RoomParticipation findByRoomAndUser(Room room, User user);
     void deleteByRoomAndUser(Room room, User user);
     List<RoomParticipation> findAllByUser(User user);
+    boolean existsByRoomAndUser(Room room, User user);
 }

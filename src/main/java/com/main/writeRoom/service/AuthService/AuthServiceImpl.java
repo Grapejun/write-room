@@ -4,16 +4,19 @@ import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.config.utils.JwtUtil;
 import com.main.writeRoom.converter.UserConverter;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.handler.TokenHandler;
 import com.main.writeRoom.handler.UserHandler;
 import com.main.writeRoom.repository.UserRepository;
+import com.main.writeRoom.service.MailService.EmailService;
 import com.main.writeRoom.web.dto.user.UserRequestDTO;
 import com.main.writeRoom.web.dto.user.UserResponseDTO;
+import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.mail.MessagingException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class AuthServiceImpl implements AuthService{
     private final JwtUtil jwtUtil;
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     @Transactional
     public UserResponseDTO.UserSignInResult login(UserRequestDTO.UserSignIn request) {
@@ -53,5 +57,29 @@ public class AuthServiceImpl implements AuthService{
 
         User user = UserConverter.UserSignUpDTO(request, password);
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public User sendResetPwd(UserRequestDTO.ResetPasswordForEmail request) throws MessagingException, UnsupportedJwtException {
+        User user  = userRepository.findByEmail(request.getEmail());
+        if (user == null) {
+            throw new UserHandler(ErrorStatus.MEMBER_NOT_FOUND);
+        }
+
+        String resetToken = UUID.randomUUID().toString();
+        user.setResetToken(resetToken);
+        emailService.sendEmail(request.getEmail(), user, resetToken);
+        return user;
+    }
+
+    @Transactional
+    public User resetPwd(UserRequestDTO.ResetPassword request, String resetToken) {
+        User user = userRepository.findByResetToken(resetToken);
+        if (user == null) {
+            throw new TokenHandler(ErrorStatus.TOKEN_NOT_FOUND);
+        }
+        user.setPassword(encoder.encode((request.getPassword())));
+        user.setResetToken(null);
+        return user;
     }
 }

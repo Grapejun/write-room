@@ -1,15 +1,11 @@
 package com.main.writeRoom.web.dto.note;
 
-import com.main.writeRoom.domain.Emoji;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Tag;
-import com.main.writeRoom.domain.mapping.EmojiClick;
 import com.main.writeRoom.web.dto.emoji.EmojiResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collector;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -113,6 +109,39 @@ public class NoteResponseDTO {
         private String title;
         private String subtitle;
         private String content;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+
+    public static class RoomResultForTag {
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+        Long roomId;
+        String roomTitle;
+        String roomIntroduction;
+        List<NoteListForTag> noteListForTags;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListForTag {
+        Long noteId;
+        String noteTitle;
+        String noteSubtitle;
+        String noteContent;
+        String writer;
+        String noteImg;
+        String userProfileImg;
+        LocalDateTime createdAt;
+        List<TagResponseDTO.TagList> tagList;
     }
 
 }

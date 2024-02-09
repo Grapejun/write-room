@@ -4,12 +4,19 @@ import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.Authority;
+import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
+import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import com.main.writeRoom.web.dto.room.RoomRequestDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO;
 import com.main.writeRoom.web.dto.room.roomPaticipation.userRoomResponseDTO;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 
 public class RoomConverter {
@@ -134,6 +141,36 @@ public class RoomConverter {
                 .user(user)
                 .room(room)
                 .authority(Authority.PARTICIPANT)
+                .build();
+    }
+
+    //챌린지 달성률 조회
+    public static RoomResponseDTO.ChallengeAchieveResult toChallengeAchieveResult(ChallengeRoutineParticipation crp, ChallengeGoalsParticipation cgp) {
+        double routineAchieveRate = 0.0, goalsAchieveRate = 0.0;
+        Long routineId = null, goalsId = null;
+        int routineTargetCount = 0, goalsTargetCount = 0;
+        if (crp != null) {
+            double routineAchieveRate1 = crp.getChallengeRoutine().getTargetCount() * (ChronoUnit.DAYS.between(crp.getChallengeRoutine().getStartDate(), LocalDate.now())/7) + crp.getAchieveCount();
+            double routineAchieveRate2 = crp.getChallengeRoutine().getTargetCount() * ((ChronoUnit.DAYS.between(crp.getChallengeRoutine().getStartDate(), crp.getChallengeRoutine().getDeadline())+1)/7);
+            routineAchieveRate = Math.round(routineAchieveRate1/routineAchieveRate2 * 1000)/10.0;
+            routineId = crp.getChallengeRoutine().getId();
+            routineTargetCount = crp.getChallengeRoutine().getTargetCount();
+        }
+
+        if (cgp != null) {
+            goalsAchieveRate = ((double)cgp.getAchieveCount()/cgp.getChallengeGoals().getTargetCount())*100;
+            goalsAchieveRate = Math.round(goalsAchieveRate * 10)/10.0;
+            goalsId = cgp.getChallengeGoals().getId();
+            goalsTargetCount = cgp.getChallengeGoals().getTargetCount();
+        }
+
+        return RoomResponseDTO.ChallengeAchieveResult.builder()
+                .routineId(routineId)
+                .routineTargetCount(routineTargetCount)
+                .routineAchieveRate(routineAchieveRate)
+                .goalsId(goalsId)
+                .goalsTargetCount(goalsTargetCount)
+                .goalsAchieveRate(goalsAchieveRate)
                 .build();
     }
 }

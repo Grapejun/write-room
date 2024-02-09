@@ -9,7 +9,6 @@ import com.main.writeRoom.web.dto.note.NoteRequestDTO;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -134,4 +133,44 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                         .build())
                 .collect(Collectors.toList());
     }
+
+    public static NoteResponseDTO.RoomResultForTag toNoteListForTag(Room room, Page<NoteTag> noteTags) {
+        List<Note> notes = noteTags.stream()
+                .map(NoteTag::getNote)
+                .toList();
+
+        List<NoteResponseDTO.NoteListForTag> toNoteListForTagResult = notes.stream()
+                .map(NoteConverter::toNoteListForTagDTOList)
+                .collect(Collectors.toList());
+
+        return NoteResponseDTO.RoomResultForTag.builder()
+                .roomId(room.getId())
+                .noteListForTags(toNoteListForTagResult)
+                .listSize(noteTags.getSize())
+                .totalPage(noteTags.getTotalPages())
+                .totalElements(noteTags.getTotalElements())
+                .isFirst(noteTags.isFirst())
+                .isLast(noteTags.isLast())
+                .build();
+
+    }
+
+    public static NoteResponseDTO.NoteListForTag toNoteListForTagDTOList(Note note) {
+        List<TagResponseDTO.TagList> toNoteResultTagDTOList = note.getNoteTagList().stream()
+                .map(NoteConverter::toNoteResultTagDTOList).collect(Collectors.toList());
+
+        return NoteResponseDTO.NoteListForTag.builder()
+                .noteId(note.getId())
+                .noteTitle(note.getTitle())
+                .noteSubtitle(note.getSubtitle())
+                .noteContent(note.getContent())
+                .noteImg(note.getCoverImg())
+                .writer(note.getUser().getName())
+                .userProfileImg(note.getUser().getProfileImage())
+                .createdAt(note.getCreatedAt())
+                .tagList(toNoteResultTagDTOList)
+                .build();
+
+    }
+
 }
