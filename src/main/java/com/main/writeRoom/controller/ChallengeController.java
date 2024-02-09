@@ -106,7 +106,21 @@ public class ChallengeController {
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toUserList(userList));
     }
     //같은 룸에 있는 참여 가능한 회원 조회 - 목표량
-
+    @GetMapping("/challenge-goals/create/users")
+    @Operation(summary = "챌린지 목표량 생성 시 참여 가능한 회원 조회 API", description = "목표량 달성하기 화면에서 챌린지 목표량의 참여자를 등록할 때, 참여 가능 회원을 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class)))
+    })
+    @Parameters({
+            @Parameter(name = "roomId", description = "챌린지가 진행될 룸의 식별자를 입력하세요."),
+    })
+    public ApiResponse<ChallengeResponseDTO.UserList> getGoalsUsers(@RequestParam(name = "roomId") Long roomId) {
+        List<ChallengeResponseDTO.UserDTO> userList = goalsQueryService.findGoalsUsers(roomQueryService.findRoom(roomId)).stream()
+                .map(user -> ChallengeConverter.toUserDTO(user)).collect(Collectors.toList());
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toUserList(userList));
+    }
 
     //챌린지 루틴 조회
     @GetMapping("/challenge-routines/{roomId}")

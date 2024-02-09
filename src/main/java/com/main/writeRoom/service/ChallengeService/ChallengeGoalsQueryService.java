@@ -17,4 +17,6 @@ public interface ChallengeGoalsQueryService {
 
     public ChallengeGoalsParticipation findProgressGoalsParticipation(User user, Room room);
     public List<ChallengeGoalsParticipation> findByChallengeStatus(ChallengeStatus challengeStatus);
+
+    public List<User> findGoalsUsers(Room room);
 }

@@ -45,6 +45,7 @@ public class RoomParticipationServiceImpl implements RoomParticipationService {
         updateRoom.updateAuthority(authority);
     }
 
+    @Override
     public List<User> findRoomUserList(Room room) {
         List<User> userList = roomParticipationRepository.findByRoom(room).stream()
                 .map(roomParticipation -> roomParticipation.getUser())
