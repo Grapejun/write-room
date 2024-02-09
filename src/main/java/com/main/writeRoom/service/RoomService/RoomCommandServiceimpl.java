@@ -17,6 +17,8 @@ import com.main.writeRoom.repository.RoomRepository;
 import com.main.writeRoom.repository.UserRepository;
 import com.main.writeRoom.repository.UuidRepository;
 import com.main.writeRoom.web.dto.room.RoomRequestDTO;
+
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -43,6 +45,14 @@ public class RoomCommandServiceimpl implements RoomCommandService {
         PageRequest pageRequest = PageRequest.of(page, 12, Sort.by(Sort.Order.desc("room.updatedAt")));
         return userRoomRepository.findAllByUser(user, pageRequest);
     }
+
+    @Override
+    public List<RoomParticipation> getMyRoomResultList(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        return userRoomRepository.findAllByUser(user);
+    }
+
 
     @Override
     public Page<RoomParticipation> getUserRoomInfoList(Room room) {

@@ -91,6 +91,30 @@ public class NoteResponseDTO {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class NoteListDTO {
+        private List<SearchNoteDTO> noteList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SearchNoteDTO {
+        private String roomName;
+        private Long noteId;
+        private String writer;
+        private String profileImg;
+        LocalDateTime  createdAt;
+
+        private String title;
+        private String subtitle;
+        private String content;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
 
     public static class RoomResultForTag {
         Integer listSize;

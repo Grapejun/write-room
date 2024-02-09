@@ -89,16 +89,6 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
             .build();
     }
 
-    // public static NoteResponseDTO.NoteResult toNoteDelete
-    /*
-    public static BookmarkResponseDTO.TopicResultDTO toDeleteResultDTO(Long id) {
-        return BookmarkResponseDTO.TopicResultDTO.builder()
-                .BookmarkId(id)
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-    */
-
     public static Note toNote(Room room, User user, Category category, NoteRequestDTO.createNoteDTO request, String imgUrl) {
 
     // challengeCheck
@@ -127,6 +117,21 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .note(note)
                 .user(user)
                 .build();
+    }
+
+    public static List<NoteResponseDTO.SearchNoteDTO> toNoteDTOList(List<Note> noteList) {
+        return noteList.stream()
+                .map(note -> NoteResponseDTO.SearchNoteDTO.builder()
+                        .roomName(note.getRoom().getTitle())
+                        .noteId(note.getId())
+                        .writer(note.getUser().getName())
+                        .profileImg(note.getUser().getProfileImage())
+                        .createdAt(note.getCreatedAt())
+                        .title(note.getTitle())
+                        .subtitle(note.getSubtitle())
+                        .content(note.getContent()) // 일부 추출??
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public static NoteResponseDTO.RoomResultForTag toNoteListForTag(Room room, Page<NoteTag> noteTags) {
