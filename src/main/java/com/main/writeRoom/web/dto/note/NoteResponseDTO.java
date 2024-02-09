@@ -9,6 +9,7 @@ import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collector;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -88,6 +89,30 @@ public class NoteResponseDTO {
     @AllArgsConstructor
     public static class NoteDeleteResult {
         Long noteId;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListDTO {
+        private List<SearchNoteDTO> noteList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SearchNoteDTO {
+        private String roomName;
+        private Long noteId;
+        private String writer;
+        private String profileImg;
+        LocalDateTime  createdAt;
+
+        private String title;
+        private String subtitle;
+        private String content;
     }
 
 }

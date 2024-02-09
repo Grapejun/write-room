@@ -1,6 +1,10 @@
 package com.main.writeRoom.service.SearchService;
 
 //import com.main.writeRoom.web.dto.topic.TopicResponseDTO;
+import com.main.writeRoom.domain.Note;
+import com.main.writeRoom.domain.Room;
+import com.main.writeRoom.repository.NoteRepository;
+import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import com.main.writeRoom.web.dto.search.SearchResponseDTO;
 import com.theokanning.openai.completion.chat.ChatCompletionChoice;
 import com.theokanning.openai.completion.chat.ChatCompletionRequest;
@@ -8,6 +12,8 @@ import com.theokanning.openai.completion.chat.ChatMessage;
 import com.theokanning.openai.service.OpenAiService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +24,15 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SearchQueryServiceImpl implements SearchQueryService{
+public class SearchQueryServiceImpl implements SearchQueryService {
+
+    private final NoteRepository noteRepository;
+
     private OpenAiService openAiService;
     private static final String MODEL = "gpt-3.5-turbo";
 
     @Value("${GPT_SECRET}")
     private String apiKey;
-
     @Transactional
     public List<SearchResponseDTO.VocabularyResultDTO> getSynonyms(String request) {
         this.openAiService = new OpenAiService(apiKey, Duration.ofSeconds(20));
@@ -91,5 +99,10 @@ public class SearchQueryServiceImpl implements SearchQueryService{
             keywords.add(keywordDto);
         }
         return keywords;
+    }
+
+    @Transactional
+    public List<Note> searchNotesInUserRooms(List<Room> userRooms, String searchWord) {
+        return noteRepository.findByRoomsAndSearchWord(userRooms, searchWord);
     }
 }

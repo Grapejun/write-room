@@ -129,4 +129,25 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .user(user)
                 .build();
     }
+
+    /*public static NoteResponseDTO.NoteListDTO toNoteListDTO(List<Note> noteList) {
+        return NoteResponseDTO.NoteListDTO.builder()
+                .noteList(noteList)
+                .build();
+    }*/
+
+    public static List<NoteResponseDTO.SearchNoteDTO> toNoteDTOList(List<Note> noteList) {
+        return noteList.stream()
+                .map(note -> NoteResponseDTO.SearchNoteDTO.builder()
+                        .roomName(note.getRoom().getTitle())
+                        .noteId(note.getId())
+                        .writer(note.getUser().getName())
+                        .profileImg(note.getUser().getProfileImage())
+                        .createdAt(note.getCreatedAt())
+                        .title(note.getTitle())
+                        .subtitle(note.getSubtitle())
+                        .content(note.getContent()) // 일부 추출??
+                        .build())
+                .collect(Collectors.toList());
+    }
 }
