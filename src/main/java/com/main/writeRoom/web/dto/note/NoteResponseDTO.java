@@ -48,6 +48,8 @@ public class NoteResponseDTO {
         String noteImg;
         String userProfileImg;
         LocalDateTime createdAt;
+        Long categoryId;
+        String categoryContent;
         List<TagResponseDTO.TagList> tagList;
     }
 

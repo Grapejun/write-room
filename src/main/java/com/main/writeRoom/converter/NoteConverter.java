@@ -47,6 +47,8 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .writer(note.getUser().getName())
                 .userProfileImg(note.getUser().getProfileImage())
                 .createdAt(note.getCreatedAt())
+                .categoryId(note.getCategory().getId())
+                .categoryContent(note.getCategory().getName())
                 .tagList(toNoteResultTagDTOList)
                 .build();
     }
