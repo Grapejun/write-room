@@ -55,7 +55,7 @@ public class AuthController {
         return ApiResponse.of(SuccessStatus._OK, UserConverter.CustomUserInfoResultDTO(user));
     }
 
-    @Operation(summary = "비밀번호 재설정 API", description = "비밀번호 재설정 API이며, 유저가 재설정 버튼 url에 토큰을 같이 담았습니다.")
+    @Operation(summary = "로그인 시 비밀번호 재설정 API", description = "로그인 시 비밀번호 재설정 API이며, 유저가 재설정 버튼 url에 토큰을 같이 담았습니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4001", description = "재설정 토큰이 잘못되었습니다.",
