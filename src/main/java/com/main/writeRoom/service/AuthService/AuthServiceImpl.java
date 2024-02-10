@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService{
 
         String resetToken = UUID.randomUUID().toString();
         user.setResetToken(resetToken);
-        emailService.sendEmail(request.getEmail(), user, resetToken);
+        emailService.sendEmail(request.getEmail(), user, resetToken, "password");
         return user;
     }
 
