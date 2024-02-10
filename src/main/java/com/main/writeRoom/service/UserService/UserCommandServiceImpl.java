@@ -8,6 +8,7 @@ import com.main.writeRoom.domain.User.ExistedEmail;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.handler.UserHandler;
 import com.main.writeRoom.repository.ExistedEmailRespository;
+import com.main.writeRoom.repository.UserRepository;
 import com.main.writeRoom.repository.UuidRepository;
 import com.main.writeRoom.service.MailService.EmailService;
 import com.main.writeRoom.web.dto.user.UserRequestDTO;
@@ -29,6 +30,7 @@ public class UserCommandServiceImpl implements UserCommandService {
     private final PasswordEncoder encoder;
     private final EmailService emailService;
     private final ExistedEmailRespository existedEmailRespository;
+    private final UserRepository userRepository;
 
 
     @Override
@@ -61,15 +63,21 @@ public class UserCommandServiceImpl implements UserCommandService {
     @Transactional
     public User updatedEmail(Long userId, UserRequestDTO.ResetPasswordForEmail request) throws MessagingException {
         User user = userQueryService.findUser(userId);
+        User userEmail = userRepository.findByEmail(request.getEmail());
+
+        if (userEmail != null) {
+            throw new UserHandler(ErrorStatus.EXIST_EMAIL);
+        }
+
         String resetToken = UUID.randomUUID().toString();
 
         user.setResetToken(resetToken);
 
+        ExistedEmail existedEmail = UserConverter.toExistedEmailResult(user.getEmail(), resetToken, user);
+        existedEmailRespository.save(existedEmail);
+
         emailService.sendEmail(request.getEmail(), user, resetToken, "email");
         user.setEmail(request.getEmail());
-
-        ExistedEmail existedEmail = UserConverter.toExistedEmailResult(request.getEmail(), resetToken, user);
-        existedEmailRespository.save(existedEmail);
 
         return user;
     }

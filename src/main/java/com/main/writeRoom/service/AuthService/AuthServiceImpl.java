@@ -3,15 +3,18 @@ package com.main.writeRoom.service.AuthService;
 import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.config.utils.JwtUtil;
 import com.main.writeRoom.converter.UserConverter;
+import com.main.writeRoom.domain.User.ExistedEmail;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.handler.TokenHandler;
 import com.main.writeRoom.handler.UserHandler;
+import com.main.writeRoom.repository.ExistedEmailRespository;
 import com.main.writeRoom.repository.UserRepository;
 import com.main.writeRoom.service.MailService.EmailService;
 import com.main.writeRoom.web.dto.user.UserRequestDTO;
 import com.main.writeRoom.web.dto.user.UserResponseDTO;
 import io.jsonwebtoken.UnsupportedJwtException;
 import jakarta.mail.MessagingException;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +28,7 @@ public class AuthServiceImpl implements AuthService{
     private final JwtUtil jwtUtil;
     private final PasswordEncoder encoder;
     private final UserRepository userRepository;
+    private final ExistedEmailRespository existedEmailRespository;
     private final EmailService emailService;
 
     @Transactional
@@ -73,13 +77,24 @@ public class AuthServiceImpl implements AuthService{
     }
 
     @Transactional
-    public User resetPwd(UserRequestDTO.ResetPassword request, String resetToken) {
+    public User resetPwd(UserRequestDTO.ResetPassword request, String resetToken, String type) {
         User user = userRepository.findByResetToken(resetToken);
+        String password = encoder.encode(request.getPassword());
         if (user == null) {
             throw new TokenHandler(ErrorStatus.TOKEN_NOT_FOUND);
         }
-        user.setPassword(encoder.encode((request.getPassword())));
-        user.setResetToken(null);
+
+        ExistedEmail existedEmail = existedEmailRespository.findByResetToken(resetToken);
+        if (Objects.equals(type, "pwd")) {
+            user.setPassword(encoder.encode((request.getPassword())));
+            user.setResetToken(null);
+        } else {
+            user.setEmail(existedEmail.getExistingEmail());
+            existedEmailRespository.delete(existedEmail);
+
+            user.setPassword(password);
+            user.setResetToken(null);
+        }
         return user;
     }
 }

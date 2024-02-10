@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ExistedEmailRespository extends JpaRepository<ExistedEmail, Long> {
+    ExistedEmail findByResetToken(String resetToken);
 }
