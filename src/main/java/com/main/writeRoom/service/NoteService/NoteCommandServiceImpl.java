@@ -188,8 +188,8 @@ public class NoteCommandServiceImpl implements NoteCommandService{
         if (!user.getId().equals(note.getUser().getId()))
             throw new AuthenticityHandler(ErrorStatus.AUTHORITY_NOT_FOUND);
 
-        Optional<EmojiClick> emojiClick = emojiClickRepository.findByNoteAndUser(note, user);
-        emojiClick.ifPresent(click -> emojiClickRepository.deleteById(click.getId()));
+        List<EmojiClick> emojiClick = emojiClickRepository.findAllByNote(note);
+        emojiClick.forEach(emojiClick1 -> emojiClickRepository.deleteById(emojiClick1.getId()));
 
         noteRepository.delete(note);
         return NoteConverter.toDeleteNoteResult(note);
