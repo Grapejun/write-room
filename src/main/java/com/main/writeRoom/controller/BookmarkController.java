@@ -52,8 +52,10 @@ public class BookmarkController {
     @Operation(summary = "오늘의 소재 북마크 삭제 API", description = "특정 사용자가 북마크에 등록한 '오늘의 소재'를 삭제하는 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "BOOKMARK4001", description = "해당하는 Id의 북마크가 없습니다.",content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "BOOKMARK4002", description = "해당 사용자가 등록한 북마크가 아닙니다.",content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "BOOKMARK4001", description = "해당하는 Id의 북마크가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "BOOKMARK4002", description = "해당 사용자가 등록한 북마크가 아닙니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters({
             @Parameter(name = "user", description = "사용자", hidden = true),

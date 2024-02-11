@@ -21,7 +21,9 @@ public class EmojiResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class EmojiDeleteResult {
-        Long emojiClickId;
+        Long emojiId;
+        Long userId;
+        Long emojiNum;
     }
 
     @Builder
