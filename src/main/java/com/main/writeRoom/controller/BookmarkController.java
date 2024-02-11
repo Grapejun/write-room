@@ -7,7 +7,6 @@ import com.main.writeRoom.converter.BookmarkConverter;
 import com.main.writeRoom.domain.Bookmark.BookmarkMaterial;
 import com.main.writeRoom.service.BookmarkService.BookmarkQueryService;
 import com.main.writeRoom.service.BookmarkService.BookmarkServiceImpl;
-import com.main.writeRoom.web.dto.bookmark.BookmarkRequestDTO;
 import com.main.writeRoom.web.dto.bookmark.BookmarkResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -51,9 +50,10 @@ public class BookmarkController {
             // 북마크 id에 해당하는 북마크가 없을 경우 에러
     })
     @Parameters({
+            @Parameter(name = "user", description = "사용자", hidden = true),
             @Parameter(name = "id", description = "북마크 아이디, path variable 입니다!"),
     })
-    public ApiResponse<BookmarkResponseDTO.TopicResultDTO> deleteBookmark(@PathVariable Long id) {
+    public ApiResponse<BookmarkResponseDTO.TopicResultDTO> deleteBookmark(@AuthUser long userId, @PathVariable Long id) {
         return ApiResponse.of(SuccessStatus._OK, bookmarkService.deleteMaterial(id));
     }
 

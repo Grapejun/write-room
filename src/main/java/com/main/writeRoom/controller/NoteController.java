@@ -82,7 +82,6 @@ public class NoteController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             // 존재 하지 않는 노트일 때 에러
             // 조회에서도 룸 안의 사람만 조회 가능한가? 필요하면 조건 추가.
-            // 노트 생성 수정 시 바로 노트 조회 반환해도 좋을 듯 함.
     })
     @Parameters({
             @Parameter(name = "noteId", description = "조회할 노트의 아이디입니다."),
@@ -105,8 +104,12 @@ public class NoteController {
             // 존재 하지 않는 노트일 때 에러
             // 작성자가 아닌 경우 수정 불가
     })
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true)
+    })
     @PutMapping(value = "/notes/{noteId}", consumes = "multipart/form-data")
     public ApiResponse<NoteResponseDTO.NoteResult> updateNote(
+            @AuthUser long userId,
             @PathVariable(name = "noteId")Long noteId,
             @RequestParam(name = "request") String request,
             @RequestPart(required = false, value = "noteImg") MultipartFile noteImg)

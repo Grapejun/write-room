@@ -12,14 +12,14 @@ public class BookmarkConverter {
 
     public static BookmarkResponseDTO.TopicResultDTO toBookmarkResultDTO(BookmarkMaterial topic) {
         return BookmarkResponseDTO.TopicResultDTO.builder()
-                .BookmarkId(topic.getId())
+                .bookmarkId(topic.getId())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
 
     public static BookmarkResponseDTO.TopicResultDTO toDeleteResultDTO(Long id) {
         return BookmarkResponseDTO.TopicResultDTO.builder()
-                .BookmarkId(id)
+                .bookmarkId(id)
                 .createdAt(LocalDateTime.now())
                 .build();
     }

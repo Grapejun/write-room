@@ -8,7 +8,6 @@ import com.main.writeRoom.handler.BookmarkHandler;
 import com.main.writeRoom.handler.UserHandler;
 import com.main.writeRoom.repository.BookmarkMaterialRepository;
 import com.main.writeRoom.repository.UserRepository;
-import com.main.writeRoom.web.dto.bookmark.BookmarkRequestDTO;
 import com.main.writeRoom.web.dto.bookmark.BookmarkResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

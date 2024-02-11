@@ -46,7 +46,6 @@ public class EmojiController {
     @Operation(summary = "이모지 남기기 API", description = "새로운 이모지를 생성하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            // 에러 상황 정리
             // 한 사람당 하나만 등록 가능 하게
     })
     @Parameters({

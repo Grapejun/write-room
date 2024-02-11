@@ -1,6 +1,5 @@
 package com.main.writeRoom.web.dto.bookmark;
 
-import com.main.writeRoom.domain.Bookmark.BookmarkMaterial;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,19 +15,9 @@ public class BookmarkResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class TopicResultDTO {
-        Long BookmarkId;
+        Long bookmarkId;
         LocalDateTime createdAt;
     }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class TopicSearchResultDTO {
-        Long userId;
-        LocalDateTime createdAt;
-    }
-
 
     @Getter
     @Builder
@@ -43,11 +32,11 @@ public class BookmarkResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class BookMarkMaterialListDTO {
-        List<BookmarkMaterialDTO> bookmarkMaterialList;
         Integer listSize;
         Integer totalPage;
         Long totalElements;
         Boolean isFirst;
         Boolean isLast;
+        List<BookmarkMaterialDTO> bookmarkMaterialList;
     }
 }
