@@ -57,7 +57,7 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
 
         return NoteResponseDTO.NoteResult.builder()
                 .noteCoverImg(note.getCoverImg())
-                .noteSubTitle(note.getSubtitle())
+                .noteSubtitle(note.getSubtitle())
                 .noteTitle(note.getTitle())
                 .noteContent(note.getContent())
                 .createdAt(note.getCreatedAt())
@@ -101,7 +101,7 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
 
         return Note.builder()
                 .title(request.getNoteTitle())
-                .subtitle(request.getNoteSubTitle())
+                .subtitle(request.getNoteSubtitle())
                 .coverImg(imgUrl)
                 .content(request.getNoteContent())
                 .achieve(achieve)

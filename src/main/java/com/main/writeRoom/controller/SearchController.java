@@ -75,12 +75,10 @@ public class SearchController {
         return ApiResponse.of(SuccessStatus._OK, response);
     }
 
-    // 검색 조건화
     @Operation(summary = "노트 검색 API", description = "사용자가 속한 모든 룸의 노트를 검색 하는 API입니다. searchType에는 title, content, tag 를 넣어 노트를 검색할 수 있으며," +
             "그 외의 문자를 넣거나 아무 것도 넣지 않는다면 3가지 모두 검색 조건으로 활용 됩니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            // 에러 정리
     })
     @Parameters({
             @Parameter(name = "searchWord", description = "검색어를 입력해 주세요."),

@@ -69,7 +69,7 @@ public class NoteResponseDTO {
     public static class NoteResult {
         Long noteId;
         String noteTitle;
-        String noteSubTitle;
+        String noteSubtitle;
         String noteContent;
         String categoryName;
         String writer;
@@ -77,7 +77,7 @@ public class NoteResponseDTO {
         LocalDateTime createdAt;
         LocalDateTime updatedAt;
         List<TagResponseDTO.TagList> tagList;
-        EmojiResponseDTO.EmojiListResult emojiList; // EmojiResponseDTO로 변경할지 고민
+        EmojiResponseDTO.EmojiListResult emojiList;
 
     }
 

@@ -28,7 +28,4 @@ public class EmojiQueryServiceImpl implements EmojiQueryService{
         return emojiClickRepository.findAllByNote(note);
     }
 
-    /*public List<Note> findNoteForCategoryAndRoom(Category category, Room room) {
-        return noteRepository.findAllByCategoryAndRoom(category, room);
-    }*/
 }

@@ -19,6 +19,7 @@ public class Emoji extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Setter
     private Long emojiNum;
 

@@ -5,10 +5,7 @@ import com.main.writeRoom.converter.BookmarkConverter;
 import com.main.writeRoom.domain.Bookmark.BookmarkMaterial;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.handler.BookmarkHandler;
-import com.main.writeRoom.handler.UserHandler;
 import com.main.writeRoom.repository.BookmarkMaterialRepository;
-import com.main.writeRoom.repository.UserRepository;
-import com.main.writeRoom.web.dto.bookmark.BookmarkRequestDTO;
 import com.main.writeRoom.web.dto.bookmark.BookmarkResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,16 +15,12 @@ import org.springframework.stereotype.Service;
 public class BookmarkServiceImpl implements BookmarkService{
 
     private final BookmarkMaterialRepository bookmarkMaterialRepository;
-    private final UserRepository userRepository;
 
     @Override
-    public BookmarkMaterial postTopic(BookmarkRequestDTO.TopicDTO request) {
-
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+    public BookmarkMaterial postTopic(User user, String content) {
 
         BookmarkMaterial newBookmarkMaterial = BookmarkMaterial.builder()
-                .content(request.getContent())
+                .content(content)
                 .user(user)
                 .build();
 
@@ -35,13 +28,12 @@ public class BookmarkServiceImpl implements BookmarkService{
     }
 
     @Override
-    public BookmarkResponseDTO.TopicResultDTO deleteMaterial(Long id) {
+    public BookmarkResponseDTO.TopicResultDTO deleteMaterial(Long userId, BookmarkMaterial bookmarkMaterial) {
 
-        BookmarkMaterial bookmarkMaterial = bookmarkMaterialRepository.findById(id)
-                        .orElseThrow(() -> new BookmarkHandler(ErrorStatus.BOOKMARK_NOT_FOUND));
-
+        if (!bookmarkMaterial.getUser().getId().equals(userId))
+            throw new BookmarkHandler(ErrorStatus.NOT_YOUR_BOOKMARK);
         bookmarkMaterialRepository.delete(bookmarkMaterial);
 
-        return BookmarkConverter.toDeleteResultDTO(id);
+        return BookmarkConverter.toDeleteResultDTO(bookmarkMaterial);
     }
 }

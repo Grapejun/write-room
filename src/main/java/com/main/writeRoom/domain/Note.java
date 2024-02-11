@@ -14,12 +14,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity(name = "Note")
 @Getter
+@DynamicUpdate
+@DynamicInsert
 @Builder(toBuilder = true) // toBuilder 속성을 true로 설정
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -28,11 +33,20 @@ public class Note extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ColumnDefault(" '제목을 입력하세요' ")
     private String title;
+
+    @ColumnDefault(" '부제목을 입력하세요' ")
     private String subtitle;
+
     private String coverImg;
+
+    @ColumnDefault(" '내용을 작성하는 곳' ")
     private String content;
+
     @Enumerated(EnumType.STRING)
+    @ColumnDefault("false")
     private ACHIEVE achieve; //노트 200자 달성 여부 true/false
 
     @ManyToOne

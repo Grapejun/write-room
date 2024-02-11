@@ -37,10 +37,12 @@ public class EmojiConverter {
                 .build();
     }
 
-    public static EmojiResponseDTO.EmojiDeleteResult toEmojiDeleteResult(EmojiClick emojiClick) {
+    public static EmojiResponseDTO.EmojiDeleteResult toEmojiDeleteResult(Emoji emoji) {
 
         return EmojiResponseDTO.EmojiDeleteResult.builder()
-                .emojiClickId(emojiClick.getId())
+                .emojiId(emoji.getId())
+                .userId(emoji.getUser().getId())
+                .emojiNum(emoji.getEmojiNum())
                 .build();
     }
 
