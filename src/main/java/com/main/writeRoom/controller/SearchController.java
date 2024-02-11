@@ -79,7 +79,6 @@ public class SearchController {
             "그 외의 문자를 넣거나 아무 것도 넣지 않는다면 3가지 모두 검색 조건으로 활용 됩니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            // 서치 타입 ENUM으로 수정
     })
     @Parameters({
             @Parameter(name = "searchWord", description = "검색어를 입력해 주세요."),

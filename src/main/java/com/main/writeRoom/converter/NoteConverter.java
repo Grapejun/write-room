@@ -101,7 +101,7 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
 
         return Note.builder()
                 .title(request.getNoteTitle())
-                .subtitle(request.getNoteSubTitle())
+                .subtitle(request.getNoteSubtitle())
                 .coverImg(imgUrl)
                 .content(request.getNoteContent())
                 .achieve(achieve)

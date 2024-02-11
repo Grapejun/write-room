@@ -102,7 +102,7 @@ public class EmojiController {
     @Operation(summary = "이모지 삭제 API", description = "이모지를 삭제하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTE4001", description = "노트가 존재하지 않습니다.",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTE4001", description = "노트가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "EMOJI4001", description = "사용자가 남긴 이모지가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),

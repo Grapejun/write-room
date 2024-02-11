@@ -28,7 +28,7 @@ public enum ErrorStatus implements BaseErrorCode {
     ROOM_NOT_FOUND(HttpStatus.BAD_REQUEST, "ROOM4001", "룸이 없습니다."),
     ROOM_ALREADY_PARTICIPATION(HttpStatus.BAD_REQUEST, "ROOM4002", "이미 룸에 참여중입니다."),
     CATEGORY_NOT_FOUND(HttpStatus.BAD_REQUEST, "CATEGORY4001", "카테고리가 없습니다."),
-    NOTE_NOT_FOUND(HttpStatus.BAD_REQUEST, "NOTE4001", "노트가 존재하지 않습니다."),
+    NOTE_NOT_FOUND(HttpStatus.BAD_REQUEST, "NOTE4001", "노트가 없습니다."),
     AUTHORITY_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTHORITY4001", "권한이 없습니다."),
     AUTHORITY_TYPE_ERROR(HttpStatus.BAD_REQUEST, "AUTHORITY4002", "올바른 권한 형식을 입력하세요."),
     BOOKMARK_NOT_FOUND(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "해당하는 Id의 북마크가 없습니다."),

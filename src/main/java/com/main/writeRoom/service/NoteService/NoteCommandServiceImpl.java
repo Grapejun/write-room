@@ -4,7 +4,6 @@ import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.aws.s3.AmazonS3Manager;
 import com.main.writeRoom.aws.s3.Uuid;
 import com.main.writeRoom.converter.NoteConverter;
-import com.main.writeRoom.converter.RoomConverter;
 import com.main.writeRoom.converter.TagConverter;
 import com.main.writeRoom.domain.*;
 import com.main.writeRoom.domain.Bookmark.BookmarkNote;
@@ -16,9 +15,9 @@ import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import com.main.writeRoom.domain.mapping.NoteTag;
+import com.main.writeRoom.handler.AuthenticityHandler;
 import com.main.writeRoom.handler.NoteHandler;
 import com.main.writeRoom.repository.*;
-import com.main.writeRoom.service.CategoryService.CategoryQueryService;
 import com.main.writeRoom.service.ChallengeService.ChallengeGoalsQueryService;
 import com.main.writeRoom.service.ChallengeService.ChallengeRoutineQueryService;
 import com.main.writeRoom.service.RoomService.RoomQueryService;
@@ -31,9 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -157,7 +153,7 @@ public class NoteCommandServiceImpl implements NoteCommandService{
 
         Note.NoteBuilder builder = existingNote.toBuilder();
         if (request.getNoteTitle() != null) builder.title(request.getNoteTitle());
-        if (request.getNoteSubTitle() != null) builder.subtitle(request.getNoteSubTitle());
+        if (request.getNoteSubtitle() != null) builder.subtitle(request.getNoteSubtitle());
         if (request.getNoteContent() != null) builder.content(request.getNoteContent());
         if (imgUrl != null) builder.coverImg(imgUrl);
         if (request.getLetterCount() >= 200) builder.achieve(ACHIEVE.TRUE);
@@ -188,6 +184,9 @@ public class NoteCommandServiceImpl implements NoteCommandService{
 
         Note note = noteRepository.findById(noteId)
                 .orElseThrow(() -> new NoteHandler(NOTE_NOT_FOUND));
+
+        if (!user.getId().equals(note.getUser().getId()))
+            throw new AuthenticityHandler(ErrorStatus.AUTHORITY_NOT_FOUND);
 
         Optional<EmojiClick> emojiClick = emojiClickRepository.findByNoteAndUser(note, user);
         emojiClick.ifPresent(click -> emojiClickRepository.deleteById(click.getId()));

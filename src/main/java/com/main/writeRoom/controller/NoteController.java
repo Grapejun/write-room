@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
+import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.NoteConverter;
@@ -14,6 +15,8 @@ import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.EmojiClick;
+import com.main.writeRoom.handler.AuthenticityHandler;
+import com.main.writeRoom.handler.TokenHandler;
 import com.main.writeRoom.service.CategoryService.CategoryQueryService;
 import com.main.writeRoom.service.EmojiService.EmojiQueryService;
 import com.main.writeRoom.service.NoteService.NoteCommandService;
@@ -53,7 +56,11 @@ public class NoteController {
     @Operation(summary = "노트 생성 API", description = "새로운 노트를 생성하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            // 존재하지 않는 룸의 아이디를 입력했을 경우 에러
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CATEGORY4001", description = "카테고리가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            // 입력 필드 관련 에러
     })
     @Parameters({
             @Parameter(name = "roomId", description = "노트를 생성할 룸의 아이디입니다."),
@@ -80,8 +87,9 @@ public class NoteController {
     @Operation(summary = "노트 조회 API", description = "노트를 조회하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            // 존재 하지 않는 노트일 때 에러
-            // 조회에서도 룸 안의 사람만 조회 가능한가? 필요하면 조건 추가.
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTE4001", description = "노트가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            // 룸 내부의 사람만 조회 가능 - 필요 하면 조건 추가.
     })
     @Parameters({
             @Parameter(name = "noteId", description = "조회할 노트의 아이디입니다."),
@@ -100,9 +108,14 @@ public class NoteController {
     @Operation(summary = "노트 수정 API", description = "노트를 수정하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTE4001", description = "노트가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CATEGORY4001", description = "카테고리가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTHORITY4001", description = "권한이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             // 형식이 맞지 않을 때 에러
-            // 존재 하지 않는 노트일 때 에러
-            // 작성자가 아닌 경우 수정 불가
+            // 입력 필드 관련 에러
     })
     @Parameters({
             @Parameter(name = "user", description = "user", hidden = true)
@@ -116,17 +129,21 @@ public class NoteController {
             throws JsonProcessingException{
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         NoteRequestDTO.patchNoteDTO jsonList = objectMapper.readValue(request, new TypeReference<>() {});
-        // 노트가 존재하지 않으면 에러
         Note note = noteQueryService.findNote(noteId);
-        // 사용자의 노트가 아닐 경우 에러
+        if (userId != note.getUser().getId())
+            throw new AuthenticityHandler(ErrorStatus.AUTHORITY_NOT_FOUND);
         Category category = categoryQueryService.findCategory(jsonList.getCategoryId());
         Note updatedNote = noteCommandService.updateNoteFields(note, category, noteImg, jsonList);
         return getNote(updatedNote.getId());
     }
 
-    @Operation(summary = "노트 삭제 API", description = "노트를 삭제하는 API입니다.") // 되는지 확인 해봐야 하고, 양방향 매핑도 삭제 해야 함. 이모지 태그 등
+    @Operation(summary = "노트 삭제 API", description = "노트를 삭제하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTE4001", description = "노트가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTHORITY4001", description = "권한이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters({
             @Parameter(name = "noteId", description = "삭제할 노트의 아이디입니다."),
