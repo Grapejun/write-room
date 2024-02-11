@@ -1,7 +1,9 @@
 package com.main.writeRoom.service.BookmarkService;
 
+import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.domain.Bookmark.BookmarkMaterial;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.handler.BookmarkHandler;
 import com.main.writeRoom.repository.BookmarkMaterialRepository;
 import com.main.writeRoom.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +25,13 @@ public class BookmarkQueryServiceImpl implements BookmarkQueryService{
     public Page<BookmarkMaterial> getBookmarkMaterialList(Long userId, Integer page) {
         User user = userRepository.findById(userId).get();
 
-        Page<BookmarkMaterial> BookmarkMaterialPage = bookmarkMaterialRepository.findAllByUser(user, PageRequest.of(page, 30));
-        return BookmarkMaterialPage;
+        return bookmarkMaterialRepository.findAllByUser(user, PageRequest.of(page, 39));
     }
+
+    @Override
+    public BookmarkMaterial findBookmarkMaterial(Long id) {
+        return bookmarkMaterialRepository.findById(id)
+                .orElseThrow(() -> new BookmarkHandler(ErrorStatus.BOOKMARK_NOT_FOUND));
+    }
+
 }

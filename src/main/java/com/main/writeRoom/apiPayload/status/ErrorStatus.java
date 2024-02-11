@@ -31,8 +31,10 @@ public enum ErrorStatus implements BaseErrorCode {
     AUTHORITY_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTHORITY4001", "권한이 없습니다."),
     AUTHORITY_TYPE_ERROR(HttpStatus.BAD_REQUEST, "AUTHORITY4002", "올바른 권한 형식을 입력하세요."),
     BOOKMARK_NOT_FOUND(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "해당하는 Id의 북마크가 없습니다."),
+    CONTENT_MUST_NOT_BE_EMPTY(HttpStatus.BAD_REQUEST, "BOOKMARK4002", "컨텐츠가 들어와야 합니다."),
     EMOJI_NOT_FOUNT(HttpStatus.BAD_REQUEST, "EMOJI4001", "사용자가 남긴 이모지가 없습니다."),
     EMOJI_REPOST(HttpStatus.BAD_REQUEST, "EMOJI4002", "이미 해당 노트에 이모지를 등록 했습니다."),
+
 
     //챌린지 에러
     ROUTINE_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4001", "챌린지 루틴이 없습니다."),

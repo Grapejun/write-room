@@ -5,8 +5,10 @@ import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.BookmarkConverter;
 import com.main.writeRoom.domain.Bookmark.BookmarkMaterial;
+import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.service.BookmarkService.BookmarkQueryService;
 import com.main.writeRoom.service.BookmarkService.BookmarkServiceImpl;
+import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.web.dto.bookmark.BookmarkResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,19 +27,24 @@ public class BookmarkController {
 
     private final BookmarkServiceImpl bookmarkService;
     private final BookmarkQueryService bookmarkQueryService;
+    private final UserQueryService userQueryService;
+
 
     @PostMapping("/topics")
     @Operation(summary = "오늘의 소재 북마크 등록 API", description = "특정한 '오늘의 소재'를 사용자의 북마크에 추가하는 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON400", description = "잘못된 요청입니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            // 콘텐츠 미입력 시 오류
     })
     @Parameters({
             @Parameter(name = "user", description = "사용자", hidden = true),
             @Parameter(name = "content", description = "북마크 내용")
     })
     public ApiResponse<BookmarkResponseDTO.TopicResultDTO> postBookmark(@AuthUser long userId, @RequestParam String content) {
-        BookmarkMaterial material = bookmarkService.postTopic(userId ,content);
+        User user = userQueryService.findUser(userId);
+
+        BookmarkMaterial material = bookmarkService.postTopic(user, content);
         return ApiResponse.of(SuccessStatus._OK, BookmarkConverter.toBookmarkResultDTO(material));
     }
 
@@ -54,7 +61,8 @@ public class BookmarkController {
             @Parameter(name = "id", description = "북마크 아이디, path variable 입니다!"),
     })
     public ApiResponse<BookmarkResponseDTO.TopicResultDTO> deleteBookmark(@AuthUser long userId, @PathVariable Long id) {
-        return ApiResponse.of(SuccessStatus._OK, bookmarkService.deleteMaterial(id));
+        BookmarkMaterial bookmarkMaterial = bookmarkQueryService.findBookmarkMaterial(id);
+        return ApiResponse.of(SuccessStatus._OK, bookmarkService.deleteMaterial(bookmarkMaterial));
     }
 
     @GetMapping("/topics")

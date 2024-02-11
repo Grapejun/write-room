@@ -16,6 +16,7 @@ public class BookmarkResponseDTO {
     @AllArgsConstructor
     public static class TopicResultDTO {
         Long bookmarkId;
+        String bookmarkContent;
         LocalDateTime createdAt;
     }
 

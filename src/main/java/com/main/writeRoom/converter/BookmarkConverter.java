@@ -17,9 +17,10 @@ public class BookmarkConverter {
                 .build();
     }
 
-    public static BookmarkResponseDTO.TopicResultDTO toDeleteResultDTO(Long id) {
+    public static BookmarkResponseDTO.TopicResultDTO toDeleteResultDTO(BookmarkMaterial bookmarkMaterial) {
         return BookmarkResponseDTO.TopicResultDTO.builder()
-                .bookmarkId(id)
+                .bookmarkId(bookmarkMaterial.getId())
+                .bookmarkContent(bookmarkMaterial.getContent())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
@@ -30,7 +31,6 @@ public class BookmarkConverter {
                 .map(bookmarkMaterial -> BookmarkResponseDTO.BookmarkMaterialDTO.builder()
                         .id(bookmarkMaterial.getId())
                         .content(bookmarkMaterial.getContent())
-                        // user 정보는 복사하지 않음
                         .build())
                 .collect(Collectors.toList());
 
@@ -38,6 +38,7 @@ public class BookmarkConverter {
                 .isLast(bookmarkMaterialPage.isLast())
                 .isFirst(bookmarkMaterialPage.isFirst())
                 .totalPage(bookmarkMaterialPage.getTotalPages())
+                .totalElements(bookmarkMaterialPage.getTotalElements())
                 .listSize(bookmarkMaterialDTOList.size())
                 .bookmarkMaterialList(bookmarkMaterialDTOList) // DTO 리스트 사용
                 .build();
