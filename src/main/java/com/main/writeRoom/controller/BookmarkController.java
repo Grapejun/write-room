@@ -28,23 +28,27 @@ public class BookmarkController {
     private final BookmarkQueryService bookmarkQueryService;
 
     @PostMapping("/topics")
-    @Operation(summary = "오늘의 소재 북마크 등록 API", description = "사용자가 특정 '오늘의 소재'를 북마크에 추가하는 API 입니다.")
+    @Operation(summary = "오늘의 소재 북마크 등록 API", description = "특정한 '오늘의 소재'를 사용자의 북마크에 추가하는 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON400", description = "잘못된 요청입니다.", content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
-    public ApiResponse<BookmarkResponseDTO.TopicResultDTO> postBookmark(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "사용자의 id와 북마크할 내용을 등록해야 합니다.", required = true, content = @Content(schema = @Schema(implementation = BookmarkRequestDTO.TopicDTO.class)))
-            @RequestBody @Valid BookmarkRequestDTO.TopicDTO request) {
-        BookmarkMaterial material = bookmarkService.postTopic(request);
+    @Parameters({
+            @Parameter(name = "user", description = "사용자", hidden = true),
+            @Parameter(name = "content", description = "북마크 내용")
+    })
+    public ApiResponse<BookmarkResponseDTO.TopicResultDTO> postBookmark(@AuthUser long userId, @RequestParam String content) {
+        BookmarkMaterial material = bookmarkService.postTopic(userId ,content);
         return ApiResponse.of(SuccessStatus._OK, BookmarkConverter.toBookmarkResultDTO(material));
     }
 
     @DeleteMapping("/topics/{id}")
-    @Operation(summary = "오늘의 소재 북마크 삭제 API", description = "특정 사용자가 북마크에 등록한 '오늘의 소재'를 해제하는 API 입니다.")
+    @Operation(summary = "오늘의 소재 북마크 삭제 API", description = "특정 사용자가 북마크에 등록한 '오늘의 소재'를 삭제하는 API 입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON400", description = "잘못된 요청입니다.",content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            // 자기가 등록한 북마크가 아닐 경우 에러
+            // 북마크 id에 해당하는 북마크가 없을 경우 에러
     })
     @Parameters({
             @Parameter(name = "id", description = "북마크 아이디, path variable 입니다!"),
@@ -59,13 +63,15 @@ public class BookmarkController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200",description = "OK, 성공"),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            // "totalElements": null, 이게 뭐지 확인
+            // 페이지가 0보다 작으면 에러
     })
     @Parameters({
             @Parameter(name = "user", description = "사용자", hidden = true),
             @Parameter(name = "page", description = "페이지 번호, 0번이 1페이지 입니다.")
     })
-    public ApiResponse<BookmarkResponseDTO.BookMarkMaterialListDTO> getBookmarks(@AuthUser long user, @RequestParam Integer page) {
-        return ApiResponse.of(SuccessStatus._OK, BookmarkConverter.toBookMarkMaterialListDTO(bookmarkQueryService.getBookmarkMaterialList(user, page)));
+    public ApiResponse<BookmarkResponseDTO.BookMarkMaterialListDTO> getBookmarks(@AuthUser long userId, @RequestParam Integer page) {
+        return ApiResponse.of(SuccessStatus._OK, BookmarkConverter.toBookMarkMaterialListDTO(bookmarkQueryService.getBookmarkMaterialList(userId, page)));
     }
 
 }

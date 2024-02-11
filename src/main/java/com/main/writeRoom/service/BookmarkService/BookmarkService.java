@@ -6,7 +6,6 @@ import com.main.writeRoom.web.dto.bookmark.BookmarkResponseDTO;
 
 public interface BookmarkService {
 
-    public BookmarkMaterial postTopic(BookmarkRequestDTO.TopicDTO request);
-
-    public BookmarkResponseDTO.TopicResultDTO deleteMaterial(Long id);
+    BookmarkMaterial postTopic(long userId, String content);
+    BookmarkResponseDTO.TopicResultDTO deleteMaterial(Long id);
     }

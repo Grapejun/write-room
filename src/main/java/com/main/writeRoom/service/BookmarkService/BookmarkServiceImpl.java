@@ -21,13 +21,13 @@ public class BookmarkServiceImpl implements BookmarkService{
     private final UserRepository userRepository;
 
     @Override
-    public BookmarkMaterial postTopic(BookmarkRequestDTO.TopicDTO request) {
+    public BookmarkMaterial postTopic(long userId, String content) {
 
-        User user = userRepository.findById(request.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
 
         BookmarkMaterial newBookmarkMaterial = BookmarkMaterial.builder()
-                .content(request.getContent())
+                .content(content)
                 .user(user)
                 .build();
 
