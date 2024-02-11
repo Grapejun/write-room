@@ -19,10 +19,6 @@ public class BookmarkServiceImpl implements BookmarkService{
     @Override
     public BookmarkMaterial postTopic(User user, String content) {
 
-        if (content == null || content.isEmpty()) {
-            throw new BookmarkHandler(ErrorStatus.CONTENT_MUST_NOT_BE_EMPTY);
-        }
-
         BookmarkMaterial newBookmarkMaterial = BookmarkMaterial.builder()
                 .content(content)
                 .user(user)
@@ -32,8 +28,10 @@ public class BookmarkServiceImpl implements BookmarkService{
     }
 
     @Override
-    public BookmarkResponseDTO.TopicResultDTO deleteMaterial(BookmarkMaterial bookmarkMaterial) {
+    public BookmarkResponseDTO.TopicResultDTO deleteMaterial(Long userId, BookmarkMaterial bookmarkMaterial) {
 
+        if (!bookmarkMaterial.getUser().getId().equals(userId))
+            throw new BookmarkHandler(ErrorStatus.NOT_YOUR_BOOKMARK);
         bookmarkMaterialRepository.delete(bookmarkMaterial);
 
         return BookmarkConverter.toDeleteResultDTO(bookmarkMaterial);

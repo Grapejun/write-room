@@ -13,6 +13,7 @@ public class BookmarkConverter {
     public static BookmarkResponseDTO.TopicResultDTO toBookmarkResultDTO(BookmarkMaterial topic) {
         return BookmarkResponseDTO.TopicResultDTO.builder()
                 .bookmarkId(topic.getId())
+                .bookmarkContent(topic.getContent())
                 .createdAt(LocalDateTime.now())
                 .build();
     }
