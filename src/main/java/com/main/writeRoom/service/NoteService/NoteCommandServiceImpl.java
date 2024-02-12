@@ -16,6 +16,7 @@ import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import com.main.writeRoom.domain.mapping.NoteTag;
 import com.main.writeRoom.handler.AuthenticityHandler;
+import com.main.writeRoom.handler.BookmarkHandler;
 import com.main.writeRoom.handler.NoteHandler;
 import com.main.writeRoom.repository.*;
 import com.main.writeRoom.service.ChallengeService.ChallengeGoalsQueryService;
@@ -199,6 +200,12 @@ public class NoteCommandServiceImpl implements NoteCommandService{
     public void createBookmarkNote(Long roomId, Note note, Long userId) {
         Room room = roomQueryService.findRoom(roomId);
         User user = userQueryService.findUser(userId);
+        BookmarkNote existingBookmarkNote = bookmarkNoteRepository.findByNoteAndUser(note, user);
+
+        if (existingBookmarkNote != null) {
+            throw new BookmarkHandler(ErrorStatus.EXIST_BOOKMARK_NOTE);
+        }
+
         BookmarkNote bookmarkNote = NoteConverter.toBookMarkNote(room, note, user);
         bookmarkNoteRepository.save(bookmarkNote);
     }

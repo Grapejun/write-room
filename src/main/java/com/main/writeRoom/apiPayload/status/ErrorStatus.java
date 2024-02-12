@@ -33,6 +33,7 @@ public enum ErrorStatus implements BaseErrorCode {
     AUTHORITY_TYPE_ERROR(HttpStatus.BAD_REQUEST, "AUTHORITY4002", "올바른 권한 형식을 입력하세요."),
     BOOKMARK_NOT_FOUND(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "해당하는 Id의 북마크가 없습니다."),
     NOT_YOUR_BOOKMARK(HttpStatus.BAD_REQUEST, "BOOKMARK4002", "해당 사용자가 등록한 북마크가 아닙니다."),
+    EXIST_BOOKMARK_NOTE(HttpStatus.BAD_REQUEST, "BOOKMARK4003", "이미 북마크된 노트 입니다."),
     EMOJI_NOT_FOUNT(HttpStatus.BAD_REQUEST, "EMOJI4001", "사용자가 남긴 이모지가 없습니다."),
     EMOJI_REPOST(HttpStatus.BAD_REQUEST, "EMOJI4002", "이미 해당 노트에 이모지를 등록 했습니다."),
     EMOJI_NUM_RANGE_ERROR(HttpStatus.BAD_REQUEST, "EMOJI4003", "이모지 넘버는 1~6 까지만 등록 가능 합니다."),
