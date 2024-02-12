@@ -173,4 +173,23 @@ public class RoomConverter {
                 .goalsAchieveRate(goalsAchieveRate)
                 .build();
     }
+
+    public static List<RoomResponseDTO.MyRoomAllResultDto> myRoomListAllInfoDTO(List<RoomParticipation> roomParticipations) {
+        return roomParticipations.stream()
+                .map(room -> {
+                    long totalMemberCount = room.getRoom().getRoomParticipationList().size();
+                    return RoomResponseDTO.MyRoomAllResultDto.builder()
+                            .roomId(room.getRoom().getId())
+                            .roomTitle(room.getRoom().getTitle())
+                            .roomImg(room.getRoom().getCoverImg())
+                            .updatedAt(room.getRoom().daysSinceLastUpdate())
+                            .userRoomList(room.getRoom().getRoomParticipationList().stream()
+                                    .limit(3)
+                                    .map(roomParticipation -> userRoomInfoDTO(roomParticipation.getUser()))
+                                    .collect(Collectors.toList()))
+                            .totalMember(totalMemberCount)
+                            .build();
+                })
+                .collect(Collectors.toList());
+    }
 }

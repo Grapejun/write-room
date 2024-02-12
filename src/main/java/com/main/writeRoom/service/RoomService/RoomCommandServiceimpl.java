@@ -118,4 +118,10 @@ public class RoomCommandServiceimpl implements RoomCommandService {
         RoomParticipation response = RoomConverter.toUserParticipateIn(room, user);
         return userRoomRepository.save(response).getRoom();
     }
+
+    public List<RoomParticipation> getMyRoomAllResultList(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        return userRoomRepository.findAllByUser(user);
+    }
 }
