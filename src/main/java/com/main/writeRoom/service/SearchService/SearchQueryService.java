@@ -16,5 +16,7 @@ public interface SearchQueryService {
 
     List<SearchResponseDTO.VocabularyResultDTO> getTopics();
 
+    List<SearchResponseDTO.VocabularyResultDTO> extractKeywords(String content);
+
     List<Note> searchNotesInUserRooms(List<Room> roomList, String normalizedSearchWord, String searchType);
 }
