@@ -62,23 +62,6 @@ public class KakaoApiClient implements OAuthApiClient {
     }
 
 
-//    @Override   // AccessToken 으로 사용자 정보 요청하는 메서드
-//    public OAuthInfoResponse requestOauthInfo(String accessToken) {
-//        String url = apiUrl + "/v2/user/me"; // 사용자 정보를 요청할 URL
-//        // HTTP 요청 헤더 설정
-//        HttpHeaders httpHeaders = new HttpHeaders();
-//        httpHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//        httpHeaders.set("Authorization", "Bearer " + accessToken);
-//        // HTTP 요청 바디 설정
-//        MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-//        body.add("property_keys", "[\"kakao_account.email\", \"kakao_account.profile\"]");
-//        // 요청 객체 생성
-//        HttpEntity<?> request = new HttpEntity<>(body, httpHeaders);
-//        // 실제 외부  HTTP 요청 수행 및 응답 수신
-//        return restTemplate.postForObject(url, request, KakaoInfoResponse.class);
-//    }
-
-
     @Override
     public OAuthInfoResponse requestOauthInfo(String accessToken) {
         String url = apiUrl + "/v2/user/me"; // 사용자 정보를 요청할 URL
