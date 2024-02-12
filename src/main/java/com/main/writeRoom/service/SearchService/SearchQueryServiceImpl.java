@@ -70,7 +70,7 @@ public class SearchQueryServiceImpl implements SearchQueryService {
     @Transactional
     public List<SearchResponseDTO.VocabularyResultDTO> getSimilarKeywords(String request) {
         this.openAiService = new OpenAiService(apiKey, Duration.ofSeconds(20));
-        String prompt = request + " 와 유사한 키워드 6개를 알려줘. 답변 조건: 반드시 아무런 부가 설명 없이 키워드만 응답해.";
+        String prompt = request + " 와 유사한 키워드 6개를 쉼표로 구분하여 나열해줘. 예: 날개, 선량한, 순수한, 신성한, 하늘, 보호. 추가적인 단어나 문구를 넣지 말고, 유사어만 답변으로 제공해.";
 //        예시: 유사어1, 유사어2, 유사어3, 유사어4, 유사어5, 유사어6
         ChatCompletionRequest requester = ChatCompletionRequest.builder()
                 .model(MODEL)
