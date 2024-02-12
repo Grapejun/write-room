@@ -1,7 +1,9 @@
 package com.main.writeRoom.converter;
 
 import com.main.writeRoom.domain.Bookmark.BookmarkMaterial;
+import com.main.writeRoom.domain.Bookmark.BookmarkNote;
 import com.main.writeRoom.web.dto.bookmark.BookmarkResponseDTO;
+import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
@@ -45,4 +47,25 @@ public class BookmarkConverter {
                 .build();
     }
 
+    public static BookmarkResponseDTO.NoteListForNoteBookmark toNoteBookmarkListResult(Page<BookmarkNote> bookmarkNotePage) {
+        List<BookmarkResponseDTO.NoteListForNoteBookmarkList> bookmarkLists = bookmarkNotePage
+                .stream()
+                .map(bookmarkNote -> BookmarkResponseDTO.NoteListForNoteBookmarkList.builder()
+                        .noteId(bookmarkNote.getNote().getId())
+                        .noteTitle(bookmarkNote.getNote().getTitle())
+                        .noteContent(bookmarkNote.getNote().getContent())
+                        .writer(bookmarkNote.getNote().getUser().getName())
+                        .createdAt(bookmarkNote.getNote().getCreatedAt())
+                        .build())
+                .toList();
+
+        return BookmarkResponseDTO.NoteListForNoteBookmark.builder()
+                .isLast(bookmarkNotePage.isLast())
+                .isFirst(bookmarkNotePage.isFirst())
+                .totalPage(bookmarkNotePage.getTotalPages())
+                .totalElements(bookmarkNotePage.getTotalElements())
+                .listSize(bookmarkLists.size())
+                .noteListForNoteBookmarkLists(bookmarkLists)
+                .build();
+    }
 }

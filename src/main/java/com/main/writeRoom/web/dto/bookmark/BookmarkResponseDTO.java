@@ -40,4 +40,29 @@ public class BookmarkResponseDTO {
         Boolean isLast;
         List<BookmarkMaterialDTO> bookmarkMaterialList;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListForNoteBookmark {
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+        List<NoteListForNoteBookmarkList> noteListForNoteBookmarkLists;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListForNoteBookmarkList {
+        Long noteId;
+        String noteTitle;
+        String noteContent;
+        String writer;
+        LocalDateTime createdAt;
+    }
 }
