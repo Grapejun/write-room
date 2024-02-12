@@ -55,6 +55,7 @@ public class BookmarkConverter {
                         .noteTitle(bookmarkNote.getNote().getTitle())
                         .noteContent(bookmarkNote.getNote().getContent())
                         .writer(bookmarkNote.getNote().getUser().getName())
+                        .writerImg(bookmarkNote.getNote().getUser().getProfileImage())
                         .createdAt(bookmarkNote.getNote().getCreatedAt())
                         .build())
                 .toList();
