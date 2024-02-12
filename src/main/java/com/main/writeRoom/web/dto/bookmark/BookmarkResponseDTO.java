@@ -63,6 +63,7 @@ public class BookmarkResponseDTO {
         String noteTitle;
         String noteContent;
         String writer;
+        String writerImg;
         LocalDateTime createdAt;
     }
 }
