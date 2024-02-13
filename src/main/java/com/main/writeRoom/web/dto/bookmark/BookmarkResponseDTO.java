@@ -62,6 +62,7 @@ public class BookmarkResponseDTO {
     public static class NoteListForNoteBookmarkList {
         Long roomId;
         Long noteId;
+        Long noteBookmarkId;
         String noteTitle;
         String noteSubtitle;
         String noteContent;

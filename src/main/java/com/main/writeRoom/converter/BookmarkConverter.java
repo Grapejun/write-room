@@ -63,6 +63,7 @@ public class BookmarkConverter {
                     return BookmarkResponseDTO.NoteListForNoteBookmarkList.builder()
                             .roomId(bookmarkNote.getRoom().getId())
                             .noteId(bookmarkNote.getNote().getId())
+                            .noteBookmarkId(bookmarkNote.getId())
                             .noteTitle(bookmarkNote.getNote().getTitle())
                             .noteSubtitle(bookmarkNote.getNote().getSubtitle())
                             .noteContent(bookmarkNote.getNote().getContent())
