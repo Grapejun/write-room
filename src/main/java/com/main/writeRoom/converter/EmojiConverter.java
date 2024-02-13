@@ -4,10 +4,6 @@ import com.main.writeRoom.domain.Emoji;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.EmojiClick;
 import com.main.writeRoom.web.dto.emoji.EmojiResponseDTO;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
@@ -33,7 +29,7 @@ public class EmojiConverter {
         return EmojiResponseDTO.EmojiUpdateResult.builder()
                 .emojiId(emoji.getId())
                 .emojiNum(emoji.getEmojiNum())
-                .updatedAT(emoji.getUpdatedAt())
+                .updatedAt(emoji.getUpdatedAt())
                 .build();
     }
 
@@ -43,6 +39,18 @@ public class EmojiConverter {
                 .emojiId(emoji.getId())
                 .userId(emoji.getUser().getId())
                 .emojiNum(emoji.getEmojiNum())
+                .build();
+    }
+    public static EmojiResponseDTO.EmojiGetResult toEmojiGetResult(EmojiClick emojiClick) {
+
+        Emoji emoji = emojiClick.getEmoji();
+        return EmojiResponseDTO.EmojiGetResult.builder()
+                .noteId(emojiClick.getNote().getId())
+                .userId(emojiClick.getUser().getId())
+                .emojiId(emoji.getId())
+                .emojiNum(emoji.getEmojiNum())
+                .createdAt(emoji.getCreatedAt())
+                .updatedAt(emoji.getUpdatedAt())
                 .build();
     }
 

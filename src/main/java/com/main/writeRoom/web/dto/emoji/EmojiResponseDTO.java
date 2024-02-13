@@ -33,10 +33,22 @@ public class EmojiResponseDTO {
     public static class EmojiUpdateResult {
         Long emojiId;
         Long emojiNum;
-        LocalDateTime updatedAT;
+        LocalDateTime updatedAt;
     }
 
     // 개별 이모지 조회
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EmojiGetResult {
+        Long noteId;
+        Long userId;
+        Long emojiId;
+        Long emojiNum;
+        LocalDateTime createdAt;
+        LocalDateTime updatedAt;
+    }
 
     // 이모지 리스트 조회
     @Builder
