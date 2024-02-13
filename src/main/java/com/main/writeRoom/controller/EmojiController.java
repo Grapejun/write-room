@@ -122,4 +122,25 @@ public class EmojiController {
         return ApiResponse.of(SuccessStatus._OK, emojiCommandService.deleteEmoji(emojiClick));
     }
 
+    @Operation(summary = "이모지 조회 API", description = "노트에 등록한 이모지를 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTE4001", description = "노트가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "noteId", description = "이모지를 조회할 노트의 아이디입니다."),
+            @Parameter(name = "user", description = "user", hidden = true)
+    })
+    @GetMapping(value = "/{noteId}")
+    public ApiResponse<EmojiResponseDTO.EmojiGetResult> getEmoji(@AuthUser long userId,
+                                                                       @PathVariable(name = "noteId")Long noteId)
+    {
+        Note note = noteQueryService.findNote(noteId);
+        User user = userQueryService.findUser(userId);
+        EmojiClick emojiClick = emojiQueryService.findByNoteAndUser(note, user);
+
+        return ApiResponse.of(SuccessStatus._OK, emojiQueryService.getEmoji(emojiClick));
+    }
+
 }

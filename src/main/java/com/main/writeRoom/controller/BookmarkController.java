@@ -11,6 +11,7 @@ import com.main.writeRoom.handler.BookmarkHandler;
 import com.main.writeRoom.service.BookmarkService.BookmarkQueryService;
 import com.main.writeRoom.service.BookmarkService.BookmarkServiceImpl;
 import com.main.writeRoom.service.UserService.UserQueryService;
+import com.main.writeRoom.validation.annotation.PageLessNull;
 import com.main.writeRoom.web.dto.bookmark.BookmarkResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -77,10 +78,10 @@ public class BookmarkController {
             @Parameter(name = "user", description = "사용자", hidden = true),
             @Parameter(name = "page", description = "페이지 번호, 0번이 1페이지 입니다.")
     })
-    public ApiResponse<BookmarkResponseDTO.BookMarkMaterialListDTO> getBookmarks(@AuthUser long userId, @RequestParam Integer page) {
-        if (page < 0) {
+    public ApiResponse<BookmarkResponseDTO.BookMarkMaterialListDTO> getBookmarks(@AuthUser long userId, @PageLessNull @RequestParam Integer page) {
+        /*if (page < 0) {
             throw new BookmarkHandler(ErrorStatus.INVALID_PAGE);
-        }
+        }*/
         return ApiResponse.of(SuccessStatus._OK, BookmarkConverter.toBookMarkMaterialListDTO(bookmarkQueryService.getBookmarkMaterialList(userId, page)));
     }
 
