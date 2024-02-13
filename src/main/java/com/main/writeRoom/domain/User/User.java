@@ -1,6 +1,6 @@
 package com.main.writeRoom.domain.User;
 
-import com.main.writeRoom.common.BaseEntity;
+import com.main.writeRoom.domain.common.BaseEntity;
 import com.main.writeRoom.domain.enums.Role;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import com.main.writeRoom.oauth.domain.OAuthProvider;
