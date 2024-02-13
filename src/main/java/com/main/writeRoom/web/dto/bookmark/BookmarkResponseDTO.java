@@ -1,5 +1,6 @@
 package com.main.writeRoom.web.dto.bookmark;
 
+import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -59,11 +60,15 @@ public class BookmarkResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class NoteListForNoteBookmarkList {
+        Long roomId;
         Long noteId;
         String noteTitle;
+        String noteSubtitle;
         String noteContent;
+        String noteImg;
         String writer;
         String writerImg;
         LocalDateTime createdAt;
+        List<TagResponseDTO.TagList> tagList;
     }
 }
