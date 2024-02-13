@@ -145,5 +145,4 @@ public class NoteResponseDTO {
         LocalDateTime createdAt;
         List<TagResponseDTO.TagList> tagList;
     }
-
 }

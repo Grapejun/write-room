@@ -1,5 +1,6 @@
 package com.main.writeRoom.web.dto.bookmark;
 
+import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,5 +40,36 @@ public class BookmarkResponseDTO {
         Boolean isFirst;
         Boolean isLast;
         List<BookmarkMaterialDTO> bookmarkMaterialList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListForNoteBookmark {
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+        List<NoteListForNoteBookmarkList> noteListForNoteBookmarkLists;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListForNoteBookmarkList {
+        Long roomId;
+        Long noteId;
+        Long noteBookmarkId;
+        String noteTitle;
+        String noteSubtitle;
+        String noteContent;
+        String noteImg;
+        String writer;
+        String writerImg;
+        LocalDateTime createdAt;
+        List<TagResponseDTO.TagList> tagList;
     }
 }

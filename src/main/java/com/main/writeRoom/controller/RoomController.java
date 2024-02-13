@@ -32,6 +32,7 @@ import com.main.writeRoom.validation.annotation.PageLessNull;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import com.main.writeRoom.web.dto.room.RoomRequestDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO;
+import com.main.writeRoom.web.dto.room.RoomResponseDTO.MyRoomAllResultDto;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO.MyRoomResultDto;
 import com.main.writeRoom.web.dto.room.roomPaticipation.userRoomResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
@@ -342,5 +343,22 @@ public class RoomController {
         Room room = roomQueryService.findRoom(roomId);
         Page<NoteTag> note = tagQueryService.findNoteForRoomAndTag(room, tag, page);
         return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteListForTag(room, note));
+    }
+
+    @GetMapping("/myRoomList/allData")
+    @Operation(summary = "나의 룸 목록 조회 API (페이징처리X)", description = "해당 유저가 참여중인 룸의 목록들을 조회하는 API이며, 페이징을 포함합니다. query String으로 page 번호를 주세요. ")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON401", description = "인증이 필요합니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+    })
+    public ApiResponse<List<MyRoomAllResultDto>> myRoomListAllData(@AuthUser long user) {
+        List<RoomParticipation> room = roomCommandService.getMyRoomAllResultList(user);
+        return ApiResponse.of(SuccessStatus._OK, RoomConverter.myRoomListAllInfoDTO(room));
     }
 }

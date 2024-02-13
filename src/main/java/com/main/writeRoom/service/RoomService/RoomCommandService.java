@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface RoomCommandService {
     Page<RoomParticipation> getMyRoomResultList(Long userId, Integer page);
+    List<RoomParticipation> getMyRoomAllResultList(Long userId);
      List<RoomParticipation> getMyRoomResultList(Long userId);
     Page<RoomParticipation> getUserRoomInfoList(Room room);
     RoomParticipation getUserRoomInfo(Room room, User user);
