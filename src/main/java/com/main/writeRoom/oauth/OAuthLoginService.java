@@ -1,12 +1,10 @@
 package com.main.writeRoom.oauth;
 
 import com.main.writeRoom.converter.UserConverter;
+import com.main.writeRoom.domain.User.JoinType;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.enums.Role;
-import com.main.writeRoom.oauth.domain.AuthTokensGenerator;
-import com.main.writeRoom.oauth.domain.OAuthInfoResponse;
-import com.main.writeRoom.oauth.domain.OAuthLoginParams;
-import com.main.writeRoom.oauth.domain.RequestOAuthInfoService;
+import com.main.writeRoom.oauth.domain.*;
 import com.main.writeRoom.oauth.infra.KakaoInfoResponse;
 import com.main.writeRoom.oauth.infra.KakaoLoginParams;
 import com.main.writeRoom.repository.UserRepository;
@@ -77,6 +75,8 @@ public class OAuthLoginService {
                 .email(oAuthInfoResponse.getEmail())
                 .name(oAuthInfoResponse.getNickname())
                 .oAuthProvider(oAuthInfoResponse.getOAuthProvider())
+                .joinType(oAuthInfoResponse.getOAuthProvider() == OAuthProvider.KAKAO ? JoinType.KAKAO : null)
+                .role(Role.USER)
                 .build();
         // 멤버 객체를 저장하고 저장된 객체의 ID를 반환
         return memberRepository.save(member).getId();
