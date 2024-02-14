@@ -339,7 +339,7 @@ public class RoomController {
     })
     @GetMapping("/search/noteListForTag/{roomId}")
     public ApiResponse<NoteResponseDTO.RoomResultForTag> findNoteListForTag(@PathVariable(name = "roomId")Long roomId, @RequestParam(name = "tag")String tag,
-                                                                   @PageLessNull @RequestParam(name = "page")Integer page) {
+                                                                            @PageLessNull @RequestParam(name = "page")Integer page) {
         Room room = roomQueryService.findRoom(roomId);
         Page<NoteTag> note = tagQueryService.findNoteForRoomAndTag(room, tag, page);
         return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteListForTag(room, note));
