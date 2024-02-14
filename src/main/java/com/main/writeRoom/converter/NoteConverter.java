@@ -27,6 +27,7 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
             .totalElements(notes.getTotalElements())
             .listSize(notes.getSize())
             .roomId(room.getId())
+            .roomImg(room.getCoverImg())
             .roomTitle(room.getTitle())
             .roomIntroduction(room.getIntroduction())
             .noteList(toRoomResultNoteDTOList)

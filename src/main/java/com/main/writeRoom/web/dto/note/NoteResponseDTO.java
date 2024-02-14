@@ -24,6 +24,7 @@ public class NoteResponseDTO {
         Boolean isFirst;
         Boolean isLast;
         Long roomId;
+        String roomImg;
         String roomTitle;
         String roomIntroduction;
         List<NoteList> noteList;
