@@ -48,6 +48,17 @@ public class RoomResponseDTO {
         Long roomId;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MyRoomInfoResult {
+        Long roomId;
+        String title;
+        String introduction;
+        String coverImg;
+    }
+
     //챌린지 달성률 조회
     @Builder
     @Getter
