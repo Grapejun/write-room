@@ -102,7 +102,7 @@ public class UserController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
 
-    @DeleteMapping("/delete/{userId}")
+    @DeleteMapping("/delete")
     public ApiResponse<Void> deleteUser(@AuthUser long userId) {
         userCommandService.deleteUser(userId);
         return ApiResponse.of(SuccessStatus._OK, null);
