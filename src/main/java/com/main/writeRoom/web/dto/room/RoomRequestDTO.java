@@ -10,4 +10,12 @@ public class RoomRequestDTO {
         @NotBlank
         String roomTitle;
     }
+
+    @Getter
+    public static class UpdatedRoomInfoDTO {
+        @NotBlank
+        String roomTitle;
+        @NotBlank
+        String roomIntroduction;
+    }
 }

@@ -22,6 +22,7 @@ import com.main.writeRoom.repository.UuidRepository;
 import com.main.writeRoom.web.dto.room.RoomRequestDTO;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -123,5 +124,34 @@ public class RoomCommandServiceimpl implements RoomCommandService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
         return userRoomRepository.findAllByUser(user);
+    }
+
+    @Transactional
+    public Room updatedMyRoomInfo(Room room, RoomRequestDTO.UpdatedRoomInfoDTO request, MultipartFile roomImg, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        RoomParticipation roomParticipation = userRoomRepository.findByRoomAndUser(room, user);
+
+        if (!Objects.equals(roomParticipation.getAuthority().toString(), "MANAGER")) {
+            throw new RoomHandler(ErrorStatus.AUTHORITY_NOT_FOUND);
+        }
+
+        String imgUrl = null;
+        Uuid savedUuid = null;
+
+        String uuid = UUID.randomUUID().toString();
+        savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
+        imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid, "user"), roomImg);
+
+        if (request.getRoomTitle() != null) {
+            room.setTitle(request.getRoomTitle());
+        }
+        if (request.getRoomIntroduction() != null) {
+            room.setIntroduction(request.getRoomIntroduction());
+        }
+        if (roomImg != null) {
+            room.setCoverImg(imgUrl);
+        }
+        return room;
     }
 }

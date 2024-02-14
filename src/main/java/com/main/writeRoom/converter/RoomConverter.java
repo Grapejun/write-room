@@ -16,7 +16,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 
 public class RoomConverter {
@@ -191,5 +190,15 @@ public class RoomConverter {
                             .build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    public static RoomResponseDTO.MyRoomInfoResult MyRoomInfoResult(Room room) {
+        return RoomResponseDTO.MyRoomInfoResult
+                .builder()
+                .roomId(room.getId())
+                .title(room.getTitle())
+                .introduction(room.getIntroduction())
+                .coverImg(room.getCoverImg())
+                .build();
     }
 }

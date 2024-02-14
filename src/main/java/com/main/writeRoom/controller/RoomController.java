@@ -30,7 +30,9 @@ import com.main.writeRoom.service.TagService.TagQueryService;
 import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.validation.annotation.PageLessNull;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
+import com.main.writeRoom.web.dto.note.NoteResponseDTO.RoomResult;
 import com.main.writeRoom.web.dto.room.RoomRequestDTO;
+import com.main.writeRoom.web.dto.room.RoomRequestDTO.UpdatedRoomInfoDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO.MyRoomAllResultDto;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO.MyRoomResultDto;
@@ -287,6 +289,16 @@ public class RoomController {
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.toCreateRoomResultDTO(response));
     }
 
+    @PatchMapping("/updatedRoomInfo/{roomId}")
+    public ApiResponse<RoomResponseDTO.MyRoomInfoResult> updatedRoomInfo(@PathVariable(name = "roomId")Long roomId, @AuthUser long userId, @RequestParam(name = "request")String request,
+                                       @RequestPart(required = false, value = "roomImg")MultipartFile roomImg) throws JsonProcessingException {
+        Room room = roomQueryService.findRoom(roomId);
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        RoomRequestDTO.UpdatedRoomInfoDTO jsonList = objectMapper.readValue(request,new TypeReference<>() {});
+        Room roomInfo = roomCommandService.updatedMyRoomInfo(room, jsonList, roomImg, userId);
+        return ApiResponse.of(SuccessStatus._OK, RoomConverter.MyRoomInfoResult(roomInfo));
+    }
+
     //챌린지 달성률 조회
     @GetMapping("/challenges/{roomId}")
     @Operation(summary = "챌린지 달성률 조회 API", description = "룸에서 진행 중인 챌린지 루틴과 챌린지 목표량의 달성률을 조회하는 API입니다. 진행 중인 챌린지가 없다면 null과 0을 반환합니다.")
@@ -339,7 +351,7 @@ public class RoomController {
     })
     @GetMapping("/search/noteListForTag/{roomId}")
     public ApiResponse<NoteResponseDTO.RoomResultForTag> findNoteListForTag(@PathVariable(name = "roomId")Long roomId, @RequestParam(name = "tag")String tag,
-                                                                   @PageLessNull @RequestParam(name = "page")Integer page) {
+                                                                            @PageLessNull @RequestParam(name = "page")Integer page) {
         Room room = roomQueryService.findRoom(roomId);
         Page<NoteTag> note = tagQueryService.findNoteForRoomAndTag(room, tag, page);
         return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteListForTag(room, note));

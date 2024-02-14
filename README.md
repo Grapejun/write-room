@@ -10,11 +10,24 @@
 <br>
 
 ## 백엔드 팀원
-| <img src="https://avatars.githubusercontent.com/u/80883709?v=4" width=100px alt="송주희"/>  | <img src="https://avatars.githubusercontent.com/u/55825895?v=4" width=100px alt="김예린"/>  | <img src="https://avatars.githubusercontent.com/u/118108487?v=4" width=100px alt="김용준"/>  | <img src="https://avatars.githubusercontent.com/u/121855519?v=4" width=100px alt="이연주"/>  | 
+| <img src="https://avatars.githubusercontent.com/u/80883709?v=4" width=100px alt="송주희"/>  | <img src="https://avatars.githubusercontent.com/u/118108487?v=4" width=100px alt="김용준"/>  | <img src="https://avatars.githubusercontent.com/u/55825895?v=4" width=100px alt="김예린"/>  | <img src="https://avatars.githubusercontent.com/u/121855519?v=4" width=100px alt="이연주"/>  | 
 | :-----: | :-----: | :-----: | :-----: |
-| [송주희](https://github.com/jhsong76) | [김예린](https://github.com/yerin03)  | [김용준](https://github.com/Grapejun) | [이연주](https://github.com/Lee-Yeonjoo) |
+| [송주희](https://github.com/jhsong76) | [김용준](https://github.com/Grapejun)  | [김예린](https://github.com/yerin03) | [이연주](https://github.com/Lee-Yeonjoo) | 
 <br>
 
+## 기술 스택
+**- Backend :** <img src="https://img.shields.io/badge/Java-007396?style=flat&logo=java&logoColor=white"> <img src="https://img.shields.io/badge/springboot-6DB33F?style=flat&logo=springboot&logoColor=white"> <img src="https://img.shields.io/badge/Postman-FF6C37?style=flat&logo=postman&logoColor=white">   
+<br>
+**- DB & Infra :** <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=mysql&logoColor=white"> <img src="https://img.shields.io/badge/AmazonEC2-FF9900?style=flat&logo=amazonec2&logoColor=white"> <img src="https://img.shields.io/badge/AmazonRDS-527FFF?style=flat&logo=amazonrds&logoColor=white"> <img src="https://img.shields.io/badge/AmazonS3-569A31?style=flat&logo=amazons3&logoColor=white">   
+<br>
+**- Communication :** <img src="https://img.shields.io/badge/Discord-5865F2?style=flat&logo=discord&logoColor=white"> <img src="https://img.shields.io/badge/Notion-000000?style=flat&logo=notion&logoColor=white"> <img src="https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white">   
+<br>
+
+## API 스펙 리스트 & ERD
+[API 스펙 리스트](https://profuse-mammal-47c.notion.site/API-7c1206ba7ac54087bfb5ba0d97f46740?pvs=4)   
+<br>
+[ERD](https://www.erdcloud.com/d/hWykXPaRrDcLfFoAc)   
+<br>
 
 ## commmit message
 - feat : 새로운 기능 추가, 기존의 기능을 요구 사항에 맞추어 수정

@@ -81,4 +81,10 @@ public class UserCommandServiceImpl implements UserCommandService {
 
         return user;
     }
+
+    @Transactional
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("사용자가 없습니다."));
+        userRepository.delete(user);
+    }
 }

@@ -9,4 +9,5 @@ public interface UserCommandService {
     User updatedMyProfile(Long userId, UserRequestDTO.UpdatedMyprofile request, MultipartFile userImg);
     User updatedPassword(Long userId, UserRequestDTO.UpdatedPassword request);
     User updatedEmail(Long userId, UserRequestDTO.ResetPasswordForEmail request) throws MessagingException;
+    void deleteUser(Long userId);
 }
