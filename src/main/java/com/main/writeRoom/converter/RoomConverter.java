@@ -201,4 +201,15 @@ public class RoomConverter {
                 .coverImg(room.getCoverImg())
                 .build();
     }
+
+    public static RoomResponseDTO.MyRoomInfoResultDTO MyRoomInfoResultDTO(Room room, RoomParticipation roomParticipation) {
+        return RoomResponseDTO.MyRoomInfoResultDTO
+                .builder()
+                .roomId(room.getId())
+                .title(room.getTitle())
+                .introduction(room.getIntroduction())
+                .coverImg(room.getCoverImg())
+                .authority(roomParticipation.getAuthority().toString())
+                .build();
+    }
 }

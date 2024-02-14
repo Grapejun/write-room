@@ -68,6 +68,10 @@ public class RoomCommandServiceimpl implements RoomCommandService {
     @Override
     public RoomParticipation getUserRoomInfo(Room room, User user) {
         RoomParticipation userRoomInfo = userRoomRepository.findByRoomAndUser(room, user);
+
+        if (userRoomInfo == null) {
+            throw new RoomHandler(ErrorStatus.ROOM_ALREADY_NOT_FOUND);
+        }
         return userRoomInfo;
     }
 
