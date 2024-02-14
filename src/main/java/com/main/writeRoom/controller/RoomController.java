@@ -289,6 +289,18 @@ public class RoomController {
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.toCreateRoomResultDTO(response));
     }
 
+    @Operation(summary = "룸 정보 수정 API", description = "룸 정보 수정 API 이며, 룸 제목, 룸 이미지, 룸 소개 3개의 데이터 모두 필수 값이 아닙니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER4001", description = "유저가 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "roomId", description = "룸 아이디 입니다.")
+    })
     @PatchMapping("/updatedRoomInfo/{roomId}")
     public ApiResponse<RoomResponseDTO.MyRoomInfoResult> updatedRoomInfo(@PathVariable(name = "roomId")Long roomId, @AuthUser long userId, @RequestParam(name = "request")String request,
                                        @RequestPart(required = false, value = "roomImg")MultipartFile roomImg) throws JsonProcessingException {
