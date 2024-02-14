@@ -25,7 +25,6 @@ public class ChallengeScheduler {
     private final ChallengeGoalsQueryService goalsQueryService;
 
     @Scheduled(cron = "0 0 0 * * *")  //매일 자정에 검사
-    //@Scheduled(fixedRate = 60000) //1분마다 검사(테스트용)
     public void checkChallengeRoutine() {
         log.info("챌린지 달성 체크 작업 시작");
 
@@ -63,13 +62,6 @@ public class ChallengeScheduler {
             }
             crp.setAchieveCount(0);  // 주의 마지막 날이니까 달성 카운트를 0으로 초기화
         }
-        /*if (LocalDate.now().isEqual(crp.getChallengeRoutine().getStartDate())) { //테스트용
-            if (crp.getAchieveCount() < crp.getChallengeRoutine().getTargetCount()) { //주의 마지막 날까지 목표일수를 못 채웠으므로 실패
-                crp.setChallengeStatus(ChallengeStatus.FAILURE);
-                crp.setStatusUpdatedAt(LocalDate.now()); //실패 날짜 기록
-            }
-            crp.setAchieveCount(0);  // 주의 마지막 날이니까 달성 카운트를 0으로 초기화
-        }*/
         crp.setIsNoteToday(false); //하루 지났으니까 다시 false로 초기화
     }
 
@@ -78,10 +70,5 @@ public class ChallengeScheduler {
             cgp.setChallengeStatus(ChallengeStatus.FAILURE);
             cgp.setStatusUpdatedAt(LocalDate.now().minusDays(1));
         }
-
-        /*if (LocalDate.now().isEqual(cgp.getChallengeGoals().getStartDate())) { //테스트용
-            cgp.setChallengeStatus(ChallengeStatus.FAILURE);
-            cgp.setStatusUpdatedAt(LocalDate.now());
-        }*/
     }
 }

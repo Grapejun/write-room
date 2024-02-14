@@ -33,4 +33,22 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     Long countByRoom(Room room);
 
     Page<Note> findAllByRoomAndUser(Room room, User user, PageRequest pageRequest);
+
+    @Query("SELECT n FROM Note n " +
+            "JOIN n.noteTagList nt " +
+            "JOIN nt.tag t " +
+            "WHERE n.room IN :rooms AND (" +
+            "LOWER(n.title) LIKE LOWER(CONCAT('%', :searchWord, '%')) OR " +
+            "LOWER(n.content) LIKE LOWER(CONCAT('%', :searchWord, '%')) OR " +
+            "LOWER(t.content) LIKE LOWER(CONCAT('%', :searchWord, '%')))")
+    List<Note> findByRoomsAndSearchWord(@Param("rooms") List<Room> rooms, @Param("searchWord") String searchWord);
+
+    @Query("SELECT n FROM Note n WHERE n.room IN :rooms AND LOWER(n.title) LIKE LOWER(:searchWord)")
+    List<Note> findByTitleInUserRooms(@Param("rooms") List<Room> rooms, @Param("searchWord") String searchWord);
+
+    @Query("SELECT n FROM Note n WHERE n.room IN :rooms AND LOWER(n.content) LIKE LOWER(:searchWord)")
+    List<Note> findByContentInUserRooms(@Param("rooms") List<Room> rooms, @Param("searchWord") String searchWord);
+
+    @Query("SELECT n FROM Note n JOIN n.noteTagList nt JOIN nt.tag t WHERE n.room IN :rooms AND LOWER(t.content) LIKE LOWER(:searchWord)")
+    List<Note> findByTagInUserRooms(@Param("rooms") List<Room> rooms, @Param("searchWord") String searchWord);
 }

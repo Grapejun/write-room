@@ -5,18 +5,23 @@ import static com.main.writeRoom.domain.mapping.Authority.MANAGER;
 import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.aws.s3.AmazonS3Manager;
 import com.main.writeRoom.aws.s3.Uuid;
+import com.main.writeRoom.converter.CategoryConverter;
 import com.main.writeRoom.converter.RoomConverter;
+import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import com.main.writeRoom.handler.RoomHandler;
 import com.main.writeRoom.handler.RoomParticipationHandler;
 import com.main.writeRoom.handler.UserHandler;
+import com.main.writeRoom.repository.CategoryRepository;
 import com.main.writeRoom.repository.RoomParticipationRepository;
 import com.main.writeRoom.repository.RoomRepository;
 import com.main.writeRoom.repository.UserRepository;
 import com.main.writeRoom.repository.UuidRepository;
 import com.main.writeRoom.web.dto.room.RoomRequestDTO;
+
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,6 +40,7 @@ public class RoomCommandServiceimpl implements RoomCommandService {
     private final UserRepository userRepository;
     private final AmazonS3Manager s3Manager;
     private final UuidRepository uuidRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public Page<RoomParticipation> getMyRoomResultList(Long userId, Integer page) {
@@ -43,6 +49,14 @@ public class RoomCommandServiceimpl implements RoomCommandService {
         PageRequest pageRequest = PageRequest.of(page, 12, Sort.by(Sort.Order.desc("room.updatedAt")));
         return userRoomRepository.findAllByUser(user, pageRequest);
     }
+
+    @Override
+    public List<RoomParticipation> getMyRoomResultList(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        return userRoomRepository.findAllByUser(user);
+    }
+
 
     @Override
     public Page<RoomParticipation> getUserRoomInfoList(Room room) {
@@ -72,7 +86,11 @@ public class RoomCommandServiceimpl implements RoomCommandService {
         RoomParticipation roomParticipation = RoomConverter.toUserRoom(room, user);
         userRoomRepository.save(roomParticipation);
 
-        return roomRepository.save(room);
+        Room newRoom = roomRepository.save(room);
+        Category category = CategoryConverter.toCategoryDefaultResult(newRoom);
+        categoryRepository.save(category);
+
+        return newRoom;
     }
 
 
@@ -99,5 +117,11 @@ public class RoomCommandServiceimpl implements RoomCommandService {
         }
         RoomParticipation response = RoomConverter.toUserParticipateIn(room, user);
         return userRoomRepository.save(response).getRoom();
+    }
+
+    public List<RoomParticipation> getMyRoomAllResultList(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserHandler(ErrorStatus.MEMBER_NOT_FOUND));
+        return userRoomRepository.findAllByUser(user);
     }
 }

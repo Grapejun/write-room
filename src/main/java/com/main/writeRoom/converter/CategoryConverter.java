@@ -40,4 +40,11 @@ public class CategoryConverter {
                 .categoryName(category.getName())
                 .build();
     }
+
+    public static Category toCategoryDefaultResult(Room room) {
+        return Category.builder()
+                .room(room)
+                .name("빠른노트")
+                .build();
+    }
 }

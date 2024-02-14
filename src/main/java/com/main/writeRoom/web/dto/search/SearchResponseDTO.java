@@ -1,14 +1,12 @@
 package com.main.writeRoom.web.dto.search;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 public class SearchResponseDTO {
 
     @Builder
     @Getter
+    @Setter
     @NoArgsConstructor
     @AllArgsConstructor
     public static class VocabularyResultDTO {

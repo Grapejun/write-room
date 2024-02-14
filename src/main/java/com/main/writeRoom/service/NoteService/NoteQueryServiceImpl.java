@@ -28,8 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class NoteQueryServiceImpl implements NoteQueryService{
     private final NoteRepository noteRepository;
-    private final NoteTagRepository noteTagRepository;
-    private final TagRepository tagRepository;
 
     public List<Note> findNoteForCategoryAndRoom(Category category, Room room) {
         return noteRepository.findAllByCategoryAndRoom(category, room);
@@ -72,9 +70,8 @@ public class NoteQueryServiceImpl implements NoteQueryService{
         noteResult.getTagList().addAll(tagDTOList);
 
         return noteResult;
-
-        // 노트에 이모지 리스트 삽입
     }
+
     public Page<Note> findNoteForRoomAndCategory(Category category, Room room, Integer page) {
         PageRequest pageRequest = PageRequest.of(page, 10);
         return noteRepository.findAllByRoomAndCategory(room, category, pageRequest);
@@ -84,4 +81,5 @@ public class NoteQueryServiceImpl implements NoteQueryService{
         PageRequest pageRequest = PageRequest.of(page, 10);
         return noteRepository.findAllByRoomAndUser(room, user, pageRequest);
     }
+
 }

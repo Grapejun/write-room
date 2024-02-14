@@ -1,5 +1,6 @@
 package com.main.writeRoom.converter;
 
+import com.main.writeRoom.domain.User.ExistedEmail;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.enums.Role;
 import com.main.writeRoom.web.dto.user.UserRequestDTO;
@@ -46,6 +47,14 @@ public class UserConverter {
                 .email(user.getEmail())
                 .nickName(user.getName())
                 .profileImg(user.getProfileImage())
+                .build();
+    }
+
+    public static ExistedEmail toExistedEmailResult (String email, String resetToken, User user) {
+        return ExistedEmail.builder()
+                .existingEmail(email)
+                .resetToken(resetToken)
+                .user(user)
                 .build();
     }
 }

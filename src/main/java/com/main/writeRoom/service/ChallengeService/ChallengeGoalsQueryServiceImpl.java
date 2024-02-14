@@ -11,12 +11,14 @@ import com.main.writeRoom.handler.ChallengeHandler;
 import com.main.writeRoom.repository.ChallengeGoalsParticipationRepository;
 import com.main.writeRoom.repository.ChallengeGoalsRepository;
 import com.main.writeRoom.repository.NoteRepository;
+import com.main.writeRoom.service.RoomParticipationService.RoomParticipationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,6 +27,7 @@ public class ChallengeGoalsQueryServiceImpl implements ChallengeGoalsQueryServic
     private final ChallengeGoalsRepository goalsRepository;
     private final NoteRepository noteRepository;
     private final ChallengeGoalsParticipationRepository goalsParticipationRepository;
+    private final RoomParticipationService roomParticipationService;
 
     @Override
     public ChallengeGoals findGoals(Long challengeId) {
@@ -53,4 +56,13 @@ public class ChallengeGoalsQueryServiceImpl implements ChallengeGoalsQueryServic
     public List<ChallengeGoalsParticipation> findByChallengeStatus(ChallengeStatus challengeStatus) {
         return goalsParticipationRepository.findByChallengeStatus(challengeStatus);
     }
+
+    @Override
+    public List<User> findGoalsUsers(Room room) {
+        List<User> userList = roomParticipationService.findRoomUserList(room).stream()
+                .filter(user -> findProgressGoalsParticipation(user, room) == null) //진행 중인 참여자를 조회했을 때 null이 반환되는 참여자로 필터링
+                .collect(Collectors.toList());
+        return userList;
+    }
+
 }

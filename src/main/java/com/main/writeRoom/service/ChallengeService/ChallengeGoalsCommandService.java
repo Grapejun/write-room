@@ -12,5 +12,4 @@ public interface ChallengeGoalsCommandService {
     public ChallengeGoals create(Long roomId, ChallengeRequestDTO.ChallengeGoalsDTO request);
     public void deadlineRangeNull(LocalDate startDate, LocalDate deadline);
     public ChallengeGoalsParticipation giveUP(Long userId, Long challengeGoalsId);
-    public void isStatusProgress(User user, ChallengeGoals goals);
 }

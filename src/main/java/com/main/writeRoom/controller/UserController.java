@@ -15,17 +15,14 @@ import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.web.dto.user.UserRequestDTO;
 import com.main.writeRoom.web.dto.user.UserResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -71,9 +68,43 @@ public class UserController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER4003", description = "비밀번호가 일치하지 않습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+    })
     @PatchMapping("/password")
     public ApiResponse<UserResponseDTO.CustomUserInfo> updatedPassword(@AuthUser long userId, @RequestBody UserRequestDTO.UpdatedPassword request) {
         User user = userCommandService.updatedPassword(userId, request);
         return ApiResponse.of(SuccessStatus._OK, UserConverter.CustomUserInfoResultDTO(user));
+    }
+
+    @Operation(summary = "유저 이메일 주소 변경 API", description = "유저의 이메일 주소 변경 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER4003", description = "비밀번호가 일치하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+    })
+    @PatchMapping("/email")
+    public ApiResponse<UserResponseDTO.CustomUserInfo> updatedEmail(@AuthUser long userId, @RequestBody UserRequestDTO.ResetPasswordForEmail request)
+            throws MessagingException {
+        User user = userCommandService.updatedEmail(userId, request);
+        return ApiResponse.of(SuccessStatus._OK, UserConverter.CustomUserInfoResultDTO(user));
+    }
+
+    @Operation(summary = "유저 탈퇴 API", description = "유저의 탈퇴 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+
+    @DeleteMapping("/delete/{userId}")
+    public ApiResponse<Void> deleteUser(@AuthUser long userId) {
+        userCommandService.deleteUser(userId);
+        return ApiResponse.of(SuccessStatus._OK, null);
     }
 }

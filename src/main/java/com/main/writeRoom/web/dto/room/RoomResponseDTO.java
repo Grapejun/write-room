@@ -3,7 +3,6 @@ package com.main.writeRoom.web.dto.room;
 import com.main.writeRoom.web.dto.room.roomPaticipation.userRoomResponseDTO.userRoomInfoList;
 import java.util.List;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,6 +19,19 @@ public class RoomResponseDTO {
         Long totalElements;
         Boolean isFirst;
         Boolean isLast;
+        Long roomId;
+        String roomTitle;
+        String updatedAt;
+        String roomImg;
+        Long totalMember;
+        List<userRoomInfoList> userRoomList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MyRoomAllResultDto {
         Long roomId;
         String roomTitle;
         String updatedAt;

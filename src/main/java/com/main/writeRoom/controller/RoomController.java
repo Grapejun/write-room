@@ -32,6 +32,7 @@ import com.main.writeRoom.validation.annotation.PageLessNull;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import com.main.writeRoom.web.dto.room.RoomRequestDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO;
+import com.main.writeRoom.web.dto.room.RoomResponseDTO.MyRoomAllResultDto;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO.MyRoomResultDto;
 import com.main.writeRoom.web.dto.room.roomPaticipation.userRoomResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
@@ -316,7 +317,10 @@ public class RoomController {
     })
     @Parameters({
             @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
+<<<<<<< HEAD
             @Parameter(name = "user", description = "user", hidden = true),
+=======
+>>>>>>> 87d9c33ad92369211738e13ec5c7303f9c4968f6
             @Parameter(name = "roomId", description = "룸 아이디 입니다.")
     })
     @GetMapping("/tagList/{roomId}")
@@ -325,4 +329,43 @@ public class RoomController {
         Page<NoteTag> tag = tagQueryService.getTagListForRoom(roomId, page);
         return ApiResponse.of(SuccessStatus._OK, TagConverter.toTagListForRoom(tag, roomId));
     }
+<<<<<<< HEAD
+=======
+
+    @Operation(summary = "태그 검색 API", description = "해당 룸에 존재하는 노트에 달린 태그를 통해 검색하며, query String으로 page 번호와 param으로 태그 String을 주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
+            @Parameter(name = "roomId", description = "룸 아이디 입니다."),
+            @Parameter(name = "tag", description = "태그 이름입니다.")
+    })
+    @GetMapping("/search/noteListForTag/{roomId}")
+    public ApiResponse<NoteResponseDTO.RoomResultForTag> findNoteListForTag(@PathVariable(name = "roomId")Long roomId, @RequestParam(name = "tag")String tag,
+                                                                   @PageLessNull @RequestParam(name = "page")Integer page) {
+        Room room = roomQueryService.findRoom(roomId);
+        Page<NoteTag> note = tagQueryService.findNoteForRoomAndTag(room, tag, page);
+        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toNoteListForTag(room, note));
+    }
+
+    @GetMapping("/myRoomList/allData")
+    @Operation(summary = "나의 룸 목록 조회 API (페이징처리X)", description = "해당 유저가 참여중인 룸의 목록들을 조회하는 API이며, 페이징을 포함합니다. query String으로 page 번호를 주세요. ")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON401", description = "인증이 필요합니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+    })
+    public ApiResponse<List<MyRoomAllResultDto>> myRoomListAllData(@AuthUser long user) {
+        List<RoomParticipation> room = roomCommandService.getMyRoomAllResultList(user);
+        return ApiResponse.of(SuccessStatus._OK, RoomConverter.myRoomListAllInfoDTO(room));
+    }
+>>>>>>> 87d9c33ad92369211738e13ec5c7303f9c4968f6
 }

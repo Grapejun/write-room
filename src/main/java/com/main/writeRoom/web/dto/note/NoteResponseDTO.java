@@ -1,14 +1,11 @@
 package com.main.writeRoom.web.dto.note;
 
-import com.main.writeRoom.domain.Emoji;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Tag;
-import com.main.writeRoom.domain.mapping.EmojiClick;
 import com.main.writeRoom.web.dto.emoji.EmojiResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,6 +48,8 @@ public class NoteResponseDTO {
         String noteImg;
         String userProfileImg;
         LocalDateTime createdAt;
+        Long categoryId;
+        String categoryContent;
         List<TagResponseDTO.TagList> tagList;
     }
 
@@ -70,7 +69,7 @@ public class NoteResponseDTO {
     public static class NoteResult {
         Long noteId;
         String noteTitle;
-        String noteSubTitle;
+        String noteSubtitle;
         String noteContent;
         String categoryName;
         String writer;
@@ -78,7 +77,7 @@ public class NoteResponseDTO {
         LocalDateTime createdAt;
         LocalDateTime updatedAt;
         List<TagResponseDTO.TagList> tagList;
-        EmojiResponseDTO.EmojiListResult emojiList; // EmojiResponseDTO로 변경할지 고민
+        EmojiResponseDTO.EmojiListResult emojiList;
 
     }
 
@@ -90,4 +89,60 @@ public class NoteResponseDTO {
         Long noteId;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListDTO {
+        private List<SearchNoteDTO> noteList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SearchNoteDTO {
+        private String roomName;
+        private Long noteId;
+        private String writer;
+        private String profileImg;
+        LocalDateTime  createdAt;
+
+        private String title;
+        private String subtitle;
+        private String content;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+
+    public static class RoomResultForTag {
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+        Long roomId;
+        String roomTitle;
+        String roomIntroduction;
+        List<NoteListForTag> noteListForTags;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListForTag {
+        Long noteId;
+        String noteTitle;
+        String noteSubtitle;
+        String noteContent;
+        String writer;
+        String noteImg;
+        String userProfileImg;
+        LocalDateTime createdAt;
+        List<TagResponseDTO.TagList> tagList;
+    }
 }

@@ -14,5 +14,4 @@ public interface ChallengeRoutineCommandService {
     public void deadlineRange(LocalDate startDate, LocalDate deadline);
 
     public ChallengeRoutineParticipation giveUp(Long userId, Long challengeRoutineId);
-    public void isStatusProgress(User user, ChallengeRoutine routine);
 }

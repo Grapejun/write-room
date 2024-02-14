@@ -9,7 +9,6 @@ import com.main.writeRoom.web.dto.note.NoteRequestDTO;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,6 +47,8 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .writer(note.getUser().getName())
                 .userProfileImg(note.getUser().getProfileImage())
                 .createdAt(note.getCreatedAt())
+                .categoryId(note.getCategory().getId())
+                .categoryContent(note.getCategory().getName())
                 .tagList(toNoteResultTagDTOList)
                 .build();
     }
@@ -56,7 +57,7 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
 
         return NoteResponseDTO.NoteResult.builder()
                 .noteCoverImg(note.getCoverImg())
-                .noteSubTitle(note.getSubtitle())
+                .noteSubtitle(note.getSubtitle())
                 .noteTitle(note.getTitle())
                 .noteContent(note.getContent())
                 .createdAt(note.getCreatedAt())
@@ -90,16 +91,6 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
             .build();
     }
 
-    // public static NoteResponseDTO.NoteResult toNoteDelete
-    /*
-    public static BookmarkResponseDTO.TopicResultDTO toDeleteResultDTO(Long id) {
-        return BookmarkResponseDTO.TopicResultDTO.builder()
-                .BookmarkId(id)
-                .createdAt(LocalDateTime.now())
-                .build();
-    }
-    */
-
     public static Note toNote(Room room, User user, Category category, NoteRequestDTO.createNoteDTO request, String imgUrl) {
 
     // challengeCheck
@@ -110,7 +101,7 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
 
         return Note.builder()
                 .title(request.getNoteTitle())
-                .subtitle(request.getNoteSubTitle())
+                .subtitle(request.getNoteSubtitle())
                 .coverImg(imgUrl)
                 .content(request.getNoteContent())
                 .achieve(achieve)
@@ -129,4 +120,59 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .user(user)
                 .build();
     }
+
+    public static List<NoteResponseDTO.SearchNoteDTO> toNoteDTOList(List<Note> noteList) {
+        return noteList.stream()
+                .map(note -> NoteResponseDTO.SearchNoteDTO.builder()
+                        .roomName(note.getRoom().getTitle())
+                        .noteId(note.getId())
+                        .writer(note.getUser().getName())
+                        .profileImg(note.getUser().getProfileImage())
+                        .createdAt(note.getCreatedAt())
+                        .title(note.getTitle())
+                        .subtitle(note.getSubtitle())
+                        .content(note.getContent()) // 일부 추출??
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public static NoteResponseDTO.RoomResultForTag toNoteListForTag(Room room, Page<NoteTag> noteTags) {
+        List<Note> notes = noteTags.stream()
+                .map(NoteTag::getNote)
+                .toList();
+
+        List<NoteResponseDTO.NoteListForTag> toNoteListForTagResult = notes.stream()
+                .map(NoteConverter::toNoteListForTagDTOList)
+                .collect(Collectors.toList());
+
+        return NoteResponseDTO.RoomResultForTag.builder()
+                .roomId(room.getId())
+                .noteListForTags(toNoteListForTagResult)
+                .listSize(noteTags.getSize())
+                .totalPage(noteTags.getTotalPages())
+                .totalElements(noteTags.getTotalElements())
+                .isFirst(noteTags.isFirst())
+                .isLast(noteTags.isLast())
+                .build();
+
+    }
+
+    public static NoteResponseDTO.NoteListForTag toNoteListForTagDTOList(Note note) {
+        List<TagResponseDTO.TagList> toNoteResultTagDTOList = note.getNoteTagList().stream()
+                .map(NoteConverter::toNoteResultTagDTOList).collect(Collectors.toList());
+
+        return NoteResponseDTO.NoteListForTag.builder()
+                .noteId(note.getId())
+                .noteTitle(note.getTitle())
+                .noteSubtitle(note.getSubtitle())
+                .noteContent(note.getContent())
+                .noteImg(note.getCoverImg())
+                .writer(note.getUser().getName())
+                .userProfileImg(note.getUser().getProfileImage())
+                .createdAt(note.getCreatedAt())
+                .tagList(toNoteResultTagDTOList)
+                .build();
+
+    }
+
 }

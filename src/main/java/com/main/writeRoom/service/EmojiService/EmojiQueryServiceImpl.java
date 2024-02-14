@@ -1,6 +1,7 @@
 package com.main.writeRoom.service.EmojiService;
 
 import com.main.writeRoom.apiPayload.status.ErrorStatus;
+import com.main.writeRoom.converter.EmojiConverter;
 import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
@@ -8,6 +9,7 @@ import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.EmojiClick;
 import com.main.writeRoom.handler.EmojiHandler;
 import com.main.writeRoom.repository.EmojiClickRepository;
+import com.main.writeRoom.web.dto.emoji.EmojiResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +30,9 @@ public class EmojiQueryServiceImpl implements EmojiQueryService{
         return emojiClickRepository.findAllByNote(note);
     }
 
-    /*public List<Note> findNoteForCategoryAndRoom(Category category, Room room) {
-        return noteRepository.findAllByCategoryAndRoom(category, room);
-    }*/
+    public EmojiResponseDTO.EmojiGetResult getEmoji(EmojiClick emojiClick) {
+
+        return EmojiConverter.toEmojiGetResult(emojiClick);
+    }
+
 }

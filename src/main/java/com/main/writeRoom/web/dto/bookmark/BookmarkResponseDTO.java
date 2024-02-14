@@ -1,6 +1,6 @@
 package com.main.writeRoom.web.dto.bookmark;
 
-import com.main.writeRoom.domain.Bookmark.BookmarkMaterial;
+import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,19 +16,10 @@ public class BookmarkResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class TopicResultDTO {
-        Long BookmarkId;
+        Long bookmarkId;
+        String bookmarkContent;
         LocalDateTime createdAt;
     }
-
-    @Builder
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class TopicSearchResultDTO {
-        Long userId;
-        LocalDateTime createdAt;
-    }
-
 
     @Getter
     @Builder
@@ -43,11 +34,42 @@ public class BookmarkResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class BookMarkMaterialListDTO {
-        List<BookmarkMaterialDTO> bookmarkMaterialList;
         Integer listSize;
         Integer totalPage;
         Long totalElements;
         Boolean isFirst;
         Boolean isLast;
+        List<BookmarkMaterialDTO> bookmarkMaterialList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListForNoteBookmark {
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+        List<NoteListForNoteBookmarkList> noteListForNoteBookmarkLists;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListForNoteBookmarkList {
+        Long roomId;
+        Long noteId;
+        Long noteBookmarkId;
+        String noteTitle;
+        String noteSubtitle;
+        String noteContent;
+        String noteImg;
+        String writer;
+        String writerImg;
+        LocalDateTime createdAt;
+        List<TagResponseDTO.TagList> tagList;
     }
 }

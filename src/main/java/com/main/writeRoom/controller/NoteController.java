@@ -6,20 +6,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.main.writeRoom.apiPayload.ApiResponse;
 import com.main.writeRoom.apiPayload.code.ErrorReasonDTO;
+import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.config.auth.AuthUser;
+import com.main.writeRoom.converter.BookmarkConverter;
 import com.main.writeRoom.converter.NoteConverter;
+import com.main.writeRoom.domain.Bookmark.BookmarkNote;
 import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.EmojiClick;
+import com.main.writeRoom.handler.AuthenticityHandler;
+import com.main.writeRoom.handler.TokenHandler;
+import com.main.writeRoom.service.BookmarkService.BookmarkService;
 import com.main.writeRoom.service.CategoryService.CategoryQueryService;
 import com.main.writeRoom.service.EmojiService.EmojiQueryService;
 import com.main.writeRoom.service.NoteService.NoteCommandService;
 import com.main.writeRoom.service.NoteService.NoteQueryService;
 import com.main.writeRoom.service.RoomService.RoomQueryService;
 import com.main.writeRoom.service.UserService.UserQueryService;
+import com.main.writeRoom.validation.annotation.PageLessNull;
+import com.main.writeRoom.web.dto.bookmark.BookmarkResponseDTO;
 import com.main.writeRoom.web.dto.note.NoteRequestDTO;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import com.main.writeRoom.web.dto.room.RoomRequestDTO;
@@ -31,6 +39,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,11 +58,16 @@ public class NoteController {
     private final UserQueryService userQueryService;
     private final CategoryQueryService categoryQueryService;
     private final EmojiQueryService emojiQueryService;
+    private final BookmarkService bookmarkService;
 
     @Operation(summary = "노트 생성 API", description = "새로운 노트를 생성하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            // 존재하지 않는 룸의 아이디를 입력했을 경우 에러
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CATEGORY4001", description = "카테고리가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            // 입력 필드 관련 에러
     })
     @Parameters({
             @Parameter(name = "roomId", description = "노트를 생성할 룸의 아이디입니다."),
@@ -80,9 +94,9 @@ public class NoteController {
     @Operation(summary = "노트 조회 API", description = "노트를 조회하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
-            // 존재 하지 않는 노트일 때 에러
-            // 조회에서도 룸 안의 사람만 조회 가능한가? 필요하면 조건 추가.
-            // 노트 생성 수정 시 바로 노트 조회 반환해도 좋을 듯 함.
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTE4001", description = "노트가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            // 룸 내부의 사람만 조회 가능 - 필요 하면 조건 추가.
     })
     @Parameters({
             @Parameter(name = "noteId", description = "조회할 노트의 아이디입니다."),
@@ -101,29 +115,42 @@ public class NoteController {
     @Operation(summary = "노트 수정 API", description = "노트를 수정하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTE4001", description = "노트가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CATEGORY4001", description = "카테고리가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTHORITY4001", description = "권한이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             // 형식이 맞지 않을 때 에러
-            // 존재 하지 않는 노트일 때 에러
-            // 작성자가 아닌 경우 수정 불가
+            // 입력 필드 관련 에러
+    })
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true)
     })
     @PutMapping(value = "/notes/{noteId}", consumes = "multipart/form-data")
     public ApiResponse<NoteResponseDTO.NoteResult> updateNote(
+            @AuthUser long userId,
             @PathVariable(name = "noteId")Long noteId,
             @RequestParam(name = "request") String request,
             @RequestPart(required = false, value = "noteImg") MultipartFile noteImg)
             throws JsonProcessingException{
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         NoteRequestDTO.patchNoteDTO jsonList = objectMapper.readValue(request, new TypeReference<>() {});
-        // 노트가 존재하지 않으면 에러
         Note note = noteQueryService.findNote(noteId);
-        // 사용자의 노트가 아닐 경우 에러
+        if (userId != note.getUser().getId())
+            throw new AuthenticityHandler(ErrorStatus.AUTHORITY_NOT_FOUND);
         Category category = categoryQueryService.findCategory(jsonList.getCategoryId());
         Note updatedNote = noteCommandService.updateNoteFields(note, category, noteImg, jsonList);
         return getNote(updatedNote.getId());
     }
 
-    @Operation(summary = "노트 삭제 API", description = "노트를 삭제하는 API입니다.") // 되는지 확인 해봐야 하고, 양방향 매핑도 삭제 해야 함. 이모지 태그 등
+    @Operation(summary = "노트 삭제 API", description = "노트를 삭제하는 API입니다.")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTE4001", description = "노트가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "AUTHORITY4001", description = "권한이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters({
             @Parameter(name = "noteId", description = "삭제할 노트의 아이디입니다."),
@@ -145,6 +172,8 @@ public class NoteController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "NOTE4001", description = "노트가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER4001", description = "유저가 없습니다",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "BOOKMARK4003", description = "이미 북마크된 노트입니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters({
@@ -170,5 +199,20 @@ public class NoteController {
     public ApiResponse deleteBookmark(@PathVariable(name = "bookmarkNoteId")Long bookmarkNoteId) {
         noteCommandService.deleteBookmarkNote(bookmarkNoteId);
         return ApiResponse.onSuccess();
+    }
+
+    @Operation(summary = "북마크한 노트 목록 조회 API", description = "내가 북마크한 노트 조회 API이며, 페이징을 포함합니다. query String으로 page 번호를 주세요.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @Parameters({
+            @Parameter(name = "page", description = "페이지 번호, 0번이 1번 페이지 입니다."),
+            @Parameter(name = "user", description = "user", hidden = true),
+    })
+    @GetMapping("/notes/bookmark/list")
+    public ApiResponse<BookmarkResponseDTO.NoteListForNoteBookmark> getNoteListForBookmark(@AuthUser long userId, @PageLessNull @RequestParam(name = "page") Integer page) {
+        User user = userQueryService.findUser(userId);
+        Page<BookmarkNote> bookmarkNote = bookmarkService.findNoteBookmark(user, page);
+        return ApiResponse.of(SuccessStatus._OK, BookmarkConverter.toNoteBookmarkListResult(bookmarkNote));
     }
 }

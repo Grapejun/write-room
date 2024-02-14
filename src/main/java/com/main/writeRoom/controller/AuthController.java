@@ -17,12 +17,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -55,10 +56,13 @@ public class AuthController {
         return ApiResponse.of(SuccessStatus._OK, UserConverter.CustomUserInfoResultDTO(user));
     }
 
-    @Operation(summary = "비밀번호 재설정 API", description = "비밀번호 재설정 API이며, 유저가 재설정 버튼 url에 토큰을 같이 담았습니다.")
+    @Operation(summary = "비밀번호 재설정 API", description = "로그인 시 비밀번호 재설정 API이며, 유저가 재설정 버튼 url에 토큰을 같이 담았습니다. "
+            + "type 을 입력해주세요. ex) 1. email // 2. pwd")
     @ApiResponses({
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "TOKEN4001", description = "재설정 토큰이 잘못되었습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER4003", description = "이미 존재하는 이메일입니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters({
@@ -66,8 +70,17 @@ public class AuthController {
     })
     @PostMapping("/resetPwd")
     public ApiResponse<UserResponseDTO.CustomUserInfo> resetPwd(@RequestBody UserRequestDTO.ResetPassword request,
-                                                                @RequestParam(name = "token")String resetToken) {
-        User user = authService.resetPwd(request, resetToken);
+                                                                @RequestParam(name = "token")String resetToken,
+                                                                @RequestParam(name= "type")String type) {
+        User user = authService.resetPwd(request, resetToken, type);
         return ApiResponse.of(SuccessStatus._OK, UserConverter.CustomUserInfoResultDTO(user));
+    }
+
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+        if (authentication != null) {
+            new SecurityContextLogoutHandler().logout(request, response, authentication);
+        }
+        return ResponseEntity.ok("Logged out successfully.");
     }
 }

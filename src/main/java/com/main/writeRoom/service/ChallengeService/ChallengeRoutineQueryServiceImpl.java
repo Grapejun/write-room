@@ -10,6 +10,7 @@ import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
 import com.main.writeRoom.domain.mapping.ChallengeStatus;
 import com.main.writeRoom.handler.ChallengeHandler;
 import com.main.writeRoom.repository.*;
+import com.main.writeRoom.service.RoomParticipationService.RoomParticipationServiceImpl;
 import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.web.dto.challenge.ChallengeRequestDTO;
 import com.main.writeRoom.web.dto.challenge.ChallengeResponseDTO;
@@ -30,6 +31,7 @@ public class ChallengeRoutineQueryServiceImpl implements ChallengeRoutineQuerySe
     private final NoteRepository noteRepository;
     private final UserQueryService userQueryService;
     private final ChallengeRoutineParticipationRepository routineParticipationRepository;
+    private final RoomParticipationServiceImpl roomParticipationService;
 
     @Override
     public ChallengeRoutine findRoutine(Long challengeId) {
@@ -62,4 +64,12 @@ public class ChallengeRoutineQueryServiceImpl implements ChallengeRoutineQuerySe
         return routineParticipationRepository.findByChallengeStatus(challengeStatus);
     }
 
+    //참여 가능한 회원 찾기
+    @Override
+    public List<User> findRoutineUsers(Room room) {
+        List<User> userList = roomParticipationService.findRoomUserList(room).stream()
+                .filter(user -> findProgressRoutineParticipation(user, room) == null) //진행 중인 참여자를 조회했을 때 null이 반환되는 참여자로 필터링
+                .collect(Collectors.toList());
+        return userList;
+    }
 }

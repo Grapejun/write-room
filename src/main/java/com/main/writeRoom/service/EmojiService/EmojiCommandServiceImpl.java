@@ -60,7 +60,7 @@ public class EmojiCommandServiceImpl implements EmojiCommandService{
             emojiRepository.deleteById(emoji.getId());
             emojiClickRepository.deleteById(emojiClick.getId());
 
-            return EmojiConverter.toEmojiDeleteResult(emojiClick);
+            return EmojiConverter.toEmojiDeleteResult(emoji);
 
     }
 

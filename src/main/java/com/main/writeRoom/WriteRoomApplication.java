@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableJpaAuditing
 @EnableScheduling
 public class WriteRoomApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(WriteRoomApplication.class, args);
 	}

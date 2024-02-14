@@ -24,6 +24,7 @@ public enum ErrorStatus implements BaseErrorCode {
 
 
     PAGE_LESS_NULL(HttpStatus.BAD_REQUEST, "PAGE4001", "Page는 0부터 입니다."),
+    INVALID_PAGE(HttpStatus.BAD_REQUEST, "INVALID_PAGE", "페이지 번호는 0 이상이어야 합니다."),
     ROOM_NOT_FOUND(HttpStatus.BAD_REQUEST, "ROOM4001", "룸이 없습니다."),
     ROOM_ALREADY_PARTICIPATION(HttpStatus.BAD_REQUEST, "ROOM4002", "이미 룸에 참여중입니다."),
     CATEGORY_NOT_FOUND(HttpStatus.BAD_REQUEST, "CATEGORY4001", "카테고리가 없습니다."),
@@ -31,8 +32,12 @@ public enum ErrorStatus implements BaseErrorCode {
     AUTHORITY_NOT_FOUND(HttpStatus.BAD_REQUEST, "AUTHORITY4001", "권한이 없습니다."),
     AUTHORITY_TYPE_ERROR(HttpStatus.BAD_REQUEST, "AUTHORITY4002", "올바른 권한 형식을 입력하세요."),
     BOOKMARK_NOT_FOUND(HttpStatus.BAD_REQUEST, "BOOKMARK4001", "해당하는 Id의 북마크가 없습니다."),
+    NOT_YOUR_BOOKMARK(HttpStatus.BAD_REQUEST, "BOOKMARK4002", "해당 사용자가 등록한 북마크가 아닙니다."),
+    EXIST_BOOKMARK_NOTE(HttpStatus.BAD_REQUEST, "BOOKMARK4003", "이미 북마크된 노트 입니다."),
     EMOJI_NOT_FOUNT(HttpStatus.BAD_REQUEST, "EMOJI4001", "사용자가 남긴 이모지가 없습니다."),
     EMOJI_REPOST(HttpStatus.BAD_REQUEST, "EMOJI4002", "이미 해당 노트에 이모지를 등록 했습니다."),
+    EMOJI_NUM_RANGE_ERROR(HttpStatus.BAD_REQUEST, "EMOJI4003", "이모지 넘버는 1~6 까지만 등록 가능 합니다."),
+
 
     //챌린지 에러
     ROUTINE_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4001", "챌린지 루틴이 없습니다."),
@@ -41,7 +46,8 @@ public enum ErrorStatus implements BaseErrorCode {
     DEADLINE_OUT_RANGE(HttpStatus.BAD_REQUEST, "CHALLENGE4004", "챌린지 마감 날짜 범위를 벗어났습니다."),
     GOALS_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4005", "챌린지 목표량이 없습니다."),
     NOT_PARTICIPATE(HttpStatus.BAD_REQUEST, "CHALLENGE4006", "해당 챌린지에 사용자가 참여하지 않았습니다."),
-    CHALLENGE_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4007", "룸과 회원에 해당하는 챌린지가 없습니다.")
+    CHALLENGE_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4007", "룸과 회원에 해당하는 챌린지가 없습니다."),
+    ALREADY_PROGRESS(HttpStatus.BAD_REQUEST, "CHALLENGE4008", "이미 진행 중인 챌린지가 있습니다.")
     ;
 
     private final HttpStatus httpStatus;
