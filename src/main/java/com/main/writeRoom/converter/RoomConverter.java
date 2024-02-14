@@ -193,10 +193,11 @@ public class RoomConverter {
     }
 
     public static RoomResponseDTO.MyRoomInfoResult MyRoomInfoResult(Room room) {
+        String title = room.getTitle() != null ? room.getTitle() : "제목 없음";
         return RoomResponseDTO.MyRoomInfoResult
                 .builder()
                 .roomId(room.getId())
-                .title(room.getTitle())
+                .title(title)
                 .introduction(room.getIntroduction())
                 .coverImg(room.getCoverImg())
                 .build();

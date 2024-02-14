@@ -142,20 +142,12 @@ public class RoomCommandServiceimpl implements RoomCommandService {
 
         String imgUrl = null;
         Uuid savedUuid = null;
+        if (roomImg != null && !roomImg.isEmpty()) {
+            String uuid = UUID.randomUUID().toString();
+            savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
+            imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid, "user"), roomImg);
+        }
 
-        String uuid = UUID.randomUUID().toString();
-        savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
-        imgUrl = s3Manager.uploadFile(s3Manager.generateReviewKeyName(savedUuid, "user"), roomImg);
-
-        if (request.getRoomTitle() != null) {
-            room.setTitle(request.getRoomTitle());
-        }
-        if (request.getRoomIntroduction() != null) {
-            room.setIntroduction(request.getRoomIntroduction());
-        }
-        if (roomImg != null) {
-            room.setCoverImg(imgUrl);
-        }
-        return room;
+        return room.setRoomInfo(request.getRoomTitle(), request.getRoomIntroduction(), imgUrl);
     }
 }
