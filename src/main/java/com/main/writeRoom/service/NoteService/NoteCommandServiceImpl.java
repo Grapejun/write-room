@@ -157,7 +157,11 @@ public class NoteCommandServiceImpl implements NoteCommandService{
         if (request.getNoteSubtitle() != null) builder.subtitle(request.getNoteSubtitle());
         if (request.getNoteContent() != null) builder.content(request.getNoteContent());
         if (imgUrl != null) builder.coverImg(imgUrl);
-        else builder.coverImg(null);
+        else
+        {
+            if (request.getImgDelete())
+                builder.coverImg(null);
+        }
         if (request.getLetterCount() >= 200) builder.achieve(ACHIEVE.TRUE);
         if (category != null) builder.category(category);
 
