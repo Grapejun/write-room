@@ -24,6 +24,8 @@ public class NoteRequestDTO {
         String noteTitle;
         String noteSubtitle;
         String noteContent;
+        @NotNull(message = "이미지 삭제 여부 필수입니다.")
+        Boolean imgDelete;
         @NotNull(message = "카테고리 입력은 필수입니다.")
         Long categoryId;
         @NotNull(message = "글자수 입력은 필수입니다.")
