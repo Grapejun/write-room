@@ -47,6 +47,7 @@ public class UserConverter {
                 .email(user.getEmail())
                 .nickName(user.getName())
                 .profileImg(user.getProfileImage())
+                .joinType(user.getJoinType().toString())
                 .build();
     }
 

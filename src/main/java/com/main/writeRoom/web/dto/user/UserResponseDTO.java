@@ -71,5 +71,6 @@ public class UserResponseDTO {
         String profileImg;
         String nickName;
         String email;
+        String joinType;
     }
 }
