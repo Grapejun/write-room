@@ -59,6 +59,18 @@ public class RoomResponseDTO {
         String coverImg;
     }
 
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class MyRoomInfoResultDTO {
+        Long roomId;
+        String title;
+        String introduction;
+        String coverImg;
+        String authority;
+    }
+
     //챌린지 달성률 조회
     @Builder
     @Getter

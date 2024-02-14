@@ -289,6 +289,18 @@ public class RoomController {
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.toCreateRoomResultDTO(response));
     }
 
+    @Operation(summary = "룸 정보 수정 API", description = "룸 정보 수정 API 이며, 룸 제목, 룸 이미지, 룸 소개 3개의 데이터 모두 필수 값이 아닙니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4001", description = "룸이 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "USER4001", description = "유저가 존재하지 않습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "roomId", description = "룸 아이디 입니다.")
+    })
     @PatchMapping("/updatedRoomInfo/{roomId}")
     public ApiResponse<RoomResponseDTO.MyRoomInfoResult> updatedRoomInfo(@PathVariable(name = "roomId")Long roomId, @AuthUser long userId, @RequestParam(name = "request")String request,
                                        @RequestPart(required = false, value = "roomImg")MultipartFile roomImg) throws JsonProcessingException {
@@ -372,5 +384,25 @@ public class RoomController {
     public ApiResponse<List<MyRoomAllResultDto>> myRoomListAllData(@AuthUser long user) {
         List<RoomParticipation> room = roomCommandService.getMyRoomAllResultList(user);
         return ApiResponse.of(SuccessStatus._OK, RoomConverter.myRoomListAllInfoDTO(room));
+    }
+
+    @Operation(summary = "나의 룸 정보 조회 API", description = "해당 유저가 참여중인 룸의 정보를 조회하는 API입니다.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "ROOM4003", description = "회원이 참여중인 룸이 아닙니다.",
+                    content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
+    })
+    @Parameters({
+            @Parameter(name = "user", description = "user", hidden = true),
+            @Parameter(name = "roomId", description = "룸 아이디 입니다."),
+    })
+    @GetMapping("/myRoomInfo/{roomId}")
+    public ApiResponse<RoomResponseDTO.MyRoomInfoResultDTO> getMyRoomInfo(@PathVariable(name = "roomId")Long roomId, @AuthUser long userId) {
+        User user = userQueryService.findUser(userId);
+        Room room = roomQueryService.findRoom(roomId);
+        RoomParticipation roomParticipation = roomCommandService.getUserRoomInfo(room, user);
+        return ApiResponse.of(SuccessStatus._OK, RoomConverter.MyRoomInfoResultDTO(room, roomParticipation));
     }
 }

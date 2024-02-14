@@ -193,12 +193,24 @@ public class RoomConverter {
     }
 
     public static RoomResponseDTO.MyRoomInfoResult MyRoomInfoResult(Room room) {
+        String title = room.getTitle() != null ? room.getTitle() : "제목 없음";
         return RoomResponseDTO.MyRoomInfoResult
+                .builder()
+                .roomId(room.getId())
+                .title(title)
+                .introduction(room.getIntroduction())
+                .coverImg(room.getCoverImg())
+                .build();
+    }
+
+    public static RoomResponseDTO.MyRoomInfoResultDTO MyRoomInfoResultDTO(Room room, RoomParticipation roomParticipation) {
+        return RoomResponseDTO.MyRoomInfoResultDTO
                 .builder()
                 .roomId(room.getId())
                 .title(room.getTitle())
                 .introduction(room.getIntroduction())
                 .coverImg(room.getCoverImg())
+                .authority(roomParticipation.getAuthority().toString())
                 .build();
     }
 }

@@ -58,18 +58,9 @@ public class Room extends BaseEntity {
             return duration.toDays() + "일 전";
         }
     }
-
-    public Room setTitle(String title) {
-        this.title = title;
-        return this;
-    }
-
-    public Room setIntroduction(String introduction) {
-        this.introduction = introduction;
-        return this;
-    }
-
-    public Room setCoverImg(String coverImg) {
+    public Room setRoomInfo(String roomTitle, String roomIntroduction, String coverImg) {
+        this.title = roomTitle;
+        this.introduction = roomIntroduction;
         this.coverImg = coverImg;
         return this;
     }
