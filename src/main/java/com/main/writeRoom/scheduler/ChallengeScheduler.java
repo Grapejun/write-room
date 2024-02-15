@@ -24,7 +24,7 @@ public class ChallengeScheduler {
     private final ChallengeRoutineQueryService routineQueryService;
     private final ChallengeGoalsQueryService goalsQueryService;
 
-    @Scheduled(cron = "0 15 11 * * *")  //매일 자정에 검사
+    @Scheduled(cron = "0 17 11 * * *")  //매일 자정에 검사
     //@Scheduled(fixedRate = 60000) //1분마다 검사(테스트용)
     public void checkChallengeRoutine() {
         log.info("챌린지 달성 체크 작업 시작");
