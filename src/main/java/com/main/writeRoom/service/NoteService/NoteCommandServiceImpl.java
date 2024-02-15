@@ -10,11 +10,7 @@ import com.main.writeRoom.domain.Bookmark.BookmarkNote;
 import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.User.User;
-import com.main.writeRoom.domain.mapping.EmojiClick;
-import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
-import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
-import com.main.writeRoom.domain.mapping.ChallengeStatus;
-import com.main.writeRoom.domain.mapping.NoteTag;
+import com.main.writeRoom.domain.mapping.*;
 import com.main.writeRoom.handler.AuthenticityHandler;
 import com.main.writeRoom.handler.BookmarkHandler;
 import com.main.writeRoom.handler.NoteHandler;
@@ -37,6 +33,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.main.writeRoom.apiPayload.status.ErrorStatus.NOTE_NOT_FOUND;
+import static com.main.writeRoom.domain.mapping.Authority.MANAGER;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +43,7 @@ public class NoteCommandServiceImpl implements NoteCommandService{
     private final RoomQueryService roomQueryService;
     private final UserQueryService userQueryService;
     private final BookmarkNoteRepository bookmarkNoteRepository;
+    private final RoomParticipationRepository roomParticipationRepository;
     private final NoteRepository noteRepository;
     private final TagRepository tagRepository;
     private final NoteTagRepository noteTagRepository;
@@ -190,8 +188,10 @@ public class NoteCommandServiceImpl implements NoteCommandService{
 
         Note note = noteRepository.findById(noteId)
                 .orElseThrow(() -> new NoteHandler(NOTE_NOT_FOUND));
+        Room room = note.getRoom();
+        RoomParticipation roomParticipation = roomParticipationRepository.findByRoomAndUser(room, user);
 
-        if (!user.getId().equals(note.getUser().getId()))
+        if (!user.getId().equals(note.getUser().getId()) || !roomParticipation.getAuthority().equals(MANAGER)) // 해당 룸의 관리자가 아닌 경우에도 권한 없는 에러 발생 하도록 수정
             throw new AuthenticityHandler(ErrorStatus.AUTHORITY_NOT_FOUND);
 
         List<EmojiClick> emojiClick = emojiClickRepository.findAllByNote(note);
