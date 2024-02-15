@@ -72,4 +72,13 @@ public class BookmarkResponseDTO {
         LocalDateTime createdAt;
         List<TagResponseDTO.TagList> tagList;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteBookmarkResult {
+        Long noteId;
+        Long noteBookmarkId;
+    }
 }

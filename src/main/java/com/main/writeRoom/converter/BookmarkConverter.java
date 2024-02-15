@@ -85,4 +85,12 @@ public class BookmarkConverter {
                 .noteListForNoteBookmarkLists(bookmarkLists)
                 .build();
     }
+
+    public static BookmarkResponseDTO.NoteBookmarkResult toBookMarkNoteResult(BookmarkNote bookmarkNote) {
+        return BookmarkResponseDTO.NoteBookmarkResult
+                .builder()
+                .noteId(bookmarkNote.getNote().getId())
+                .noteBookmarkId(bookmarkNote.getId())
+                .build();
+    }
 }
