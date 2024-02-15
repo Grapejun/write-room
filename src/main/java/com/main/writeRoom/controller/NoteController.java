@@ -10,7 +10,6 @@ import com.main.writeRoom.apiPayload.status.ErrorStatus;
 import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.BookmarkConverter;
-import com.main.writeRoom.converter.NoteConverter;
 import com.main.writeRoom.domain.Bookmark.BookmarkNote;
 import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Note;
@@ -18,7 +17,6 @@ import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.EmojiClick;
 import com.main.writeRoom.handler.AuthenticityHandler;
-import com.main.writeRoom.handler.TokenHandler;
 import com.main.writeRoom.service.BookmarkService.BookmarkService;
 import com.main.writeRoom.service.CategoryService.CategoryQueryService;
 import com.main.writeRoom.service.EmojiService.EmojiQueryService;
@@ -30,7 +28,6 @@ import com.main.writeRoom.validation.annotation.PageLessNull;
 import com.main.writeRoom.web.dto.bookmark.BookmarkResponseDTO;
 import com.main.writeRoom.web.dto.note.NoteRequestDTO;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
-import com.main.writeRoom.web.dto.room.RoomRequestDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -40,10 +37,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -182,10 +177,10 @@ public class NoteController {
             @Parameter(name = "user", description = "user", hidden = true),
     })
     @PostMapping("/notes/bookmark/{roomId}/{noteId}")
-    public ApiResponse<NoteResponseDTO.NoteResult> noteBookmark(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId, @AuthUser long user) {
+    public ApiResponse<BookmarkResponseDTO.NoteBookmarkResult> noteBookmark(@PathVariable(name = "roomId")Long roomId, @PathVariable(name = "noteId")Long noteId, @AuthUser long user) {
         Note note = noteQueryService.findNote(noteId);
-        noteCommandService.createBookmarkNote(roomId, note, user);
-        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toBookMarkNoteResult(note));
+        BookmarkNote bookmarkNote = noteCommandService.createBookmarkNote(roomId, note, user);
+        return ApiResponse.of(SuccessStatus._OK, BookmarkConverter.toBookMarkNoteResult(bookmarkNote));
     }
 
     @Operation(summary = "북마크 노트 해제 API", description = "북마크한 노트를 해제하는 API입니다.")

@@ -1,5 +1,6 @@
 package com.main.writeRoom.service.NoteService;
 
+import com.main.writeRoom.domain.Bookmark.BookmarkNote;
 import com.main.writeRoom.domain.Category;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
@@ -13,7 +14,7 @@ public interface NoteCommandService {
     public Note createNote(NoteResponseDTO.PreNoteResult preNoteResult);
     public Note updateNoteFields(Note existingNote, Category category, MultipartFile noteImg, NoteRequestDTO.patchNoteDTO request);
 
-    void createBookmarkNote(Long roomId, Note note, Long userId);
+    BookmarkNote createBookmarkNote(Long roomId, Note note, Long userId);
     void deleteBookmarkNote(Long bookmarkNoteId);
     NoteResponseDTO.NoteDeleteResult deleteNote(Long noteId, User user);
 }
