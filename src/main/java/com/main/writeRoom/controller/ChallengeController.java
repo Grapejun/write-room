@@ -77,14 +77,9 @@ public class ChallengeController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters({
-            @Parameter(name = "user", description = "user", hidden = true),
             @Parameter(name = "roomId", description = "챌린지가 진행될 룸의 식별자를 입력하세요."),
     })
-    public ApiResponse<ChallengeResponseDTO.CreateChallengeResultDTO> createChallengeRoutine(@AuthUser long user, @RequestParam Long roomId, @Valid @RequestBody ChallengeRequestDTO.ChallengeRoutineDTO request) {
-        //회원의 해당 룸에 이미 진행 중인 챌린지가 있는지 검사
-        if (routineQueryService.findProgressRoutineParticipation(userQueryService.findUser(user), roomQueryService.findRoom(roomId)) != null) {
-            throw new ChallengeHandler(ErrorStatus.ALREADY_PROGRESS);
-        }
+    public ApiResponse<ChallengeResponseDTO.CreateChallengeResultDTO> createChallengeRoutine(@RequestParam Long roomId, @Valid @RequestBody ChallengeRequestDTO.ChallengeRoutineDTO request) {
         ChallengeRoutine challengeRoutine = routineCommandService.create(roomId, request);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toCreateChallengeRoutineResultDTO(challengeRoutine));
     }
