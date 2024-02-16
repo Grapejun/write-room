@@ -29,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -206,7 +205,7 @@ public class NoteCommandServiceImpl implements NoteCommandService{
     }
 
     @Transactional
-    public void createBookmarkNote(Long roomId, Note note, Long userId) {
+    public BookmarkNote createBookmarkNote(Long roomId, Note note, Long userId) {
         Room room = roomQueryService.findRoom(roomId);
         User user = userQueryService.findUser(userId);
         BookmarkNote existingBookmarkNote = bookmarkNoteRepository.findByNoteAndUser(note, user);
@@ -216,7 +215,7 @@ public class NoteCommandServiceImpl implements NoteCommandService{
         }
 
         BookmarkNote bookmarkNote = NoteConverter.toBookMarkNote(room, note, user);
-        bookmarkNoteRepository.save(bookmarkNote);
+        return bookmarkNoteRepository.save(bookmarkNote);
     }
 
     @Transactional
