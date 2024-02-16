@@ -14,6 +14,7 @@ import com.main.writeRoom.domain.mapping.*;
 import com.main.writeRoom.handler.AuthenticityHandler;
 import com.main.writeRoom.handler.BookmarkHandler;
 import com.main.writeRoom.handler.NoteHandler;
+import com.main.writeRoom.handler.RoomHandler;
 import com.main.writeRoom.repository.*;
 import com.main.writeRoom.service.ChallengeService.ChallengeGoalsQueryService;
 import com.main.writeRoom.service.ChallengeService.ChallengeRoutineQueryService;
@@ -191,8 +192,11 @@ public class NoteCommandServiceImpl implements NoteCommandService{
         Room room = note.getRoom();
         RoomParticipation roomParticipation = roomParticipationRepository.findByRoomAndUser(room, user);
 
-        if (!user.getId().equals(note.getUser().getId()) || !roomParticipation.getAuthority().equals(MANAGER)) // 해당 룸의 관리자가 아닌 경우에도 권한 없는 에러 발생 하도록 수정
+        if (roomParticipation == null || roomParticipation.getAuthority() == null) {
+            throw new RoomHandler(ErrorStatus.ROOM_ALREADY_NOT_FOUND);
+        } else if (!user.getId().equals(note.getUser().getId()) && !roomParticipation.getAuthority().equals(MANAGER)) {
             throw new AuthenticityHandler(ErrorStatus.AUTHORITY_NOT_FOUND);
+        }
 
         List<EmojiClick> emojiClick = emojiClickRepository.findAllByNote(note);
         emojiClick.forEach(emojiClick1 -> emojiClickRepository.deleteById(emojiClick1.getId()));
