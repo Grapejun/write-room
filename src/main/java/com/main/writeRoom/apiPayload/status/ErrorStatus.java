@@ -48,7 +48,8 @@ public enum ErrorStatus implements BaseErrorCode {
     GOALS_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4005", "챌린지 목표량이 없습니다."),
     NOT_PARTICIPATE(HttpStatus.BAD_REQUEST, "CHALLENGE4006", "해당 챌린지에 사용자가 참여하지 않았습니다."),
     CHALLENGE_NOTFOUND(HttpStatus.BAD_REQUEST, "CHALLENGE4007", "룸과 회원에 해당하는 챌린지가 없습니다."),
-    ALREADY_PROGRESS(HttpStatus.BAD_REQUEST, "CHALLENGE4008", "이미 진행 중인 챌린지가 있습니다.")
+    ALREADY_PROGRESS(HttpStatus.BAD_REQUEST, "CHALLENGE4008", "이미 진행 중인 챌린지가 있습니다."),
+    ALREADY_PROGRESS_USER(HttpStatus.BAD_REQUEST, "CHALLENGE4009", "이미 챌린지를 진행하고 있는 참여자가 있습니다.")
     ;
 
     private final HttpStatus httpStatus;

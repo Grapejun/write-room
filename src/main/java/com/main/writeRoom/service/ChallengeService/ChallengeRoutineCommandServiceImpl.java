@@ -47,7 +47,10 @@ public class ChallengeRoutineCommandServiceImpl implements ChallengeRoutineComma
         //유저아이디로 유저 조회 -> 참여자
         List<User> userList = request.getUserList().stream()
                 .map(userId -> {
-                    return userQueryService.findUser(userId);
+                    User user = userQueryService.findUser(userId);
+                    if(routineQueryService.findProgressRoutineParticipation(user, room) != null) //참여자로 등록한 유저 중에 이미 챌린지를 진행하고 있는 유저가 있는지 검사
+                        throw new ChallengeHandler(ErrorStatus.ALREADY_PROGRESS_USER);
+                    return user;
                 }).collect(Collectors.toList());
 
         List<ChallengeRoutineParticipation> challengeRoutineParticipationList = ChallengeParticipationConverter.toChallengeRoutineParticipation(userList);
