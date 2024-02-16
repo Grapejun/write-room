@@ -73,7 +73,7 @@ public class ChallengeController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4004", description = "챌린지 마감 날짜의 범위를 벗어났습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4008", description = "이미 진행 중인 챌린지가 있습니다.",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4009", description = "이미 챌린지를 진행하고 있는 참여자가 있습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters({
@@ -222,18 +222,13 @@ public class ChallengeController {
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4004", description = "챌린지 마감 날짜의 범위를 벗어났습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
-            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4008", description = "이미 진행 중인 챌린지가 있습니다.",
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "CHALLENGE4009", description = "이미 챌린지를 진행하고 있는 참여자가 있습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
     @Parameters({
-            @Parameter(name = "user", description = "user", hidden = true),
             @Parameter(name = "roomId", description = "챌린지가 진행될 룸의 식별자를 입력하세요."),
     })
-    public ApiResponse<ChallengeResponseDTO.CreateChallengeResultDTO> createChallengeGoals(@AuthUser long user, @RequestParam Long roomId, @Valid @RequestBody ChallengeRequestDTO.ChallengeGoalsDTO request) {
-        //회원의 해당 룸에 이미 진행 중인 챌린지가 있는지 검사
-        if (goalsQueryService.findProgressGoalsParticipation(userQueryService.findUser(user), roomQueryService.findRoom(roomId)) != null) {
-            throw new ChallengeHandler(ErrorStatus.ALREADY_PROGRESS);
-        }
+    public ApiResponse<ChallengeResponseDTO.CreateChallengeResultDTO> createChallengeGoals(@RequestParam Long roomId, @Valid @RequestBody ChallengeRequestDTO.ChallengeGoalsDTO request) {
         ChallengeGoals challengeGoals = goalsCommandService.create(roomId, request);
         return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toCreateChallengeGoalsResultDTO(challengeGoals));
     }
