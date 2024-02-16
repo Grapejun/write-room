@@ -57,6 +57,12 @@ public class NoteCommandServiceImpl implements NoteCommandService{
     @Transactional
     public NoteResponseDTO.PreNoteResult createPreNote(Room room, User user, Category category, MultipartFile noteImg, NoteRequestDTO.createNoteDTO request) {
 
+        RoomParticipation roomParticipation = roomParticipationRepository.findByRoomAndUser(room, user);
+
+        if (roomParticipation == null) {
+            throw new RoomHandler(ErrorStatus.ROOM_ALREADY_NOT_FOUND);
+        }
+
         String uuid = UUID.randomUUID().toString();
         Uuid savedUuid = uuidRepository.save(Uuid.builder()
                 .uuid(uuid).build());
