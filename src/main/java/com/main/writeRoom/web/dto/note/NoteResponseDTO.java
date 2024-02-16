@@ -2,6 +2,7 @@ package com.main.writeRoom.web.dto.note;
 
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Tag;
+import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.web.dto.emoji.EmojiResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import java.time.LocalDateTime;
@@ -95,6 +96,15 @@ public class NoteResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class NoteListDTO {
+        private List<SearchNoteDTO> noteList;
+        private List<String> writerList;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListWithMemberFilterDTO {
         private List<SearchNoteDTO> noteList;
     }
 

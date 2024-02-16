@@ -6,6 +6,7 @@ import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.NoteConverter;
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Room;
+import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.EmojiClick;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import com.main.writeRoom.service.NoteService.NoteQueryServiceImpl;
@@ -15,6 +16,7 @@ import com.main.writeRoom.service.SearchService.SearchQueryServiceImpl;
 
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import com.main.writeRoom.web.dto.search.SearchResponseDTO;
+import com.main.writeRoom.web.dto.user.UserResponseDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -105,7 +107,57 @@ public class SearchController {
         // 각각의 룸 아이디로 룸에 들어가서 searchWord를 포함하는 title, contents, tag 가 있는 룸들을 모두 리스트에 저장
 
         List<NoteResponseDTO.SearchNoteDTO> noteDTOList = NoteConverter.toNoteDTOList(noteList);
+        List<String> nickNameList = noteDTOList.stream()
+                .map(NoteResponseDTO.SearchNoteDTO::getWriter)
+                .distinct() // 중복된 요소 제거
+                .collect(Collectors.toList()); // 리스트로 수집
+
         NoteResponseDTO.NoteListDTO noteListDTO = NoteResponseDTO.NoteListDTO.builder()
+                .noteList(noteDTOList)
+                .writerList(nickNameList)
+                .build();
+
+        return ApiResponse.of(SuccessStatus._OK, noteListDTO);
+    }
+
+    @Operation(summary = "노트 검색(with. 멤버 필터) API", description = "사용자가 속한 모든 룸의 노트를 검색 하는 API입니다. searchType에는 title, content, tag 를 넣어 노트를 검색할 수 있으며," +
+            "그 외의 문자를 넣거나 아무 것도 넣지 않는다면 3가지 모두 검색 조건으로 활용 됩니다. " +
+            "추가로 유저의 이름를 nickName에 넣어서 조회해 주세요")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
+    })
+    @Parameters({
+            @Parameter(name = "searchWord", description = "검색어를 입력해 주세요."),
+            @Parameter(name = "user", description = "user", hidden = true)
+    })
+    @GetMapping("/withMember")
+    public ApiResponse<NoteResponseDTO.NoteListWithMemberFilterDTO> searchNotesWithMember(
+            @AuthUser long userId,
+            @RequestParam String searchWord,
+            @RequestParam String nickName,
+            @RequestParam(required = false) String searchType
+    )
+    {
+        List<RoomParticipation> roomParticipationList = roomCommandService.getMyRoomResultList(userId);
+        // 일단 유저 아이디로 룸 or 룸 아이디를 전부 불러와야 함. -> 룸참여 데이터 조회 해서 룸 아이디 가져와
+        List<Room> roomList = roomParticipationList.stream()
+                .map(RoomParticipation::getRoom) // RoomParticipation 객체로부터 Room 객체를 가져옴
+                .distinct() // 중복 제거 - 매니저, 참여자 동시 참여 가능
+                .toList(); // 결과를 List<Room>으로 수집
+
+        String normalizedSearchWord = "%" + searchWord.toLowerCase() + "%";
+
+        List<Note> noteList = searchQueryServiceImpl.searchNotesInUserRooms(roomList, normalizedSearchWord, searchType);
+        // 각각의 룸 아이디로 룸에 들어가서 searchWord를 포함하는 title, contents, tag 가 있는 룸들을 모두 리스트에 저장
+
+        List<Note> filteredList = noteList.stream()
+                .filter(note -> note.getUser().getName().equals(nickName))
+                .collect(Collectors.toList());
+
+        List<NoteResponseDTO.SearchNoteDTO> noteDTOList = NoteConverter.toNoteDTOList(filteredList);
+
+
+        NoteResponseDTO.NoteListWithMemberFilterDTO noteListDTO = NoteResponseDTO.NoteListWithMemberFilterDTO.builder()
                 .noteList(noteDTOList)
                 .build();
 

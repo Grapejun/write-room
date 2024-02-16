@@ -10,14 +10,11 @@ import com.main.writeRoom.domain.Bookmark.BookmarkNote;
 import com.main.writeRoom.domain.Challenge.ChallengeGoals;
 import com.main.writeRoom.domain.Challenge.ChallengeRoutine;
 import com.main.writeRoom.domain.User.User;
-import com.main.writeRoom.domain.mapping.EmojiClick;
-import com.main.writeRoom.domain.mapping.ChallengeGoalsParticipation;
-import com.main.writeRoom.domain.mapping.ChallengeRoutineParticipation;
-import com.main.writeRoom.domain.mapping.ChallengeStatus;
-import com.main.writeRoom.domain.mapping.NoteTag;
+import com.main.writeRoom.domain.mapping.*;
 import com.main.writeRoom.handler.AuthenticityHandler;
 import com.main.writeRoom.handler.BookmarkHandler;
 import com.main.writeRoom.handler.NoteHandler;
+import com.main.writeRoom.handler.RoomHandler;
 import com.main.writeRoom.repository.*;
 import com.main.writeRoom.service.ChallengeService.ChallengeGoalsQueryService;
 import com.main.writeRoom.service.ChallengeService.ChallengeRoutineQueryService;
@@ -36,6 +33,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.main.writeRoom.apiPayload.status.ErrorStatus.NOTE_NOT_FOUND;
+import static com.main.writeRoom.domain.mapping.Authority.MANAGER;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +43,7 @@ public class NoteCommandServiceImpl implements NoteCommandService{
     private final RoomQueryService roomQueryService;
     private final UserQueryService userQueryService;
     private final BookmarkNoteRepository bookmarkNoteRepository;
+    private final RoomParticipationRepository roomParticipationRepository;
     private final NoteRepository noteRepository;
     private final TagRepository tagRepository;
     private final NoteTagRepository noteTagRepository;
@@ -57,6 +56,12 @@ public class NoteCommandServiceImpl implements NoteCommandService{
     @Override
     @Transactional
     public NoteResponseDTO.PreNoteResult createPreNote(Room room, User user, Category category, MultipartFile noteImg, NoteRequestDTO.createNoteDTO request) {
+
+        RoomParticipation roomParticipation = roomParticipationRepository.findByRoomAndUser(room, user);
+
+        if (roomParticipation == null) {
+            throw new RoomHandler(ErrorStatus.ROOM_ALREADY_NOT_FOUND);
+        }
 
         String uuid = UUID.randomUUID().toString();
         Uuid savedUuid = uuidRepository.save(Uuid.builder()
@@ -136,7 +141,15 @@ public class NoteCommandServiceImpl implements NoteCommandService{
 
     @Transactional
     // NoteService 내 updateNoteFields 메소드
-    public Note updateNoteFields(Note existingNote, Category category, MultipartFile noteImg, NoteRequestDTO.patchNoteDTO request) {
+    public Note updateNoteFields(Long userId, Note existingNote, Category category, MultipartFile noteImg, NoteRequestDTO.patchNoteDTO request) {
+
+        User user = userQueryService.findUser(userId);
+        Room room = existingNote.getRoom();
+        RoomParticipation roomParticipation = roomParticipationRepository.findByRoomAndUser(room, user);
+
+        if (roomParticipation == null) {
+            throw new RoomHandler(ErrorStatus.ROOM_ALREADY_NOT_FOUND);
+        }
 
         String imgUrl = null;
         if (noteImg != null) {
@@ -189,9 +202,14 @@ public class NoteCommandServiceImpl implements NoteCommandService{
 
         Note note = noteRepository.findById(noteId)
                 .orElseThrow(() -> new NoteHandler(NOTE_NOT_FOUND));
+        Room room = note.getRoom();
+        RoomParticipation roomParticipation = roomParticipationRepository.findByRoomAndUser(room, user);
 
-        if (!user.getId().equals(note.getUser().getId()))
+        if (roomParticipation == null || roomParticipation.getAuthority() == null) {
+            throw new RoomHandler(ErrorStatus.ROOM_ALREADY_NOT_FOUND);
+        } else if (!user.getId().equals(note.getUser().getId()) && !roomParticipation.getAuthority().equals(MANAGER)) {
             throw new AuthenticityHandler(ErrorStatus.AUTHORITY_NOT_FOUND);
+        }
 
         List<EmojiClick> emojiClick = emojiClickRepository.findAllByNote(note);
         emojiClick.forEach(emojiClick1 -> emojiClickRepository.deleteById(emojiClick1.getId()));

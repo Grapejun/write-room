@@ -73,4 +73,13 @@ public class UserResponseDTO {
         String email;
         String joinType;
     }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class WriterDTO {
+        private Long userId;
+        String nickName;
+    }
 }
