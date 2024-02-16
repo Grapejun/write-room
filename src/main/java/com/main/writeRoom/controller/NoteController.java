@@ -135,7 +135,7 @@ public class NoteController {
         if (userId != note.getUser().getId())
             throw new AuthenticityHandler(ErrorStatus.AUTHORITY_NOT_FOUND);
         Category category = categoryQueryService.findCategory(jsonList.getCategoryId());
-        Note updatedNote = noteCommandService.updateNoteFields(note, category, noteImg, jsonList);
+        Note updatedNote = noteCommandService.updateNoteFields(userId, note, category, noteImg, jsonList);
         return getNote(updatedNote.getId());
     }
 

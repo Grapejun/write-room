@@ -135,7 +135,15 @@ public class NoteCommandServiceImpl implements NoteCommandService{
 
     @Transactional
     // NoteService 내 updateNoteFields 메소드
-    public Note updateNoteFields(Note existingNote, Category category, MultipartFile noteImg, NoteRequestDTO.patchNoteDTO request) {
+    public Note updateNoteFields(Long userId, Note existingNote, Category category, MultipartFile noteImg, NoteRequestDTO.patchNoteDTO request) {
+
+        User user = userQueryService.findUser(userId);
+        Room room = existingNote.getRoom();
+        RoomParticipation roomParticipation = roomParticipationRepository.findByRoomAndUser(room, user);
+
+        if (roomParticipation == null) {
+            throw new RoomHandler(ErrorStatus.ROOM_ALREADY_NOT_FOUND);
+        }
 
         String imgUrl = null;
         if (noteImg != null) {

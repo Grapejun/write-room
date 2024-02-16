@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 public interface NoteCommandService {
     public NoteResponseDTO.PreNoteResult createPreNote(Room room, User user, Category category, MultipartFile noteImg, NoteRequestDTO.createNoteDTO request);
     public Note createNote(NoteResponseDTO.PreNoteResult preNoteResult);
-    public Note updateNoteFields(Note existingNote, Category category, MultipartFile noteImg, NoteRequestDTO.patchNoteDTO request);
+    public Note updateNoteFields(Long userId, Note existingNote, Category category, MultipartFile noteImg, NoteRequestDTO.patchNoteDTO request);
 
     BookmarkNote createBookmarkNote(Long roomId, Note note, Long userId);
     void deleteBookmarkNote(Long bookmarkNoteId);
