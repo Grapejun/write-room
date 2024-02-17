@@ -104,7 +104,7 @@ public class UserController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
-    @DeleteMapping("/delete")
+    @GetMapping("/delete")
     public ApiResponse<Void> deleteUser(@AuthUser long userId) {
         userCommandService.deleteUser(userId);
         return ApiResponse.of(SuccessStatus._OK, null);
