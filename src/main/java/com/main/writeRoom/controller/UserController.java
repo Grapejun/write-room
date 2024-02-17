@@ -107,7 +107,7 @@ public class UserController {
     @GetMapping("/delete")
     public ApiResponse<Void> deleteUser(@AuthUser long userId) {
         userCommandService.deleteUser(userId);
-        return ApiResponse.of(SuccessStatus._OK, null);
+        return ApiResponse.of(SuccessStatus._OK, null );
     }
 
 
