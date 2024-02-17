@@ -235,6 +235,9 @@ public class NoteCommandServiceImpl implements NoteCommandService{
     @Transactional
     public void deleteBookmarkNote(Note note, User user) {
         BookmarkNote bookmarkNote = bookmarkNoteRepository.findByNoteAndUser(note, user);
+        if (bookmarkNote == null) {
+            throw new BookmarkHandler(ErrorStatus.BOOKMARK_NOT_FOUND);
+        }
         bookmarkNoteRepository.delete(bookmarkNote);
     }
 }
