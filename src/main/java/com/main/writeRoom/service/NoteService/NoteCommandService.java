@@ -15,6 +15,6 @@ public interface NoteCommandService {
     public Note updateNoteFields(Long userId, Note existingNote, Category category, MultipartFile noteImg, NoteRequestDTO.patchNoteDTO request);
 
     BookmarkNote createBookmarkNote(Long roomId, Note note, Long userId);
-    void deleteBookmarkNote(Long bookmarkNoteId);
+    void deleteBookmarkNote(Note note, User user);
     NoteResponseDTO.NoteDeleteResult deleteNote(Long noteId, User user);
 }

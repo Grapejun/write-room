@@ -188,11 +188,13 @@ public class NoteController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "COMMON200", description = "성공입니다."),
     })
     @Parameters({
-            @Parameter(name = "bookmarkNoteId", description = "북마크 노트 아이디입니다."),
+            @Parameter(name = "noteId", description = "노트 아이디입니다."),
     })
-    @DeleteMapping("/notes/bookmark/delete/{bookmarkNoteId}")
-    public ApiResponse deleteBookmark(@PathVariable(name = "bookmarkNoteId")Long bookmarkNoteId) {
-        noteCommandService.deleteBookmarkNote(bookmarkNoteId);
+    @DeleteMapping("/notes/bookmark/delete/{noteId}")
+    public ApiResponse deleteBookmark(@PathVariable(name = "noteId")Long noteId, @AuthUser long userId) {
+        User user = userQueryService.findUser(userId);
+        Note note = noteQueryService.findNote(noteId);
+        noteCommandService.deleteBookmarkNote(note, user);
         return ApiResponse.onSuccess();
     }
 
