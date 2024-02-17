@@ -10,6 +10,7 @@ import com.main.writeRoom.apiPayload.status.SuccessStatus;
 import com.main.writeRoom.config.auth.AuthUser;
 import com.main.writeRoom.converter.UserConverter;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.RoomParticipation;
 import com.main.writeRoom.service.UserService.UserCommandService;
 import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.web.dto.user.UserRequestDTO;
@@ -24,6 +25,8 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -101,10 +104,15 @@ public class UserController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "MEMBER4001", description = "사용자가 없습니다.",
                     content = @Content(schema = @Schema(implementation = ErrorReasonDTO.class))),
     })
-
-    @DeleteMapping("/delete/{userId}")
+    @DeleteMapping("/delete")
     public ApiResponse<Void> deleteUser(@AuthUser long userId) {
         userCommandService.deleteUser(userId);
         return ApiResponse.of(SuccessStatus._OK, null);
     }
+
+
+
+
+
+
 }
