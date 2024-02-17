@@ -10,4 +10,4 @@ public interface BookmarkService {
     BookmarkMaterial postTopic(User user, String content);
     BookmarkResponseDTO.TopicResultDTO deleteMaterial(Long userId, BookmarkMaterial bookmarkMaterial);
     Page<BookmarkNote> findNoteBookmark(User user, Integer page);
-    }
+}

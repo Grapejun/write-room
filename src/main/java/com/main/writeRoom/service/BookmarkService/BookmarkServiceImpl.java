@@ -8,8 +8,6 @@ import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.handler.BookmarkHandler;
 import com.main.writeRoom.repository.BookmarkMaterialRepository;
 import com.main.writeRoom.repository.BookmarkNoteRepository;
-import com.main.writeRoom.service.UserService.UserQueryService;
-import com.main.writeRoom.service.UserService.UserQueryServiceImpl;
 import com.main.writeRoom.web.dto.bookmark.BookmarkResponseDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class BookmarkServiceImpl implements BookmarkService{
+public class BookmarkServiceImpl implements BookmarkService {
 
     private final BookmarkMaterialRepository bookmarkMaterialRepository;
     private final BookmarkNoteRepository bookmarkNoteRepository;
