@@ -34,7 +34,7 @@ public class SearchQueryServiceImpl implements SearchQueryService {
     @Transactional
     public List<SearchResponseDTO.VocabularyResultDTO> getTopics() {
         this.openAiService = new OpenAiService(apiKey, Duration.ofSeconds(20));
-        String prompt = "글쓰기를 위한 주제 5개를 아무런 부가 설명 없이 단어만 알려줘. 예시: 첫눈이 오면, 공통 되는 부분, 연예인 vs 배우, 코딩 공부란, 애정에 관하여";
+        String prompt = "글쓰기를 위한 주제 5개를 쉼표로 구분하여 나열해줘. 예시: 첫눈이 오면, 공통 되는 부분, 연예인 vs 배우, 코딩 공부란, 애정에 관하여. 추가적인 단어나 문구를 넣지 말고, 키워드만 답변으로 제공해.";
 
         ChatCompletionRequest requester = ChatCompletionRequest.builder()
                 .model(MODEL)
