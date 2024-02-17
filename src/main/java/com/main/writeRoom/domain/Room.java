@@ -40,7 +40,7 @@ public class Room extends BaseEntity {
     private List<RoomParticipation> roomParticipationList = new ArrayList<>();
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
     private List<Note> noteList = new ArrayList<>();
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE)
     private List<Category> categoryList = new ArrayList<>();
 
     public String daysSinceLastUpdate() {

@@ -106,6 +106,10 @@ public class RoomCommandServiceimpl implements RoomCommandService {
         if (roomParticipation.getAuthority() != MANAGER) {
             throw new RoomHandler(ErrorStatus.AUTHORITY_NOT_FOUND);
         }
+
+        // 룸과 관련된 카테고리를 먼저 삭제합니다.
+        categoryRepository.deleteAll(room.getCategoryList());
+
         roomRepository.delete(room);
     }
 
