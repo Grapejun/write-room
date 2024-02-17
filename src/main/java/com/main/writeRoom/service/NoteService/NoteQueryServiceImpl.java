@@ -10,11 +10,7 @@ import com.main.writeRoom.handler.NoteHandler;
 import com.main.writeRoom.repository.NoteRepository;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-import com.main.writeRoom.repository.NoteTagRepository;
-import com.main.writeRoom.repository.TagRepository;
-import com.main.writeRoom.web.dto.emoji.EmojiResponseDTO;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -81,5 +77,4 @@ public class NoteQueryServiceImpl implements NoteQueryService{
         PageRequest pageRequest = PageRequest.of(page, 10);
         return noteRepository.findAllByRoomAndUser(room, user, pageRequest);
     }
-
 }

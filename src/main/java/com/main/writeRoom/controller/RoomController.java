@@ -30,9 +30,7 @@ import com.main.writeRoom.service.TagService.TagQueryService;
 import com.main.writeRoom.service.UserService.UserQueryService;
 import com.main.writeRoom.validation.annotation.PageLessNull;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
-import com.main.writeRoom.web.dto.note.NoteResponseDTO.RoomResult;
 import com.main.writeRoom.web.dto.room.RoomRequestDTO;
-import com.main.writeRoom.web.dto.room.RoomRequestDTO.UpdatedRoomInfoDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO.MyRoomAllResultDto;
 import com.main.writeRoom.web.dto.room.RoomResponseDTO.MyRoomResultDto;
@@ -225,10 +223,11 @@ public class RoomController {
             @Parameter(name = "roomId", description = "룸 아이디 입니다."),
     })
     @GetMapping("/{roomId}/list")
-    public ApiResponse<NoteResponseDTO.RoomResult> getNoteList(@PathVariable(name = "roomId")Long roomId, @PageLessNull @RequestParam(name = "page") Integer page) {
+    public ApiResponse<NoteResponseDTO.RoomResultInfo> getNoteList(@PathVariable(name = "roomId")Long roomId, @PageLessNull @RequestParam(name = "page") Integer page, @AuthUser long userId) {
+        User user = userQueryService.findUser(userId);
         Room room = roomQueryService.findRoom(roomId);
         Page<Note> note = noteQueryService.getNoteListForRoom(room, page);
-        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toRoomResultDTO(room, note));
+        return ApiResponse.of(SuccessStatus._OK, NoteConverter.toRoomResultInfoDTO(room, note, user));
     }
 
     @Operation(summary = "룸에 참여중인 멤버들의 최근 수정일자 조회 API", description = "해당 룸에 참여중인 멤버들의 노트 수정일자를 조회하는 API이며, 페이징을 포함합니다. query String으로 page 번호를 주세요.")
@@ -303,7 +302,7 @@ public class RoomController {
     })
     @PatchMapping("/updatedRoomInfo/{roomId}")
     public ApiResponse<RoomResponseDTO.MyRoomInfoResult> updatedRoomInfo(@PathVariable(name = "roomId")Long roomId, @AuthUser long userId, @RequestParam(name = "request")String request,
-                                       @RequestPart(required = false, value = "roomImg")MultipartFile roomImg) throws JsonProcessingException {
+                                                                         @RequestPart(required = false, value = "roomImg")MultipartFile roomImg) throws JsonProcessingException {
         Room room = roomQueryService.findRoom(roomId);
         ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
         RoomRequestDTO.UpdatedRoomInfoDTO jsonList = objectMapper.readValue(request,new TypeReference<>() {});

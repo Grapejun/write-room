@@ -2,7 +2,6 @@ package com.main.writeRoom.web.dto.note;
 
 import com.main.writeRoom.domain.Note;
 import com.main.writeRoom.domain.Tag;
-import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.web.dto.emoji.EmojiResponseDTO;
 import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 import java.time.LocalDateTime;
@@ -155,5 +154,40 @@ public class NoteResponseDTO {
         String userProfileImg;
         LocalDateTime createdAt;
         List<TagResponseDTO.TagList> tagList;
+    }
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class NoteListInfoDTO {
+        Long noteId;
+        String noteTitle;
+        String noteSubtitle;
+        String noteContent;
+        String writer;
+        String noteImg;
+        String userProfileImg;
+        LocalDateTime createdAt;
+        Long categoryId;
+        String categoryContent;
+        List<TagResponseDTO.TagList> tagList;
+        boolean isbookmarked;
+    }
+
+    @Builder
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class RoomResultInfo {
+        Integer listSize;
+        Integer totalPage;
+        Long totalElements;
+        Boolean isFirst;
+        Boolean isLast;
+        Long roomId;
+        String roomImg;
+        String roomTitle;
+        String roomIntroduction;
+        List<NoteListInfoDTO> noteList;
     }
 }

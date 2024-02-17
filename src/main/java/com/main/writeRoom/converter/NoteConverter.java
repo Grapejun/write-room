@@ -4,6 +4,7 @@ import com.main.writeRoom.domain.*;
 import com.main.writeRoom.domain.Bookmark.BookmarkNote;
 import com.main.writeRoom.domain.User.User;
 import com.main.writeRoom.domain.mapping.NoteTag;
+import com.main.writeRoom.repository.BookmarkNoteRepository;
 import com.main.writeRoom.web.dto.emoji.EmojiResponseDTO;
 import com.main.writeRoom.web.dto.note.NoteRequestDTO;
 import com.main.writeRoom.web.dto.note.NoteResponseDTO;
@@ -11,33 +12,88 @@ import com.main.writeRoom.web.dto.tag.TagResponseDTO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NoteConverter {
+    private static BookmarkNoteRepository bookmarkNoteRepository;
 
-public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> notes) {
-    List<NoteResponseDTO.NoteList> toRoomResultNoteDTOList = notes.stream()
-            .map(NoteConverter::toRoomResultNoteDTOList).collect(Collectors.toList());
+    public NoteConverter(BookmarkNoteRepository bookmarkNoteRepository) {
+        this.bookmarkNoteRepository = bookmarkNoteRepository;
+    }
 
-    return NoteResponseDTO.RoomResult.builder()
-            .isFirst(notes.isFirst())
-            .isLast(notes.isFirst())
-            .totalPage(notes.getTotalPages())
-            .totalElements(notes.getTotalElements())
-            .listSize(notes.getSize())
-            .roomId(room.getId())
-            .roomImg(room.getCoverImg())
-            .roomTitle(room.getTitle())
-            .roomIntroduction(room.getIntroduction())
-            .noteList(toRoomResultNoteDTOList)
-            .build();
-}
 
+    public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> notes) {
+        List<NoteResponseDTO.NoteList> toRoomResultNoteDTOList = notes.stream()
+                .map(NoteConverter::toRoomResultNoteDTOList).collect(Collectors.toList());
+
+        return NoteResponseDTO.RoomResult.builder()
+                .isFirst(notes.isFirst())
+                .isLast(notes.isFirst())
+                .totalPage(notes.getTotalPages())
+                .totalElements(notes.getTotalElements())
+                .listSize(notes.getSize())
+                .roomId(room.getId())
+                .roomImg(room.getCoverImg())
+                .roomTitle(room.getTitle())
+                .roomIntroduction(room.getIntroduction())
+                .noteList(toRoomResultNoteDTOList)
+                .build();
+    }
+
+    public static NoteResponseDTO.RoomResultInfo toRoomResultInfoDTO(Room room, Page<Note> notes, User user) {
+        List<NoteResponseDTO.NoteListInfoDTO> toRoomResultNoteInfoDTOList = notes.stream()
+                .map(note -> toRoomResultNoteInfoDTOList(note, user))
+                .collect(Collectors.toList());
+
+            return NoteResponseDTO.RoomResultInfo.builder()
+                    .isFirst(notes.isFirst())
+                    .isLast(notes.isFirst())
+                    .totalPage(notes.getTotalPages())
+                    .totalElements(notes.getTotalElements())
+                    .listSize(notes.getSize())
+                    .roomId(room.getId())
+                    .roomImg(room.getCoverImg())
+                    .roomTitle(room.getTitle())
+                    .roomIntroduction(room.getIntroduction())
+                    .noteList(toRoomResultNoteInfoDTOList)
+                    .build();
+        }
+
+    public static NoteResponseDTO.NoteListInfoDTO toRoomResultNoteInfoDTOList(Note note, User user) {
+            List<TagResponseDTO.TagList> toNoteResultTagDTOList = note.getNoteTagList().stream()
+                    .map(NoteConverter::toNoteResultTagDTOList)
+                    .collect(Collectors.toList());
+
+            boolean isBookmarked = checkIfNoteIsBookmarked(note, user);
+
+            return NoteResponseDTO.NoteListInfoDTO.builder()
+                    .noteId(note.getId())
+                    .noteTitle(note.getTitle())
+                    .noteSubtitle(note.getSubtitle())
+                    .noteContent(note.getContent())
+                    .noteImg(note.getCoverImg())
+                    .writer(note.getUser().getName())
+                    .userProfileImg(note.getUser().getProfileImage())
+                    .createdAt(note.getCreatedAt())
+                    .categoryId(note.getCategory().getId())
+                    .categoryContent(note.getCategory().getName())
+                    .tagList(toNoteResultTagDTOList)
+                    .isbookmarked(isBookmarked)
+                    .build();
+        }
+
+    private static boolean checkIfNoteIsBookmarked(Note note, User user) {
+        Optional<List<BookmarkNote>> bookmarkNotes = Optional.ofNullable(bookmarkNoteRepository.findByUserAndNote(user, note));
+        return bookmarkNotes.map(list -> !list.isEmpty()).orElse(false);
+    }
 
     public static NoteResponseDTO.NoteList toRoomResultNoteDTOList(Note note) {
-    List<TagResponseDTO.TagList> toNoteResultTagDTOList = note.getNoteTagList().stream()
-            .map(NoteConverter::toNoteResultTagDTOList).collect(Collectors.toList());
+        List<TagResponseDTO.TagList> toNoteResultTagDTOList = note.getNoteTagList().stream()
+                .map(NoteConverter::toNoteResultTagDTOList).collect(Collectors.toList());
 
         return NoteResponseDTO.NoteList.builder()
                 .noteId(note.getId())
@@ -53,6 +109,7 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .tagList(toNoteResultTagDTOList)
                 .build();
     }
+
 
     public static NoteResponseDTO.NoteResult toNoteResponseDTO(Note note, ArrayList<Integer> emojiCountList) {
 
@@ -80,21 +137,16 @@ public static NoteResponseDTO.RoomResult toRoomResultDTO(Room room, Page<Note> n
                 .build();
     }
 
-    public static NoteResponseDTO.NoteResult toBookMarkNoteResult(Note note) {
-        return NoteResponseDTO.NoteResult.builder()
+
+    public static NoteResponseDTO.NoteDeleteResult toDeleteNoteResult(Note note) {
+        return NoteResponseDTO.NoteDeleteResult.builder()
                 .noteId(note.getId())
                 .build();
     }
 
-    public static NoteResponseDTO.NoteDeleteResult toDeleteNoteResult(Note note) {
-    return NoteResponseDTO.NoteDeleteResult.builder()
-            .noteId(note.getId())
-            .build();
-    }
-
     public static Note toNote(Room room, User user, Category category, NoteRequestDTO.createNoteDTO request, String imgUrl) {
 
-    // challengeCheck
+        // challengeCheck
         ACHIEVE achieve = ACHIEVE.FALSE;
         // 200자 이상 시 true 로직 구현 -> check 받으면 TRUE로 받기
         if (request.getLetterCount() >= 200)
