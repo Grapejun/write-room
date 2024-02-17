@@ -2,6 +2,7 @@ package com.main.writeRoom.repository;
 
 import com.main.writeRoom.domain.Room;
 import com.main.writeRoom.domain.User.User;
+import com.main.writeRoom.domain.mapping.Authority;
 import com.main.writeRoom.domain.mapping.RoomParticipation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,4 +20,8 @@ public interface RoomParticipationRepository extends JpaRepository<RoomParticipa
     List<RoomParticipation> findAllByUser(User user);
     boolean existsByRoomAndUser(Room room, User user);
     List<RoomParticipation> findByRoom(Room room);
+
+
+    List<RoomParticipation> findByUserIdAndAuthority(Long userId, Authority authority);
+    void deleteByRoomId(Long roomId);
 }
