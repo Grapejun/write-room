@@ -27,7 +27,7 @@ public class EmailService {
         msgOfEmail += "<br>";
         msgOfEmail += "<p>아래 링크를 클릭하면 <u>" + user.getEmail() + "</u> 계정의 Writeroom 비밀번호를 재설정할 수 있습니다.<p>";
         msgOfEmail += "<br>";
-        msgOfEmail += "<a href='http://localhost:3000/reset/pw/currentEmail?token=" + resetToken+ "'>비밀번호 재설정</a>";
+        msgOfEmail += "<a href='https://illustrious-starlight-6547ce.netlify.app/reset/pw/currentEmail?token=" + resetToken+ "'>비밀번호 재설정</a>";
         msgOfEmail += "<br>";
         msgOfEmail += "<br>";
         msgOfEmail += "<p>비밀번호 재설정을 통해 비밀번호가 변경되면 계정 보안을 위해 모든 기기와 브라우저에서 자동 로그인이 해제됩니다.";
@@ -57,7 +57,7 @@ public class EmailService {
         msgOfEmail += "<br><br>";
         msgOfEmail += "누군가 회원님의 Writeroom 계정에 액세스했을 수 있습니다. 계정 보호를 위해 비밀번호 재설정이 필요합니다.";
         msgOfEmail += "<br><br>";
-        msgOfEmail += "<a href='http://localhost:3000/reset/pw/newEmail?token=" + resetToken+ "'>비밀번호 재설정</a>";
+        msgOfEmail += "<a href='https://illustrious-starlight-6547ce.netlify.app/reset/pw/newEmail?token=" + resetToken+ "'>비밀번호 재설정</a>";
         msgOfEmail += "<br><br>";
         msgOfEmail += "<p>Writeroom 팀<p>";
         message.setFrom(mail);
