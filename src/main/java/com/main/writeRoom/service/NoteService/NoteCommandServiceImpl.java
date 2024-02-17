@@ -233,7 +233,8 @@ public class NoteCommandServiceImpl implements NoteCommandService{
     }
 
     @Transactional
-    public void deleteBookmarkNote(Long bookmarkNoteId) {
-        bookmarkNoteRepository.deleteById(bookmarkNoteId);
+    public void deleteBookmarkNote(Note note, User user) {
+        BookmarkNote bookmarkNote = bookmarkNoteRepository.findByNoteAndUser(note, user);
+        bookmarkNoteRepository.delete(bookmarkNote);
     }
 }
