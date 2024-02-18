@@ -24,4 +24,6 @@ public interface RoomParticipationRepository extends JpaRepository<RoomParticipa
 
     List<RoomParticipation> findByUserIdAndAuthority(Long userId, Authority authority);
     void deleteByRoomId(Long roomId);
+
+    void deleteByUserId(Long userId);
 }
