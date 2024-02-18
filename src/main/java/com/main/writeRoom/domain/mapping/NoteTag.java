@@ -28,7 +28,7 @@ public class NoteTag {
     @JoinColumn(name = "tag")
     private Tag tag;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room")
     private Room room;
 }
