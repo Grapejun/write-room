@@ -11,10 +11,6 @@ import java.util.List;
 
 public interface ChallengeGoalsQueryService {
     public ChallengeGoals findGoals(Long challengeId);
-    public Integer findAchieveNote(User user, ChallengeGoals goals);
-
-    public ChallengeGoalsParticipation findGoalsParticipation(User user, ChallengeGoals goals);
-
     public ChallengeGoalsParticipation findProgressGoalsParticipation(User user, Room room);
     public List<ChallengeGoalsParticipation> findByChallengeStatus(ChallengeStatus challengeStatus);
 

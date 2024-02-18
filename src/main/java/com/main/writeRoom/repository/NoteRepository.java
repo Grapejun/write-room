@@ -23,12 +23,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
     @Query("select n from Note n where n.createdAt>= :startDate and n.createdAt<= :deadline and n.user = :user and n.room = :room and n.achieve = 'TRUE'")
     List<Note> findAchieveNotes(@Param("startDate") LocalDateTime startDate, @Param("deadline") LocalDateTime deadline, @Param("user") User user, @Param("room") Room room);
 
-    @Query("select count(*) from Note n where n.createdAt>= :startDate and n.createdAt<= :deadline and n.user = :user and n.room = :room and n.achieve = 'TRUE'")
-    Integer findAchieveCount(@Param("startDate") LocalDateTime startDate, @Param("deadline") LocalDateTime deadline, @Param("user") User user, @Param("room") Room room);
-
-    @Query("select count(*) from Note n where n.user = :user and n.room = :room and n.achieve = 'TRUE'")
-    Integer findAchieveCountNoDate(@Param("user") User user, @Param("room") Room room);
-
     Page<Note> findAllByRoom(Room room, PageRequest pageRequest);
     Long countByRoom(Room room);
 

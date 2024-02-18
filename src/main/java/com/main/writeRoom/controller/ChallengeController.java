@@ -256,8 +256,7 @@ public class ChallengeController {
             throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);
         }
         ChallengeGoals goals = goalsParticipation.getChallengeGoals();
-        Integer achieveCount = goalsQueryService.findAchieveNote(user1, goals);
-        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeGoalsDTO(user1, goals, achieveCount));
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeGoalsDTO(user1, goals, goalsParticipation));
     }
 
     //다른 참여자꺼 챌린지 목표량 조회
@@ -277,8 +276,11 @@ public class ChallengeController {
     public ApiResponse<ChallengeResponseDTO.ChallengeGoalsDTO> getParticipantsGoals(@PathVariable(name = "participantsId") Long participantsId, @PathVariable(name = "challengeId") Long challengeId) {
         User user1 = userQueryService.findUser(participantsId);
         ChallengeGoals goals = goalsQueryService.findGoals(challengeId);
-        Integer achieveCount = goalsQueryService.findAchieveNote(user1, goals);
-        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeGoalsDTO(user1, goals, achieveCount));
+        ChallengeGoalsParticipation goalsParticipation = goalsQueryService.findProgressGoalsParticipation(user1, goals.getRoom());
+        if (goalsParticipation == null) {
+            throw new ChallengeHandler(ErrorStatus.PROGRESS_NOTFOUND);
+        }
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toChallengeGoalsDTO(user1, goals, goalsParticipation));
     }
 
     //챌린지 목표량 포기
@@ -380,8 +382,7 @@ public class ChallengeController {
         User user1 = userQueryService.findUser(user);
         ChallengeGoals goals = goalsQueryService.findGoals(challengeId);
         ChallengeGoalsParticipation goalsParticipation = myChallengeQueryService.findByUserAndChallengeGoals(user1, goals);
-        Integer achieveCount = goalsQueryService.findAchieveNote(user1, goals);
-        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toMyChallengeGoalsDTO(user1, goals, achieveCount, goalsParticipation));
+        return ApiResponse.of(SuccessStatus._OK, ChallengeConverter.toMyChallengeGoalsDTO(user1, goals, goalsParticipation));
     }
 
     //챌린지 내역 삭제 - 루틴

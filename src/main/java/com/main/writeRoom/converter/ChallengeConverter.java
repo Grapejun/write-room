@@ -108,7 +108,7 @@ public class ChallengeConverter {
     }
 
     //챌린지 목표량 조회
-    public static ChallengeResponseDTO.ChallengeGoalsDTO toChallengeGoalsDTO(User user, ChallengeGoals goals, Integer achieveCount)  {
+    public static ChallengeResponseDTO.ChallengeGoalsDTO toChallengeGoalsDTO(User user, ChallengeGoals goals, ChallengeGoalsParticipation goalsParticipation)  {
         List<ChallengeResponseDTO.UserDTO> userList = goals.getChallengeGoalsParticipationList().stream()
                 .filter(participation -> participation.getChallengeStatus() != ChallengeStatus.GIVEUP)
                 .map(participation -> {
@@ -122,7 +122,7 @@ public class ChallengeConverter {
                 .deadline(goals.getDeadline())
                 .targetCount(goals.getTargetCount())
                 .userList(userList)
-                .achieveCount(achieveCount)
+                .achieveCount(goalsParticipation.getAchieveCount())
                 .build();
     }
 
@@ -198,7 +198,7 @@ public class ChallengeConverter {
     }
 
     //나의 챌린지 상세 조회 - 목표량
-    public static ChallengeResponseDTO.MyChallengeGoalsDTO toMyChallengeGoalsDTO(User user, ChallengeGoals goals, Integer achieveCount, ChallengeGoalsParticipation goalsParticipation)  {
+    public static ChallengeResponseDTO.MyChallengeGoalsDTO toMyChallengeGoalsDTO(User user, ChallengeGoals goals, ChallengeGoalsParticipation goalsParticipation)  {
         List<ChallengeResponseDTO.UserDTO> userList = goals.getChallengeGoalsParticipationList().stream()
                 .filter(participation -> participation.getChallengeStatus() != ChallengeStatus.GIVEUP)
                 .map(participation -> {
@@ -212,7 +212,7 @@ public class ChallengeConverter {
                 .deadline(goals.getDeadline())
                 .targetCount(goals.getTargetCount())
                 .userList(userList)
-                .achieveCount(achieveCount)
+                .achieveCount(goalsParticipation.getAchieveCount())
                 .challengeStatus(goalsParticipation.getChallengeStatus())
                 .build();
     }

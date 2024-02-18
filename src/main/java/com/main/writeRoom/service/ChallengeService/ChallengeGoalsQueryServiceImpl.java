@@ -35,19 +35,6 @@ public class ChallengeGoalsQueryServiceImpl implements ChallengeGoalsQueryServic
     }
 
     @Override
-    public Integer findAchieveNote(User user, ChallengeGoals goals) {
-        if (goals.getStartDate() == null) {
-            return noteRepository.findAchieveCountNoDate(user, goals.getRoom());
-        }
-        else return noteRepository.findAchieveCount(goals.getStartDate().atStartOfDay(), goals.getDeadline().atTime(LocalTime.MAX), user,goals.getRoom());
-    }
-
-    @Override
-    public ChallengeGoalsParticipation findGoalsParticipation(User user, ChallengeGoals goals) {
-        return goalsParticipationRepository.findByUserAndChallengeGoals(user, goals);
-    }
-
-    @Override
     public ChallengeGoalsParticipation findProgressGoalsParticipation(User user, Room room) {
         return goalsParticipationRepository.findProgressGoalsParticipation(user, room);
     }
