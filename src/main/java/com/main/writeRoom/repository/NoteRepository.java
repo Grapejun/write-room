@@ -45,4 +45,6 @@ public interface NoteRepository extends JpaRepository<Note, Long> {
 
     @Query("SELECT n FROM Note n JOIN n.noteTagList nt JOIN nt.tag t WHERE n.room IN :rooms AND LOWER(t.content) LIKE LOWER(:searchWord)")
     List<Note> findByTagInUserRooms(@Param("rooms") List<Room> rooms, @Param("searchWord") String searchWord);
+
+    void deleteByUserId(Long userId);
 }

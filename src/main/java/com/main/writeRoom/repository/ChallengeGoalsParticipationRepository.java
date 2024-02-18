@@ -24,4 +24,6 @@ public interface ChallengeGoalsParticipationRepository extends JpaRepository<Cha
     @Query("select cgp from ChallengeGoalsParticipation cgp where cgp.user = :user and cgp.room = :room and cgp.challengeStatus = 'PROGRESS'")
     public ChallengeGoalsParticipation findProgressGoalsParticipation(@Param("user") User user, @Param("room") Room room);
     public List<ChallengeGoalsParticipation> findByChallengeStatus(ChallengeStatus challengeStatus);
+
+    void deleteByUserId(Long userId);
 }
